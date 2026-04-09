@@ -1,13 +1,19 @@
-name: .NET Framework 4.8 Nightly 每日构建
+name: .NET Framework 4.8 Nightly 每日构建（dev分支）
 trigger:
   schedule:
     - cron: "0 18 * * *"  # 北京时间 凌晨2点
-  manual: true
+  manual: true  # 可手动触发
+
+# 🔥 关键：指定只从 dev 分支构建
+resources:
+  repositories:
+    - repository: self
+      ref: dev
 
 variables:
-  PROJECT_DIR: "./"       # 网站项目根目录
+  PROJECT_DIR: "./"
   NIGHTLY_TAG: "nightly"
-  GITEE_TOKEN: ${GITEE_TOKEN}
+  GITEE_TOKEN: ${BUILD_TOKEN}
 
 stages:
   - stage: Build
@@ -17,34 +23,34 @@ stages:
         displayName: 编译 .NET Framework
         pool:
           windows: yes
-        image: mcr.microsoft.com/dotnet/framework/sdk:4.8
+        image: mcr.microsoft.com/dotframework/sdk:4.8
         
         steps:
           - checkout: self
             fetchDepth: 0
 
-          # 网站项目直接编译发布
+          # 构建网站项目（无sln）
           - name: Build Website
             script: |
               "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe" ^
               ./ /t:Build /p:Configuration=Release /p:OutputPath=../publish
 
-          # 打包升级包
+          # 打包
           - name: Zip Package
             script: |
               Compress-Archive -Path .\publish\* -DestinationPath nightly-build.zip -Force
 
-          # 生成 SHA256 校验
+          # 哈希校验
           - name: Generate SHA256
             script: |
               $hash = (Get-FileHash -Path nightly-build.zip -Algorithm SHA256).Hash
               $hash | Out-File nightly-hash.txt -Encoding utf8
 
-          # 自动生成 Changelog
+          # 自动Changelog
           - name: Generate Changelog
             script: |
               $date = Get-Date -Format "yyyy-MM-dd"
-              $log = "## Nightly $date`n"
+              $log = "## Nightly Build $date (dev分支)`n"
               $commits = git log --since="1 days ago" --pretty="- %s"
               $log += $commits
               $log | Out-File CHANGELOG.md -Encoding utf8
@@ -88,8 +94,8 @@ stages:
               gitee tag delete ${{ variables.NIGHTLY_TAG }} --yes 2>&1 | Out-Null
               
               gitee release create --tag ${{ variables.NIGHTLY_TAG }} `
-              --name "Nightly 每日构建" `
-              --body "更新内容：`n`n$changelog" `
+              --name "Nightly 每日构建 (dev分支)" `
+              --body "自动从 dev 分支构建`n`n更新内容：`n$changelog" `
               --pre-release `
               --assets "nightly-build.zip" `
               --assets "nightly-hash.txt"
