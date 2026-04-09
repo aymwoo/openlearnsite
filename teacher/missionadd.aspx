@@ -1,7 +1,7 @@
 <%@ Page Title="" Language="C#" MasterPageFile="~/teacher/Teach.master" StylesheetTheme="Teacher" Validaterequest="false" AutoEventWireup="true" CodeFile="missionadd.aspx.cs" Inherits="Teacher_missionadd" ResponseEncoding="utf-8" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
-    
+    <link rel="stylesheet" type="text/css" href="/App_Themes/Teacher/missionadd.css" />
 
     <div class="content-add-page mission-add-page">
         <div class="content-add-shell is-medium">
@@ -96,12 +96,21 @@
                     
                     <div class="ai-assistant-panel">
                         <div class="ai-panel-header">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c-.11.89-.34 2.08-1.52 3.16C11.3 8.24 10.38 9 8 9a2 2 0 0 1-2-2c.11-.89.34-2.08 1.52-3.16C8.7 2.76 9.62 2 12 2Z"></path><path d="M12 10v12"></path><path d="M12 10a2 2 0 0 0-2 2c.11.89.34 2.08 1.52 3.16.89.8 1.81 1.56 4.19 1.56a2 2 0 0 0 2-2c-.11-.89-.34-2.08-1.52-3.16C15.3 10.76 14.38 10 12 10Z"></path></svg>
-                            AI 教学助手
+                            <span class="ai-panel-icon" aria-hidden="true">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c-.11.89-.34 2.08-1.52 3.16C11.3 8.24 10.38 9 8 9a2 2 0 0 1-2-2c.11-.89.34-2.08 1.52-3.16C8.7 2.76 9.62 2 12 2Z"></path><path d="M12 10v12"></path><path d="M12 10a2 2 0 0 0-2 2c.11.89.34 2.08 1.52 3.16.89.8 1.81 1.56 4.19 1.56a2 2 0 0 0 2-2c-.11-.89-.34-2.08-1.52-3.16C15.3 10.76 14.38 10 12 10Z"></path></svg>
+                            </span>
+                            <div class="ai-panel-heading">
+                                <strong class="ai-panel-title">AI 教学助手</strong>
+                                <p class="ai-panel-desc">围绕教学主题快速生成活动说明、学习目标、示例内容和练习素材。</p>
+                            </div>
                         </div>
                         <div class="ai-panel-body">
-                            <div>
-                                <label style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem; display: block;">描述您需要的教学内容：</label>
+                            <div class="ai-panel-tip">
+                                <span class="ai-panel-tip-badge">使用建议</span>
+                                <p class="ai-panel-tip-text">提示词里尽量写清年级、主题、学习目标、产出形式和练习要求，生成结果会更贴合课堂使用场景。</p>
+                            </div>
+                            <div class="ai-panel-group">
+                                <label class="ai-panel-label" for="ai-prompt">描述您需要的教学内容：</label>
                                 <textarea id="ai-prompt" class="ai-prompt-input" placeholder="例如：帮我生成一份关于《Python条件判断》的学案，包含学习目标、示例代码和练习题。"></textarea>
                             </div>
                             <button type="button" id="ai-generate-btn" class="ai-generate-btn" onclick="generateAIContent()">
@@ -118,8 +127,8 @@
                                 </div>
                                 <div id="ai-progress-note" class="ai-progress-note">输入提示词后，系统会调用当前默认 AI Provider 生成教学内容。</div>
                             </div>
-                            <div>
-                                <label style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem; display: block;">生成结果：</label>
+                            <div class="ai-panel-group">
+                                <label class="ai-panel-label" for="ai-result">生成结果：</label>
                                 <div id="ai-result" class="ai-result-area"></div>
                             </div>
                         </div>

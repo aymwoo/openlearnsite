@@ -2,8 +2,18 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
     <link rel="stylesheet" type="text/css" href="/App_Themes/Teacher/aiconfig.css" />
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            var body = document.body;
+            if (!body) {
+                return;
+            }
 
-    <div class="ai-config">
+            body.classList.add('bg-slate-50', 'font-sans', 'text-slate-800', 'antialiased', 'selection:bg-indigo-100', 'selection:text-indigo-900');
+        });
+    </script>
+
+    <div class="placehold ai-config">
         <div class="lesson-shell">
 
             <!-- Hero Banner -->

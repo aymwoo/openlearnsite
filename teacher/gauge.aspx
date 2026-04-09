@@ -1,7 +1,7 @@
 <%@ Page Title="" Language="C#" MasterPageFile="~/teacher/Teach.master" StylesheetTheme="Teacher" AutoEventWireup="true" CodeFile="gauge.aspx.cs" Inherits="Teacher_gauge" ResponseEncoding="utf-8" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
-    
+    <link rel="stylesheet" type="text/css" href="/App_Themes/Teacher/gauge.css" />
 
     <div class="gauge-page">
         <div class="gauge-shell">

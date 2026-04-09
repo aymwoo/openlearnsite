@@ -103,7 +103,7 @@
         </div>
         </div>
         
-        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm overflow-hidden w-full space-y-3">
+        <div id="gamesDiv" runat="server" class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm overflow-hidden w-full space-y-3">
             <h4 class="text-sm font-bold text-slate-500 mb-2 border-b border-slate-200 pb-2">休闲益智区</h4>
             <asp:HyperLink ID="Hlztype" runat="server" NavigateUrl="~/ztype/index.html" Target="_blank" 
                 CssClass="w-full flex justify-center py-2 text-sm bg-white border border-indigo-300 text-indigo-600 font-medium rounded-lg hover:bg-indigo-50 transition duration-300 shadow-sm" >🚀 太空打字游戏</asp:HyperLink>
@@ -126,4 +126,3 @@
 
 </div>
 </asp:Content>
-
