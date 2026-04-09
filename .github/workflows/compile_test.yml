@@ -22,6 +22,9 @@ on:
       - '.github/workflows/run_test_for_docker.yml'
       - '.github/workflows/dev_branch_tests.yml'
   workflow_dispatch:
+  schedule:
+    # UTC 01:00 = 北京时间 09:00
+    - cron: '0 1 * * *'
 
 jobs:
   build-and-test:

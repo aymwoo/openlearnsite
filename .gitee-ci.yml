@@ -1,64 +1,68 @@
 name: .NET Framework 4.8 Nightly 每日构建
 trigger:
   schedule:
-    - cron: "0 18 * * *"  # 每天北京时间 凌晨 2:00 构建
-  manual: true  # 允许手动触发
+    - cron: "0 18 * * *"  # 北京时间 凌晨2点
+  manual: true
 
 variables:
-  SOLUTION_NAME: "openlearnsite.sln"    # 改成你的 sln 文件名
-  NIGHTLY_TAG: "nightly"              # 固定标签，每天覆盖
-  GITEE_TOKEN: ${BUILD_TOKEN}         # 仓库变量里配置，不要明文
+  PROJECT_DIR: "./"       # 网站项目根目录
+  NIGHTLY_TAG: "nightly"
+  GITEE_TOKEN: ${GITEE_TOKEN}
 
 stages:
   - stage: Build
     displayName: 构建打包
     jobs:
       - job: BuildNetFx48
-        displayName: 编译 .NET Framework 4.8
+        displayName: 编译 .NET Framework
         pool:
-          windows: yes                 # 必须用 Windows 构建机
+          windows: yes
         image: mcr.microsoft.com/dotnet/framework/sdk:4.8
-
+        
         steps:
           - checkout: self
             fetchDepth: 0
 
-          # 还原 NuGet 包
-          - name: Restore NuGet
-            script: |
-              nuget restore ${{ variables.SOLUTION_NAME }}
-
-          # 编译 + 发布（Release 模式）
-          - name: Build & Publish
+          # 网站项目直接编译发布
+          - name: Build Website
             script: |
               "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe" ^
-              ${{ variables.SOLUTION_NAME }} ^
-              /t:Rebuild /p:Configuration=Release /p:OutputPath=..\publish
+              ./ /t:Build /p:Configuration=Release /p:OutputPath=../publish
 
-          # 打包成 zip（给升级程序用）
+          # 打包升级包
           - name: Zip Package
             script: |
               Compress-Archive -Path .\publish\* -DestinationPath nightly-build.zip -Force
 
-          # 生成 SHA256 校验文件
+          # 生成 SHA256 校验
           - name: Generate SHA256
             script: |
               $hash = (Get-FileHash -Path nightly-build.zip -Algorithm SHA256).Hash
               $hash | Out-File nightly-hash.txt -Encoding utf8
 
-          # 上传构建产物
+          # 自动生成 Changelog
+          - name: Generate Changelog
+            script: |
+              $date = Get-Date -Format "yyyy-MM-dd"
+              $log = "## Nightly $date`n"
+              $commits = git log --since="1 days ago" --pretty="- %s"
+              $log += $commits
+              $log | Out-File CHANGELOG.md -Encoding utf8
+
+          # 上传产物
           - artifacts:
               - name: nightly-build
                 path: nightly-build.zip
               - name: nightly-hash
                 path: nightly-hash.txt
+              - name: changelog
+                path: CHANGELOG.md
 
   - stage: Release
     displayName: 发布到 Gitee Release
     dependsOn: Build
     jobs:
       - job: Publish
-        displayName: 更新 Nightly 版本
         pool:
           windows: yes
         steps:
@@ -68,22 +72,24 @@ stages:
           - download: Build
             artifact: nightly-hash
             path: ./
+          - download: Build
+            artifact: changelog
+            path: ./
 
-          # 安装 Gitee CLI
           - name: Install Gitee CLI
             script: |
               choco install gitee-cli -y
               gitee config token ${{ variables.GITEE_TOKEN }}
 
-          # 删除旧 nightly，发布新版本
           - name: Update Nightly Release
             script: |
+              $changelog = Get-Content CHANGELOG.md -Raw
               gitee release delete --tag ${{ variables.NIGHTLY_TAG }} --yes 2>&1 | Out-Null
               gitee tag delete ${{ variables.NIGHTLY_TAG }} --yes 2>&1 | Out-Null
-
+              
               gitee release create --tag ${{ variables.NIGHTLY_TAG }} `
-              --name "Nightly 每日构建版" `
-              --body "每日自动构建，包含最新代码，仅用于测试环境" `
+              --name "Nightly 每日构建" `
+              --body "更新内容：`n`n$changelog" `
               --pre-release `
               --assets "nightly-build.zip" `
               --assets "nightly-hash.txt"
