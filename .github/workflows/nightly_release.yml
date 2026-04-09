@@ -1,0 +1,66 @@
+name: Nightly Release (Dev Branch)
+
+on:
+  schedule:
+    # 每天北京时间凌晨 1:00（UTC 17:00，北京时间 = UTC+8）
+    - cron: '0 17 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  nightly_build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Dev Branch
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Make scripts executable
+        run: chmod +x run_tests.sh build_release.sh
+
+      - name: Run Unit Tests
+        run: ./run_tests.sh --no-e2e
+
+      - name: Build and Precompile Release
+        run: ./build_release.sh
+
+      - name: Get Current Date (Beijing Time)
+        id: datetime
+        run: |
+          echo "datetime=$(TZ='Asia/Shanghai' date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+          echo "date=$(TZ='Asia/Shanghai' date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Zip Precompiled Release
+        run: |
+          cd publish_output
+          zip -r ../learnsite-nightly.zip .
+
+      - name: Create GitHub Nightly Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: nightly-${{ steps.datetime.outputs.datetime }}
+          name: LearnSite Nightly ${{ steps.datetime.outputs.date }}
+          body: |
+            🌙 **Nightly Build** — 自动从 `dev` 分支构建
+            
+            - 构建时间（北京时间）：${{ steps.datetime.outputs.datetime }}
+            - 源分支：`dev`
+            - 提交：${{ github.sha }}
+            
+            > ⚠️ 此版本为开发预览版，可能包含未完成的功能或已知问题，不建议用于生产环境。
+          files: learnsite-nightly.zip
+          draft: false
+          prerelease: true
