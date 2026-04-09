@@ -112,7 +112,30 @@ public partial class Teacher_gaugeitem : System.Web.UI.Page
         if (e.Row.RowIndex > -1)
         {
             string strjs = "if(confirm('您确定要删除该评价描述吗?'))return true;else return false; ";
-            ((LinkButton)e.Row.FindControl("BtnDel")).OnClientClick = strjs;
+            LinkButton deleteButton = (LinkButton)e.Row.FindControl("BtnDel");
+            if (deleteButton != null)
+            {
+                deleteButton.OnClientClick = strjs;
+            }
+
+            ConfigureGridRowActionButton(e.Row, "Edit", "gaugeitem-row-action gaugeitem-row-action--edit");
+            ConfigureGridRowActionButton(e.Row, "Update", "gaugeitem-row-action gaugeitem-row-action--save");
+            ConfigureGridRowActionButton(e.Row, "Cancel", "gaugeitem-row-action gaugeitem-row-action--cancel");
+        }
+    }
+
+    private void ConfigureGridRowActionButton(GridViewRow row, string commandName, string cssClass)
+    {
+        foreach (TableCell cell in row.Cells)
+        {
+            foreach (Control control in cell.Controls)
+            {
+                LinkButton linkButton = control as LinkButton;
+                if (linkButton != null && string.Equals(linkButton.CommandName, commandName, StringComparison.OrdinalIgnoreCase))
+                {
+                    linkButton.CssClass = cssClass;
+                }
+            }
         }
     }
     protected void Btnreturn_Click(object sender, EventArgs e)
