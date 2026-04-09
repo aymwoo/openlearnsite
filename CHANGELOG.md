@@ -1,5 +1,18 @@
 # 更新日志 (CHANGELOG)
 
+## 2026-04-10
+
+### 新功能
+- **首页站点标题支持配置化显示**：`index.aspx` 改为优先展示站点配置中的标题，首页品牌信息可以跟随站点设置统一调整，避免继续写死默认名称
+- **学生入口页补齐统一头尾信息**：`student/mynum.aspx`、`student/myrule.aspx`、`student/register.aspx` 新增与首页一致的站点头部和状态页脚，学生在学号查询、课堂守则和注册场景下也能直接看到站点标题、学期、机房主机和教师入口
+
+### 升级增强
+- **学生入口页信息展示复用现有站点配置**：相关后台代码统一补齐 `SiteTitle` 读取、页面标题设置与页脚状态展示逻辑，减少学生入口页与首页之间的信息割裂，便于后续继续统一公共入口体验
+
+### 涉及文件
+- 首页与公共入口：`index.aspx`、`index.aspx.cs`
+- 学生入口页：`student/mynum.aspx`、`student/mynum.aspx.cs`、`student/myrule.aspx`、`student/myrule.aspx.cs`、`student/register.aspx`、`student/register.aspx.cs`
+
 ## 2026-04-09
 
 ### 新功能
