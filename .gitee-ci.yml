@@ -1,4 +1,6 @@
-name: .NET Framework 4.8 Nightly 每日构建（dev分支）
+version: '1.0'
+name: Nightly_build
+displayName: Nightly_build
 trigger:
   schedule:
     - cron: "0 18 * * *"  # 北京时间 凌晨2点
@@ -13,10 +15,10 @@ resources:
 variables:
   PROJECT_DIR: "./"
   NIGHTLY_TAG: "nightly"
-  GITEE_TOKEN: ${BUILD_TOKEN}
+  BUILD_TOKEN: ${BUILD_TOKEN}
 
 stages:
-  - stage: Build
+  - stage: build_stage
     displayName: 构建打包
     jobs:
       - job: BuildNetFx48
@@ -64,7 +66,7 @@ stages:
               - name: changelog
                 path: CHANGELOG.md
 
-  - stage: Release
+  - stage: release_stage
     displayName: 发布到 Gitee Release
     dependsOn: Build
     jobs:
@@ -85,7 +87,7 @@ stages:
           - name: Install Gitee CLI
             script: |
               choco install gitee-cli -y
-              gitee config token ${{ variables.GITEE_TOKEN }}
+              gitee config token ${{ variables.BUILD_TOKEN }}
 
           - name: Update Nightly Release
             script: |
