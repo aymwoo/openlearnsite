@@ -1,0 +1,27 @@
+version: '1.0'
+name: pipeline-20260409
+displayName: pipeline-20260409
+triggers:
+  trigger: manual
+  schedule:
+    - cron: '* * 1 * * ? *'
+stages:
+  - name: stage-7f7075be
+    displayName: 发布
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: release@gitee
+        name: release_gitee
+        displayName: Gitee Release
+        releaseName: nightly-${GITEE_PIPELINE_START_TIME_YMD}-${GITEE_BUILD_NUM}
+        description: '## Nightly 构建 ${GITEE_COMMIT_DATE}   ---  ### 📝 更新日志 - ${GITEE_COMMIT_MSG}'
+        tagName: nightly-${GITEE_COMMIT_DATE}-${GITEE_PIPELINE_BUILD_NUMBER}
+        upstreamArtifact: []
+        assertFiles: null
+        prerelease: true
+        allowUpdate: true
+        notify: []
+        strategy:
+          retry: '0'
