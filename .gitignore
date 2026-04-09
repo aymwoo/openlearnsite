@@ -1,0 +1,28 @@
+CompilerTest/bin/
+CompilerTest/obj/
+perftest/
+Tests/**/bin/
+Tests/**/obj/
+node_modules/
+obj/
+TestResults/
+test-results/
+playwright-report/
+package-lock.json
+log/
+
+# Local-only development environment
+.local-dev/
+
+# Common local overrides for this repo
+docker-compose.dev.yml
+docker-compose.dev.yaml
+.env.dev
+web.config.local
+web.config.docker.local
+/mssql/data
+Tests/SharpZipTests/bin/
+Tests/SharpZipTests/obj/
+/store
+/upexcel
+/.playwright-mcp

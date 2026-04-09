@@ -1,0 +1,105 @@
+name: Linux Environment Tests
+
+on:
+  workflow_run:
+    workflows: ["Release Build and Publish"]
+    types: [completed]
+    branches: [master, main]
+  workflow_dispatch:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Get Alpha Release
+        id: release
+        run: |
+          # 优先获取alpha版本
+          ALPHA_TAGS=$(gh release list --repo ${{ github.repository }} --json tagName --jq '.[] | select(.tagName | startswith("alpha-")) | .tagName' | sort -r)
+          if [ ! -z "$ALPHA_TAGS" ]; then
+            TAG_NAME=$(echo "$ALPHA_TAGS" | head -1)
+            echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          else
+            # 如果没有alpha版本，获取最新版本
+            TAG_NAME=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')
+            echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Download Release Asset
+        run: |
+          gh release download ${{ steps.release.outputs.tag_name }} --repo ${{ github.repository }} --pattern "*.zip"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Extract Release
+        run: |
+          unzip -o learnsite-*.zip -d .
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Install MS SQL Server and Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget software-properties-common apt-transport-https
+          wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+          sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/22.04/mssql-server-2022.list)"
+          sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/22.04/prod.list)"
+          sudo apt-get update
+          sudo apt-get install -y mssql-server
+          sudo MSSQL_SA_PASSWORD='YourStrong!Passw0rd' MSSQL_PID='evaluation' ACCEPT_EULA='Y' /opt/mssql/bin/mssql-conf -n setup
+          sudo systemctl start mssql-server
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
+          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+          source ~/.bashrc
+          sleep 15
+
+      - name: Install Mono and XSP4
+        run: |
+          sudo apt-get install -y ca-certificates gnupg
+          sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+          echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+          sudo apt-get update
+          sudo apt-get install -y mono-complete mono-xsp4
+
+      - name: Initialize Database
+        run: |
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -C -Q "CREATE DATABASE [learnsite];"
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -C -d learnsite -i sql/learnsite.sql
+
+      - name: Make scripts executable
+        run: |
+          chmod +x start_web.sh run_tests.sh
+
+      - name: Update web.config for Linux test
+        run: |
+          sed -i 's/Data Source=127.0.0.1;/Data Source=localhost;/g' web.config
+
+      - name: Start Web Service
+        run: |
+          nohup bash start_web.sh 8080 > web.log 2>&1 &
+          sleep 10
+
+      - name: Check Web Service Status
+        run: |
+          curl -s http://localhost:8080 || echo "Web service not ready yet"
+
+      - name: Run Tests
+        run: ./run_tests.sh
+        env:
+          BASE_URL: http://localhost:8080
+
+      - name: Cleanup
+        run: |
+          sudo systemctl stop mssql-server || true

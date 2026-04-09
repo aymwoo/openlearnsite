@@ -1,0 +1,70 @@
+.python-add-page {
+            --content-add-page-bg: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+            --content-add-hero-bg: linear-gradient(135deg, #1d4ed8 0%, #2563eb 55%, #60a5fa 100%);
+            --content-add-hero-shadow: 0 22px 45px -28px rgba(37, 99, 235, 0.72);
+            --content-add-primary-bg: #2563eb;
+            --content-add-primary-hover: #1d4ed8;
+            --content-add-primary-shadow: 0 14px 24px -18px rgba(37, 99, 235, 0.85);
+            --content-add-secondary-bg: #eff6ff;
+            --content-add-secondary-fg: #1d4ed8;
+            --content-add-secondary-border: #bfdbfe;
+            --content-add-secondary-hover: #dbeafe;
+            --content-add-focus: #2563eb;
+            --content-add-focus-ring: rgba(37, 99, 235, 0.14);
+        }
+
+        .python-add-editor-stage textarea {
+            width: 830px;
+            height: 450px;
+        }
+
+        .python-add-editor-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .python-add-editor-select {
+            min-height: 38px;
+            padding: 0 32px 0 12px;
+            border: 1px solid #bfdbfe;
+            border-radius: .75rem;
+            background: #eff6ff;
+            color: #1e3a8a;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364738b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .python-add-editor-stage #wangeditor-wrap,
+        .python-add-editor-stage #vditor-wrap,
+        .python-add-editor-stage textarea,
+        .python-add-editor-stage .ke-container {
+            width: 100% !important;
+            max-width: 100%;
+        }
+
+        .python-add-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 9999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 0.84rem;
+            font-weight: 700;
+        }
+
+        .python-add-badge img {
+            width: 18px;
+            height: 18px;
+        }

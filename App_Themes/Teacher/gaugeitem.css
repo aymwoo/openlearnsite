@@ -1,0 +1,190 @@
+.gaugeitem-toolbar {
+        margin: 0 auto 16px;
+        width: 680px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .gaugeitem-provider {
+        font-size: 12px;
+        color: #475569;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        padding: 8px 12px;
+    }
+
+    .gaugeitem-ai-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: 1px solid #c7d2fe;
+        background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+        color: #4338ca;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .gaugeitem-ai-btn:hover {
+        background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 100%);
+    }
+
+    .gauge-ai-notice {
+        margin: 18px auto 14px;
+        width: 680px;
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+        padding: 16px 18px;
+        text-align: left;
+        color: #1e3a8a;
+    }
+
+    .gauge-ai-notice__title {
+        margin: 0 0 8px;
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .gauge-ai-notice__msg {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #1d4ed8;
+    }
+
+    .gauge-ai-notice__list {
+        margin: 10px 0 0;
+        padding-left: 18px;
+        color: #334155;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .gauge-ai-notice--fallback {
+        border-color: #fcd34d;
+        background: linear-gradient(135deg, #fffbeb 0%, #fffdf5 100%);
+    }
+
+    .gauge-ai-notice--fallback .gauge-ai-notice__title {
+        color: #92400e;
+    }
+
+    .gauge-ai-notice--fallback .gauge-ai-notice__msg {
+        color: #b45309;
+    }
+
+    .gauge-ai-loading {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(3px);
+    }
+
+    .gauge-ai-loading.is-active {
+        display: flex;
+    }
+
+    .gauge-ai-loading__card {
+        width: min(92vw, 420px);
+        padding: 28px 24px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.22);
+        text-align: center;
+    }
+
+    .gauge-ai-loading__spinner {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 16px;
+        border-radius: 999px;
+        border: 5px solid #dbeafe;
+        border-top-color: #2563eb;
+        animation: gaugeitem-spin 0.9s linear infinite;
+    }
+
+    .gauge-ai-loading__title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .gauge-ai-loading__desc {
+        margin: 10px 0 0;
+        font-size: 14px;
+        line-height: 1.7;
+        color: #64748b;
+    }
+
+    .gauge-ai-loading__steps {
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+        text-align: left;
+        display: grid;
+        gap: 10px;
+    }
+
+    .gauge-ai-loading__step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .gauge-ai-loading__step-index {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #e2e8f0;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .gauge-ai-loading__step.is-active {
+        background: #eff6ff;
+        color: #1d4ed8;
+        box-shadow: inset 0 0 0 1px #bfdbfe;
+    }
+
+    .gauge-ai-loading__step.is-active .gauge-ai-loading__step-index {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+    .gauge-ai-loading__step.is-done {
+        background: #ecfdf5;
+        color: #047857;
+        box-shadow: inset 0 0 0 1px #a7f3d0;
+    }
+
+    .gauge-ai-loading__step.is-done .gauge-ai-loading__step-index {
+        background: #10b981;
+        color: #ffffff;
+    }
+
+    @keyframes gaugeitem-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }

@@ -1,0 +1,46 @@
+.program-add-page {
+            --content-add-page-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+            --content-add-hero-bg: linear-gradient(135deg, #312e81 0%, #4f46e5 55%, #818cf8 100%);
+            --content-add-primary-bg: #4f46e5;
+            --content-add-primary-hover: #4338ca;
+            --content-add-primary-shadow: 0 14px 24px -18px rgba(79, 70, 229, 0.85);
+        }
+
+        .program-add-editor-stage textarea {
+            width: 830px;
+            height: 450px;
+        }
+
+        .program-add-editor-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .program-add-editor-select {
+            min-height: 38px;
+            padding: 0 32px 0 12px;
+            border: 1px solid #c7d2fe;
+            border-radius: .75rem;
+            background: #eef2ff;
+            color: #312e81;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364738b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .program-add-editor-stage #wangeditor-wrap,
+        .program-add-editor-stage #vditor-wrap,
+        .program-add-editor-stage textarea,
+        .program-add-editor-stage .ke-container {
+            width: 100% !important;
+            max-width: 100%;
+        }

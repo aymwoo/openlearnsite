@@ -1,0 +1,161 @@
+.course-import-page {
+            --workspace-page-bg: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+            --workspace-hero-bg: linear-gradient(135deg, #1d4ed8 0%, #2563eb 55%, #60a5fa 100%);
+            --workspace-primary-bg: #2563eb;
+            --workspace-primary-hover: #1d4ed8;
+            --workspace-primary-shadow: 0 14px 24px -18px rgba(37, 99, 235, 0.85);
+            --workspace-secondary-bg: #eff6ff;
+            --workspace-secondary-fg: #1d4ed8;
+            --workspace-secondary-border: #bfdbfe;
+            --workspace-secondary-hover: #dbeafe;
+        }
+
+        .course-import-shell {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .course-import-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .course-import-primary-btn {
+            padding: 14px 36px;
+            background: linear-gradient(135deg, var(--workspace-primary-bg) 0%, var(--workspace-primary-hover) 100%);
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            border: none;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .course-import-primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+        }
+
+        .course-import-secondary-btn {
+            padding: 14px 36px;
+            background: #ffffff;
+            color: #475569;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .course-import-secondary-btn:hover {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .course-import-action-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .course-import-gridview {
+            min-width: 640px;
+        }
+
+        .course-import-gridview caption {
+            caption-side: top;
+            text-align: left;
+            padding: 0 0 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+
+        .course-import-feedback {
+            min-height: 4rem;
+        }
+
+        .course-import-feedback .status {
+            color: #b91c1c;
+        }
+
+        @media (max-width: 768px) {
+            .course-import-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .course-import-action-group {
+                justify-content: stretch;
+            }
+
+            .course-import-table-wrap {
+                overflow-x: visible;
+                border: 0;
+                background: transparent;
+            }
+
+            .course-import-gridview {
+                min-width: 0;
+            }
+
+            .course-import-gridview th {
+                display: none;
+            }
+
+            .course-import-gridview tr {
+                display: block;
+            }
+
+            .course-import-gridview tr + tr {
+                margin-top: 0.9rem;
+            }
+
+            .course-import-gridview td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.75rem;
+                padding: 0.72rem 1rem;
+                border-bottom: 1px solid #eef2f7;
+                background: #ffffff;
+                text-align: right;
+            }
+
+            .course-import-gridview td:before {
+                content: "";
+                margin-right: auto;
+                color: #64748b;
+                font-size: 0.78rem;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+                text-align: left;
+            }
+
+            .course-import-gridview td:nth-child(1):before { content: "年级"; }
+            .course-import-gridview td:nth-child(2):before { content: "课节"; }
+            .course-import-gridview td:nth-child(3):before { content: "学案"; }
+            .course-import-gridview td:nth-child(4):before { content: "类型"; }
+
+            .course-import-gridview tr td:first-child {
+                border-top-left-radius: 1rem;
+                border-top-right-radius: 1rem;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .course-import-gridview tr td:last-child {
+                border-bottom-left-radius: 1rem;
+                border-bottom-right-radius: 1rem;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.35);
+            }
+        }

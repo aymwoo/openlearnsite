@@ -1,0 +1,80 @@
+name: Docker Environment Tests
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types: [completed]
+    branches: [master, main]
+  workflow_dispatch:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Lowercase Owner
+        id: owner
+        run: |
+          # Convert repository owner to lowercase
+          LOWERCASE_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "lowercase_owner=$LOWERCASE_OWNER" >> $GITHUB_OUTPUT
+
+      - name: Run MS SQL Server in Docker
+        run: |
+          docker run -d --name learnsite-mssql -e 'ACCEPT_EULA=Y' -e "MSSQL_SA_PASSWORD=YourStrong!Passw0rd" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+          echo "Waiting for SQL Server to start..."
+          sleep 15
+
+      - name: Initialize Database
+        run: |
+          if [ -f "sql/learnsite.sql" ]; then
+            docker cp sql/learnsite.sql learnsite-mssql:/tmp/learnsite.sql
+            docker exec learnsite-mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -C -Q "CREATE DATABASE [learnsite];"
+            docker exec learnsite-mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -C -d learnsite -i /tmp/learnsite.sql
+          else
+            echo "[WARNING] sql/learnsite.sql not found, skipping database initialization"
+          fi
+
+      - name: Pull and Run LearnSite Docker Image
+        run: |
+          # 拉取最新镜像
+          docker pull ghcr.io/${{ steps.owner.outputs.lowercase_owner }}/learnsite-wz:latest
+          
+          # 运行容器
+          docker run -d --name learnsite \
+            --link learnsite-mssql:mssql \
+            -p 8080:8080 \
+            -e MONO_THREADS_PER_CPU=50 \
+            ghcr.io/${{ steps.owner.outputs.lowercase_owner }}/learnsite-wz:latest
+          
+          echo "Waiting for LearnSite to start..."
+          sleep 10
+
+      - name: Test frontend page access
+        run: |
+          echo "=== Testing Frontend Page Access ==="
+          # 测试主页
+          echo "Testing main page..."
+          curl -s http://localhost:8080 || echo "Main page test failed"
+          
+          # 测试index.aspx登录页面
+          echo "Testing index.aspx (login page)..."
+          curl -s http://localhost:8080/index.aspx || echo "Login page test failed"
+
+      - name: Cleanup
+        run: |
+          docker stop learnsite || true
+          docker rm learnsite || true
+          docker stop learnsite-mssql || true
+          docker rm learnsite-mssql || true

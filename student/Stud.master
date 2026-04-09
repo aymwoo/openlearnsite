@@ -1,0 +1,217 @@
+<%@ Master Language="C#"   AutoEventWireup="true" CodeFile="Stud.master.cs" Inherits="Student_Stud" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head id="Head1" runat="server">
+    <meta charset="UTF-8" />
+    <title></title>
+    <link href="../js/css/font-awesome.min.css" rel="stylesheet" type="text/css" />   
+    <link href="../App_Themes/Student/StyleSheet.css?ver=621" rel="stylesheet" type="text/css" />
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>        
+    <link href="../js/tinybox.css" rel="stylesheet" type="text/css" />
+    <script src="../js/tinybox.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function showShare() {
+            var urlat = "../student/groupshare.aspx";
+            TINY.box.show({ iframe: urlat, boxid: 'frameless', width: 600, height: 400, fixed: false, maskopacity: 60, close: true })
+        }
+
+        function showChat() {
+            var urlat = "../student/chat.aspx";
+            TINY.box.show({ iframe: urlat, boxid: 'frameless', width: 616, height: 515, fixed: false, maskopacity: 100, close: true });
+        }
+        function showRobot() {
+            var urlat = "../deepseek/robot.html";
+            TINY.box.show({ iframe: urlat, boxid: 'frameless', width: 616, height: 515, fixed: false, maskopacity: 100, close: true });
+        }  
+    </script>
+    <script src="../js/ruffle.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		window.RufflePlayer = window.RufflePlayer || {};
+		window.RufflePlayer.config = {
+			"autoplay": "on",
+	}
+	</script>
+    
+    <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
+    <form id="form1" runat="server">
+      <div class="min-h-screen flex flex-col relative overflow-hidden">
+            <!-- Abstract background shape -->
+            <div class="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-blue-100/50 to-transparent -z-10 pointer-events-none"></div>
+
+            <!-- Modern Topbar -->
+            <style>
+                .stud-topbar {
+                    position: sticky; top: 0; z-index: 50; width: 100%;
+                    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #1d4ed8 100%);
+                    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+                    box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.08);
+                    transition: all 0.3s ease;
+                    color: #f1f5f9;
+                }
+                /* Override global a { color: inherit } so topbar links pick up light color */
+                .stud-topbar a, .stud-topbar a:link, .stud-topbar a:visited { color: inherit; text-decoration: none; }
+                .stud-topbar::after {
+                    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+                    background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.4), rgba(147, 197, 253, 0.5), rgba(96, 165, 250, 0.4), transparent);
+                }
+                .stud-topbar-inner {
+                    margin: 0 auto; padding: 0 1rem; height: 64px;
+                    display: flex; align-items: center; justify-content: space-between; position: relative;
+                }
+                @media (min-width: 640px) { .stud-topbar-inner { padding: 0 1.5rem; } }
+                @media (min-width: 1024px) { .stud-topbar-inner { padding: 0 2rem; } }
+                /* Logo + Site Name */
+                .stud-topbar-brand {
+                    display: flex; align-items: center; gap: 0.75rem; text-decoration: none;
+                    flex-shrink: 0; min-width: 0;
+                }
+                .stud-topbar-logo {
+                    width: 38px; height: 38px; border-radius: 12px;
+                    background: rgba(255,255,255,0.12); backdrop-filter: blur(12px);
+                    display: flex; align-items: center; justify-content: center;
+                    color: #93c5fd; flex-shrink: 0;
+                    border: 1px solid rgba(147, 197, 253, 0.2);
+                    transition: all 0.3s ease;
+                }
+                .stud-topbar-brand:hover .stud-topbar-logo {
+                    background: rgba(255,255,255,0.18); color: #bfdbfe;
+                    transform: scale(1.05);
+                }
+                .stud-topbar-logo svg { width: 20px; height: 20px; }
+                .stud-topbar-title {
+                    font-size: 1.125rem; font-weight: 800; color: #f1f5f9;
+                    letter-spacing: 0.05em; white-space: nowrap; overflow: hidden;
+                    text-overflow: ellipsis; max-width: 200px;
+                    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+                }
+                @media (min-width: 640px) { .stud-topbar-title { max-width: 280px; font-size: 1.2rem; } }
+                /* Nav Links */
+                .stud-topbar-nav {
+                    display: none; align-items: center; gap: 2px;
+                }
+                @media (min-width: 768px) { .stud-topbar-nav { display: flex; } }
+                .stud-topbar-link {
+                    position: relative; padding: 0.5rem 1rem; border-radius: 10px;
+                    font-size: 0.875rem; font-weight: 600; color: rgba(203, 213, 225, 0.9);
+                    text-decoration: none; white-space: nowrap;
+                    transition: all 0.25s ease;
+                }
+                .stud-topbar-link:hover {
+                    color: #fff; background: rgba(255,255,255,0.1);
+                }
+                .stud-topbar-link::after {
+                    content: ''; position: absolute; bottom: 2px; left: 50%; width: 0; height: 2px;
+                    background: #60a5fa; border-radius: 1px;
+                    transform: translateX(-50%); transition: width 0.25s ease;
+                }
+                .stud-topbar-link:hover::after { width: 60%; }
+                .stud-topbar-sep {
+                    width: 1px; height: 24px; background: rgba(148, 163, 184, 0.2); margin: 0 6px; flex-shrink: 0;
+                }
+                .stud-topbar-logout {
+                    display: inline-flex; align-items: center; gap: 0.375rem;
+                    padding: 0.4rem 1rem; border-radius: 10px;
+                    font-size: 0.8125rem; font-weight: 700;
+                    color: #fff !important; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                    text-decoration: none !important; white-space: nowrap;
+                    border: 1px solid rgba(255,255,255,0.15);
+                    box-shadow: 0 2px 8px rgba(220,38,38,0.35);
+                    transition: all 0.25s ease;
+                }
+                .stud-topbar-logout:hover {
+                    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+                    box-shadow: 0 4px 16px rgba(220,38,38,0.45);
+                    transform: translateY(-1px); color: #fff !important;
+                }
+                .stud-topbar-logout svg { width: 15px; height: 15px; }
+                /* Mobile menu toggle */
+                .stud-topbar-toggle {
+                    display: flex; align-items: center; justify-content: center;
+                    width: 40px; height: 40px; border-radius: 10px;
+                    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+                    color: #cbd5e1; cursor: pointer; transition: all 0.2s ease;
+                }
+                .stud-topbar-toggle:hover { background: rgba(255,255,255,0.15); color: #fff; }
+                @media (min-width: 768px) { .stud-topbar-toggle { display: none; } }
+                .stud-topbar-toggle svg { width: 22px; height: 22px; }
+                /* Mobile dropdown */
+                .stud-mobile-menu {
+                    display: none; position: absolute; top: 100%; left: 0; right: 0;
+                    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+                    border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+                    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+                    padding: 0.75rem 1rem 1rem; z-index: 100;
+                }
+                .stud-mobile-menu.stud-mobile-open { display: block; }
+                .stud-mobile-link {
+                    display: block; padding: 0.625rem 1rem; border-radius: 10px;
+                    font-size: 0.9375rem; font-weight: 600; color: rgba(203, 213, 225, 0.9);
+                    text-decoration: none; transition: all 0.2s ease;
+                }
+                .stud-mobile-link:hover { color: #fff; background: rgba(255,255,255,0.08); }
+                .stud-mobile-sep { height: 1px; background: rgba(148,163,184,0.12); margin: 0.5rem 0; }
+            </style>
+            <header class="stud-topbar">
+                <div class="stud-topbar-inner">
+                    <a href="../student/myinfo.aspx" class="stud-topbar-brand">
+                        <div class="stud-topbar-logo">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <span class="stud-topbar-title"><%= SiteTitle %></span>
+                    </a>
+                    
+                    <nav class="stud-topbar-nav">
+                        <a href="../student/mycourse.aspx" class="stud-topbar-link">我的学案</a>
+                        <a href="../student/mywork.aspx" class="stud-topbar-link">我的作品</a>
+                        <a href="../student/myfinger.aspx" class="stud-topbar-link">打字宝典</a>
+                        <asp:HyperLink ID="hlSummary" runat="server" NavigateUrl="~/student/summary.aspx" CssClass="stud-topbar-link">学习汇总</asp:HyperLink>
+                        <asp:HyperLink ID="hlHonors" runat="server" NavigateUrl="~/student/myhonors.aspx" CssClass="stud-topbar-link">我的荣誉</asp:HyperLink>
+                        <a href="../student/myfile.aspx" class="stud-topbar-link">在线资源</a>
+                        <a onclick="showShare()" class="stud-topbar-link" style="cursor:pointer;">我的网盘</a>
+                        <div class="stud-topbar-sep"></div>
+                        <a href="../student/myinfo.aspx?action=logout" class="stud-topbar-logout">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            退出
+                        </a>
+                    </nav>
+
+                    <button type="button" class="stud-topbar-toggle" onclick="document.getElementById('studMobileMenu').classList.toggle('stud-mobile-open')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+
+                    <div id="studMobileMenu" class="stud-mobile-menu">
+                        <a href="../student/mycourse.aspx" class="stud-mobile-link">我的学案</a>
+                        <a href="../student/mywork.aspx" class="stud-mobile-link">我的作品</a>
+                        <a href="../student/myfinger.aspx" class="stud-mobile-link">打字宝典</a>
+                        <asp:HyperLink ID="hlSummaryMobile" runat="server" NavigateUrl="~/student/summary.aspx" CssClass="stud-mobile-link">学习汇总</asp:HyperLink>
+                        <asp:HyperLink ID="hlHonorsMobile" runat="server" NavigateUrl="~/student/myhonors.aspx" CssClass="stud-mobile-link">我的荣誉</asp:HyperLink>
+                        <a href="../student/myfile.aspx" class="stud-mobile-link">在线资源</a>
+                        <a onclick="showShare()" class="stud-mobile-link" style="cursor:pointer;">我的网盘</a>
+                        <div class="stud-mobile-sep"></div>
+                        <a href="../student/myinfo.aspx?action=logout" class="stud-mobile-link" style="color:#fca5a5 !important;">退出登录</a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 w-full mx-auto p-4 sm:p-6 lg:p-8 z-10 w-full">
+                <div class="path mb-2 text-sm text-slate-500 hidden">
+                    &nbsp;
+                </div>
+                <div class="bg-white rounded-[1.25rem] shadow-sm border border-slate-200/60 p-4 sm:p-8 min-h-[calc(100vh-10rem)] w-full relative">
+                    <asp:contentplaceholder id="Cphs" runat="server">
+                    </asp:contentplaceholder>
+                </div>
+            </main>
+        </div>
+        <br />
+		<div class="chatimg"  onclick="showChat()"  title="小组在线聊天" ></div>
+		<div class="robotimg"  title="人工智能对话"   onclick="showRobot()" ></div>
+
+    </form>
+</body>
+</html>

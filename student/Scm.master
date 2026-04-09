@@ -1,0 +1,570 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Scm.master.cs" Inherits="Student_Scm" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head id="Head1" runat="server">
+    <meta charset="UTF-8" />
+    <title></title>
+    <link href="../js/css/font-awesome.min.css" rel="stylesheet" type="text/css" />   
+    <link href="../App_Themes/Student/StyleSheet.css?ver=621" rel="stylesheet" type="text/css" />
+    <script src="../js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../kindeditor/plugins/code/prettify.js" type="text/javascript"></script>     
+    <link href="../js/tinybox.css" rel="stylesheet" type="text/css" />
+    <script src="../js/tinybox.js" type="text/javascript"></script>
+    <script type="text/javascript">
+            function showShare() {
+                var urlat = "../student/groupshare.aspx";
+                TINY.box.show({ iframe: urlat, boxid: 'frameless', width: 600, height: 400, fixed: false, maskopacity: 60, close: true });
+            }
+    </script>
+   <script src="../js/ruffle.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		window.RufflePlayer = window.RufflePlayer || {};
+		window.RufflePlayer.config = {
+			"autoplay": "on",
+	}
+	</script>
+
+    <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">
+    <style>
+        /* ================================================================
+           TOPBAR — 精简版，只保留品牌 + 用户信息，不再放学案菜单
+           ================================================================ */
+        .scm-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            width: 100%;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #1d4ed8 100%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.08);
+            transition: all 0.3s ease;
+            color: #f1f5f9;
+        }
+        .scm-topbar::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(96,165,250,0.4), rgba(147,197,253,0.5), rgba(96,165,250,0.4), transparent);
+        }
+        .scm-topbar a, .scm-topbar a:link, .scm-topbar a:visited { color: inherit; text-decoration: none; }
+        .scm-topbar-inner {
+            margin: 0 auto;
+            padding: 0 1rem;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+        @media (min-width: 640px)  { .scm-topbar-inner { padding: 0 1.5rem; } }
+        @media (min-width: 1024px) { .scm-topbar-inner { padding: 0 2rem; } }
+
+        .scm-topbar-brand {
+            display: flex; align-items: center; gap: 0.625rem;
+            flex-shrink: 0; text-decoration: none;
+        }
+        .scm-topbar-logo {
+            width: 34px; height: 34px; border-radius: 9px;
+            background: rgba(255,255,255,0.12); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+            color: #93c5fd; flex-shrink: 0;
+            border: 1px solid rgba(147,197,253,0.2);
+        }
+        .scm-topbar-logo svg { width: 17px; height: 17px; }
+        .scm-topbar-title {
+            font-size: 1rem; font-weight: 800; color: #f1f5f9;
+            letter-spacing: 0.04em; white-space: nowrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        @media (min-width: 640px) { .scm-topbar-title { font-size: 1.0625rem; } }
+        .scm-topbar-sep {
+            width: 1px; height: 26px;
+            background: rgba(148,163,184,0.25);
+            flex-shrink: 0;
+        }
+        /* 顶栏右侧区域（可放用户信息、返回按钮等） */
+        .scm-topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .scm-topbar-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: rgba(226,232,240,0.85);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            transition: all 0.18s ease;
+            white-space: nowrap;
+        }
+        .scm-topbar-home:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.2);
+        }
+        .scm-topbar-home svg { width: 13px; height: 13px; }
+
+        /* ================================================================
+           LESSON NAV BAR — 学案导航条，独立于 topbar 下方，同样 sticky
+           ================================================================ */
+        .scm-lessonav {
+            position: sticky;
+            top: 56px;          /* 紧贴 topbar 底部 */
+            z-index: 50;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+        }
+        /* 仅在学案菜单有内容时才有高度 */
+        .scm-lessonav:empty,
+        .scm-lessonav--hidden { display: none; }
+
+        .scm-lessonav-inner {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 0 1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            min-height: 52px;
+        }
+        .scm-lessonav-inner::-webkit-scrollbar { display: none; }
+        @media (min-width: 640px)  { .scm-lessonav-inner { padding: 0 1.5rem; } }
+        @media (min-width: 1024px) { .scm-lessonav-inner { padding: 0 2rem; } }
+
+        /* ── 导航条左侧：课程首页胶囊 ── */
+        .scm-nav-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.75rem 0.3rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #1d4ed8;
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            white-space: nowrap;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: all 0.18s ease;
+            margin-right: 6px;
+        }
+        .scm-nav-home:hover { background: #bfdbfe; border-color: #93c5fd; }
+        .scm-nav-home svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+        /* ── 导航条分隔箭头 ── */
+        .scm-nav-sep {
+            flex-shrink: 0;
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            margin: 0 1px;
+            user-select: none;
+            line-height: 1;
+        }
+
+        /* ── 各环节导航项 ── */
+        .scm-nav-items {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
+            /* asp:Menu 会渲染成 table，需要覆盖 */
+        }
+
+        /*
+         * asp:Menu (RenderingMode=List, ASP.NET 4.x 默认) 渲染为：
+         *   <ul class="..."><li ...><a href="...">文字</a></li>...</ul>
+         * selected 项：<li> 上有内联 background-color 样式。
+         * 我们通过包裹 div 的 CSS 强制它横向展示并美化链接。
+         */
+        .scm-nav-items ul  { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 2px; flex-wrap: nowrap; }
+        .scm-nav-items li  { padding: 0; margin: 0; display: block; }
+        .scm-nav-items img { display: none !important; }
+
+        /* 所有菜单链接的基础样式 */
+        .scm-nav-items a,
+        .scm-nav-items a:link,
+        .scm-nav-items a:visited {
+            display: inline-flex !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+            padding: 0.3rem 0.75rem !important;
+            border-radius: 6px !important;
+            font-size: 0.8125rem !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+            text-decoration: none !important;
+            border: 1px solid transparent !important;
+            transition: all 0.18s ease !important;
+            line-height: 1.5 !important;
+            background: transparent !important;
+        }
+        .scm-nav-items a:hover {
+            color: #1d4ed8 !important;
+            background: #eff6ff !important;
+            border-color: #bfdbfe !important;
+        }
+
+        /* asp:Menu 选中态：StaticSelectedStyle 生成内联 background-color 在 <li> 上，
+           JS 会清除它并给 <a> 加 data-selected，CSS 作为备用 */
+        .scm-nav-items li[style*="background-color"] a,
+        .scm-nav-items a[data-selected="1"] {
+            color: #1d4ed8 !important;
+            background: #dbeafe !important;
+            border-color: #93c5fd !important;
+            font-weight: 700 !important;
+        }
+        /* 强制清掉 asp:Menu 给 li 注入的背景色 */
+        .scm-nav-items li[style*="background-color"] {
+            background-color: transparent !important;
+        }
+
+        /* 闯关锁定项 — href="#" 的链接 */
+        .scm-nav-items a[href="#"],
+        .scm-nav-items a[href="#"]:link,
+        .scm-nav-items a[href="#"]:visited {
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+        }
+        .scm-nav-items a[href="#"]:hover {
+            color: #94a3b8 !important;
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+            transform: none !important;
+        }
+
+        /* ── 导航条右侧返回按钮 ── */
+        .scm-nav-return {
+            margin-left: auto;
+            flex-shrink: 0;
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .scm-nav-return a,
+        .scm-nav-return a:link,
+        .scm-nav-return a:visited {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.25rem !important;
+            padding: 0.28rem 0.7rem !important;
+            border-radius: 6px !important;
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            color: #64748b !important;
+            background: #f1f5f9 !important;
+            border: 1px solid #e2e8f0 !important;
+            text-decoration: none !important;
+            white-space: nowrap !important;
+            transition: all 0.18s ease !important;
+        }
+        .scm-nav-return a:hover {
+            color: #0f172a !important;
+            background: #e2e8f0 !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* ── 无学案时隐藏导航条 ── */
+        .scm-lessonav[data-empty="1"] { display: none; }
+
+        /* ================================================================
+           MAIN CONTENT — 适配双层 sticky 头部
+           ================================================================ */
+        .scm-main {
+            flex: 1;
+            width: 100%;
+            padding: 1rem;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        @media (min-width: 640px)  { .scm-main { padding: 1.5rem; } }
+        @media (min-width: 1024px) { .scm-main { padding: 2rem; } }
+
+        .scm-content-card {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(15,23,42,0.04);
+            border: 1px solid rgba(226,232,240,0.6);
+            padding: 1.25rem;
+            min-height: calc(100vh - 14rem);
+            position: relative;
+            width: 100%;
+        }
+        @media (min-width: 640px)  { .scm-content-card { padding: 2rem; } }
+
+        .course-node-head {
+            position: relative;
+            overflow: hidden;
+        }
+        .has-course-banner .course-node-head {
+            background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.28), rgba(30, 41, 59, 0.18)), var(--course-banner-image);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .has-course-banner .course-node-head::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.2));
+            pointer-events: none;
+        }
+        .has-course-banner .course-node-head > * {
+            position: relative;
+            z-index: 1;
+        }
+        .has-course-banner .course-node-title {
+            color: #ffffff !important;
+            text-shadow: 0 2px 12px rgba(15,23,42,0.45);
+        }
+        .has-course-banner .course-node-head .topictext,
+        .has-course-banner .course-node-head #Topics,
+        .has-course-banner .course-node-head #TopicsResult {
+            color: rgba(255,255,255,0.94) !important;
+            text-shadow: 0 1px 8px rgba(15,23,42,0.35);
+        }
+        .has-course-banner .course-node-head img {
+            filter: drop-shadow(0 2px 6px rgba(15,23,42,0.35));
+        }
+
+        /* custom-menu-wrapper overrides for topbar brand only */
+        .scm-topbar-inner table { margin: 0; }
+        .scm-topbar-inner td { padding: 0 2px; }
+    </style>
+</head>
+<body onload="prettyPrint();" style="margin:0; background:#f8fafc; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans SC',sans-serif; color:#1e293b; overflow-x:hidden;">
+    <form id="form1" runat="server">
+        <div style="min-height:100vh; display:flex; flex-direction:column; position:relative; width:100%; max-width:100vw;">
+
+            <!-- ── Subtle Banner (decorative, behind content) ── -->
+            <div class="banner" style="position:absolute; top:0; left:0; right:0; height:192px; background:linear-gradient(to bottom, rgba(219,234,254,0.4), transparent); z-index:0; background-size:cover; background-position:center; opacity:0.35; mix-blend-mode:multiply;"></div>
+
+            <!-- ══════════════════════════════════════════
+                 TOPBAR — 品牌 + 返回首页，干净简洁
+                 ══════════════════════════════════════════ -->
+            <header class="scm-topbar">
+                <div class="scm-topbar-inner">
+                    <!-- Brand -->
+                    <a href="../student/myinfo.aspx" class="scm-topbar-brand">
+                        <div class="scm-topbar-logo">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <span class="scm-topbar-title" style="display:none;" id="scm-title-sm"><%= SiteTitle %></span>
+                        <span class="scm-topbar-title" id="scm-title-md"><%= SiteTitle %></span>
+                    </a>
+
+                    <div class="scm-topbar-sep" style="margin-left:0.25rem;"></div>
+
+                    <!-- Right: back to home -->
+                    <div class="scm-topbar-right">
+                        <a href="../student/myinfo.aspx" class="scm-topbar-home">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 9.75L12 3l9 6.75V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.75z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 21V12h6v9"></path>
+                            </svg>
+                            <span>我的首页</span>
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ══════════════════════════════════════════
+                 LESSON NAV BAR — 学案各环节导航条
+                 ══════════════════════════════════════════ -->
+            <nav class="scm-lessonav" id="scm-lessonav">
+                <div class="scm-lessonav-inner" id="scm-lessonav-inner">
+
+                    <!-- 课程首页入口（第一个菜单项，Home 图标胶囊）由 asp:Menu 第一项渲染，
+                         我们在这里通过 JS 把它抽出来用特殊样式展示，见底部脚本。
+                         asp:Menu 整体渲染在下方 scm-nav-items 容器中。 -->
+
+                    <div class="scm-nav-items" id="scm-nav-items">
+                        <asp:Menu ID="Menuact" runat="server"
+                            Orientation="Horizontal"
+                            ForeColor="#475569"
+                            StaticEnableDefaultPopOutImage="false">
+                            <StaticSelectedStyle BackColor="#334155" ForeColor="#ffffff" />
+                            <StaticHoverStyle BackColor="#eff6ff" ForeColor="#1d4ed8" />
+                            <StaticMenuItemStyle
+                                ItemSpacing="0"
+                                HorizontalPadding="10"
+                                VerticalPadding="5"
+                                Font-Size="Small"
+                                Font-Bold="true" />
+                        </asp:Menu>
+                    </div>
+
+                </div>
+            </nav>
+
+            <!-- ══════════════════════════════════════════
+                 MAIN CONTENT AREA
+                 ══════════════════════════════════════════ -->
+            <main class="scm-main" style="z-index:10;">
+                <div class="scm-content-card">
+                    <asp:contentplaceholder id="Cpcm" runat="server"></asp:contentplaceholder>
+                </div>
+            </main>
+
+        </div>
+    </form>
+
+    <script type="text/javascript">
+        /* ── Banner 背景 ── */
+        var cbanner = "<%=Cbanner %>";
+        if (cbanner !== "") {
+            document.body.className += (document.body.className ? " " : "") + "has-course-banner";
+            document.body.style.setProperty("--course-banner-image", "url('" + cbanner + "')");
+            $(".banner").css({
+                "background-image": "url(" + cbanner + ")",
+                "opacity": "0.15"
+            });
+        }
+
+        /* ── 学案导航条增强脚本 ── */
+        (function () {
+            var nav   = document.getElementById("scm-lessonav");
+            var inner = document.getElementById("scm-lessonav-inner");
+            var items = document.getElementById("scm-nav-items");
+            if (!nav || !items) return;
+
+            /*
+             * ASP.NET 4.x asp:Menu (controlRenderingCompatibilityVersion="4.x")
+             * 渲染为 <ul class="..."><li ...><a>...</a></li><li>...</li></ul>
+             * 每个 <li> 对应一个菜单项，选中项 <li> 有内联 background-color 样式。
+             */
+            var menuUl = items.querySelector("ul");
+            if (!menuUl) { nav.setAttribute("data-empty", "1"); return; }
+
+            var allLis = menuUl.querySelectorAll("li");
+            if (allLis.length === 0) { nav.setAttribute("data-empty", "1"); return; }
+
+            /* 收集含链接的 li */
+            var linkLis = [];
+            for (var k = 0; k < allLis.length; k++) {
+                if (allLis[k].querySelector("a")) linkLis.push(allLis[k]);
+            }
+            if (linkLis.length === 0) { nav.setAttribute("data-empty", "1"); return; }
+
+            var firstLi   = linkLis[0];
+            var lastLi    = linkLis[linkLis.length - 1];
+            var firstLink = firstLi.querySelector("a");
+            var lastLink  = lastLi.querySelector("a");
+
+            /* ── 1. 首页胶囊：插到 inner 最前，从 ul 中移除原始 li ── */
+            var homeEl = document.createElement("a");
+            homeEl.href = firstLink.href;
+            homeEl.className = "scm-nav-home";
+            homeEl.innerHTML =
+                '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" ' +
+                'style="width:13px;height:13px;flex-shrink:0;">' +
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" ' +
+                'd="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>' +
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" ' +
+                'd="M9 22V12h6v10"></path>' +
+                '</svg>' +
+                '<span>' + (firstLink.innerText || firstLink.textContent || "首页").trim() + '</span>';
+            inner.insertBefore(homeEl, items);
+            firstLi.parentNode.removeChild(firstLi);
+
+            /* ── 2. 返回按钮：移到 inner 最右，从 ul 中移除原始 li ── */
+            var returnDiv = document.createElement("div");
+            returnDiv.className = "scm-nav-return";
+            var returnA = document.createElement("a");
+            returnA.href = lastLink.href;
+            returnA.innerHTML =
+                '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" ' +
+                'style="width:12px;height:12px;">' +
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" ' +
+                'd="M15 19l-7-7 7-7"></path>' +
+                '</svg>' +
+                '<span>返回</span>';
+            returnDiv.appendChild(returnA);
+            inner.appendChild(returnDiv);
+            lastLi.parentNode.removeChild(lastLi);
+
+            /* ── 3. 选中态：li 上有内联 background-color，清除并标记链接 ── */
+            var remainLis = menuUl.querySelectorAll("li");
+            var scrollTarget = null;
+            for (var i = 0; i < remainLis.length; i++) {
+                var li = remainLis[i];
+                var bg = li.style.backgroundColor;
+                if (bg && bg !== "" && bg !== "transparent") {
+                    li.style.backgroundColor = "transparent";
+                    var selA = li.querySelector("a");
+                    if (selA) {
+                        selA.setAttribute("data-selected", "1");
+                        selA.style.cssText +=
+                            ";color:#1d4ed8!important;" +
+                            "background:#dbeafe!important;" +
+                            "border-color:#93c5fd!important;" +
+                            "font-weight:700!important;";
+                        scrollTarget = selA;
+                    }
+                }
+            }
+            if (scrollTarget) {
+                setTimeout(function () {
+                    scrollTarget.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                }, 120);
+            }
+
+            /* ── 4. 闯关锁定项（href="#"）加锁图标 ── */
+            var allLinks = items.querySelectorAll("a");
+            for (var j = 0; j < allLinks.length; j++) {
+                if (allLinks[j].getAttribute("href") === "#") {
+                    allLinks[j].title = "请先完成前一环节";
+                    var lockSvg =
+                        '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" ' +
+                        'style="width:11px;height:11px;flex-shrink:0;margin-right:3px;opacity:0.55;">' +
+                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" ' +
+                        'd="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 ' +
+                        '00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>' +
+                        '</svg>';
+                    allLinks[j].innerHTML = lockSvg + allLinks[j].innerHTML;
+                }
+            }
+        })();
+    </script>
+
+    <!-- 学习状态上报配置 + 脚本 -->
+    <script type="text/javascript">
+        window.__learnStatus = {
+            snum: "<%= LsSnum %>",
+            sname: "<%= LsSname %>",
+            sgrade: "<%= LsSgrade %>",
+            sclass: "<%= LsSclass %>",
+            sid: "<%= LsSid %>",
+            cid: "<%= LsCid %>",
+            lid: "<%= LsLid %>",
+            ltitle: "<%= LsLtitle %>",
+            ltype: "<%= LsLtype %>"
+        };
+    </script>
+    <script src="../js/learnstatus.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+body { background: #f1f5f9; font-family: Arial, sans-serif; }
+
+        /* ===== Page Shell ===== */
+        .ws-shell {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem 3rem;
+        }
+
+        /* ===== Control Bar ===== */
+        .ws-control-bar {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .ws-control-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .ws-control-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            color: #475569;
+            margin-bottom: 0.75rem;
+        }
+        .ws-control-row:last-child { margin-bottom: 0; }
+        .ws-control-label { font-weight: 600; color: #64748b; white-space: nowrap; }
+
+        /* Legend dots */
+        .ws-legend {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .ws-legend-dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        /* Stats badge */
+        .ws-stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #f0f9ff;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Grade dist text */
+        .ws-grade-dist {
+            font-size: 0.8rem;
+            color: #64748b;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.35rem 0.75rem;
+        }
+
+        /* Sort radio group */
+        .ws-sort-group { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+        .ws-sort-group input[type="radio"] { accent-color: #3b82f6; }
+
+        /* Action buttons row */
+        .ws-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* ===== Button base ===== */
+        .ws-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 34px;
+            padding: 0 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: filter 0.15s, box-shadow 0.15s, transform 0.1s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            line-height: 1;
+        }
+        .ws-btn:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.13);
+            transform: translateY(-1px);
+            text-decoration: none;
+            color: #ffffff;
+        }
+        .ws-btn:active {
+            filter: brightness(0.95);
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+        }
+
+        /* ---- Color variants ---- */
+        .ws-btn--blue     { background: #3b82f6; }
+        .ws-btn--indigo   { background: #6366f1; }
+        .ws-btn--slate    { background: #64748b; }
+        .ws-btn--rose     { background: #e11d48; }
+        .ws-btn--emerald  { background: #10b981; }
+        .ws-btn--teal     { background: #14b8a6; }
+        .ws-btn--amber    { background: #f59e0b; color: #78350f; }
+        .ws-btn--amber:hover { color: #78350f; }
+        .ws-btn--red      { background: #ef4444; }
+
+        /* Icon-only button variant */
+        .ws-btn--icon {
+            width: 34px;
+            padding: 0;
+            border-radius: 8px;
+        }
+        .ws-btn--icon img { height: 16px; width: 16px; }
+
+        /* Preview link buttons — image inside */
+        .ws-btn img {
+            height: 18px;
+            width: auto;
+            vertical-align: middle;
+        }
+
+        /* ===== Work Cards Grid ===== */
+        .ws-section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin-bottom: 0.75rem;
+            padding-left: 0.25rem;
+        }
+        .ws-cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        /* Override .divscore from StyleSheet.css */
+        .divscore {
+            border: 1px solid #dbeafe !important;
+            background: #fffaee !important;
+            border-radius: 10px !important;
+            width: 106px !important;
+            padding: 6px 4px !important;
+            text-align: center !important;
+            transition: box-shadow 0.15s;
+        }
+        .divscore:hover { box-shadow: 0 2px 8px rgba(59,130,246,0.12); }
+        .workname {
+            display: inline-block !important;
+            background: #dbeafe !important;
+            color: #1e40af !important;
+            border-radius: 5px !important;
+            padding: 1px 4px !important;
+            font-size: 10pt !important;
+            width: auto !important;
+            max-width: 90px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-decoration: none !important;
+            height: auto !important;
+            line-height: 1.4 !important;
+        }
+        .wscored {
+            display: inline-block !important;
+            background: #e0f2fe !important;
+            color: #0369a1 !important;
+            border-radius: 4px !important;
+            font-size: 10pt !important;
+            width: 18px !important;
+            height: 18px !important;
+            line-height: 18px !important;
+            text-align: center;
+            text-decoration: none !important;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .wscored:hover { background: #bae6fd !important; }
+
+        /* ===== Group Cards Grid ===== */
+        .ws-group-section {
+            margin-top: 1.5rem;
+        }
+        .divgroupscore {
+            border: 1px solid #d1fae5 !important;
+            background: #f0fdf4 !important;
+            border-radius: 10px !important;
+            width: 110px !important;
+            padding: 6px 4px !important;
+            text-align: center !important;
+            transition: box-shadow 0.15s;
+        }
+        .divgroupscore:hover { box-shadow: 0 2px 8px rgba(16,185,129,0.12); }
+        .groupname {
+            display: inline-block !important;
+            background: #bbf7d0 !important;
+            color: #065f46 !important;
+            border-radius: 5px !important;
+            padding: 1px 4px !important;
+            font-size: 10pt !important;
+            width: auto !important;
+            max-width: 96px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-decoration: none !important;
+            height: auto !important;
+            line-height: 1.4 !important;
+        }
+
+        /* ===== No-work list ===== */
+        .ws-nowork-section {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
+        }
+        .ws-nowork-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #9a3412;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+        }
+        .ws-nowork-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        /* ===== Refresh notice ===== */
+        .ws-refresh-note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+        }
+
+        /* Hide the old logo/header image */
+        #Imagelogo { display: none !important; }
+
+        /* Dropdowns */
+        select { border: 1px solid #cbd5e1; border-radius: 6px; padding: 3px 6px; font-size: 0.88rem; color: #1e293b; background: #f8fafc; }

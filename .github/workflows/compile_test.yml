@@ -1,0 +1,50 @@
+name: Compile and Test
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+    paths-ignore:
+      - '.github/workflows/run_test_for_windows.yml'
+      - '.github/workflows/run_test_for_linux.yml'
+      - '.github/workflows/run_test_for_docker.yml'
+      - '.github/workflows/dev_branch_tests.yml'
+  pull_request:
+    branches:
+      - master
+      - main
+      - dev
+    paths-ignore:
+      - '.github/workflows/run_test_for_windows.yml'
+      - '.github/workflows/run_test_for_linux.yml'
+      - '.github/workflows/run_test_for_docker.yml'
+      - '.github/workflows/dev_branch_tests.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+
+    - name: Install dependencies (Node)
+      run: npm install
+
+    - name: Make run_tests.sh executable
+      run: chmod +x run_tests.sh
+
+    - name: Run unit tests
+      run: ./run_tests.sh --no-e2e

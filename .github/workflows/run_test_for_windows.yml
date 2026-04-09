@@ -1,0 +1,89 @@
+name: Windows Environment Tests
+
+on:
+  workflow_run:
+    workflows: ["Release Build and Publish"]
+    types: [completed]
+    branches: [master, main]
+  workflow_dispatch:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Get Alpha Release
+        id: release
+        run: |
+          # 优先获取alpha版本
+          $alphaTags = gh release list --repo ${{ github.repository }} --json tagName --jq '.[] | select(.tagName | startswith("alpha-")) | .tagName'
+          if ($alphaTags) {
+            $latestAlpha = ($alphaTags -split "`n") | Sort-Object -Descending | Select-Object -First 1
+            echo "tag_name=$latestAlpha" >> $env:GITHUB_OUTPUT
+          } else {
+            # 如果没有alpha版本，获取最新版本
+            $latestTag = gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName'
+            echo "tag_name=$latestTag" >> $env:GITHUB_OUTPUT
+          }
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Download Release Asset
+        run: |
+          gh release download ${{ steps.release.outputs.tag_name }} --repo ${{ github.repository }} --pattern "*.zip"
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Extract Release
+        run: |
+          Expand-Archive -Path learnsite-*.zip -DestinationPath . -Force
+        shell: powershell
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Setup MS SQL Server
+        uses: potatoqualitee/mssqlsuite@v1.7
+        with:
+          install: sqlengine
+          sa-password: YourStrong!Passw0rd
+
+      - name: Initialize Database
+        run: |
+          sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -Q "CREATE DATABASE [learnsite];"
+          sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -d learnsite -i sql\learnsite.sql
+
+      - name: Update web.config connection string
+        run: |
+          $content = Get-Content web.config -Raw
+          $content = $content -replace "Data Source=127.0.0.1;Initial Catalog=learnsite;uid=sa;pwd=YourStrong!Passw0rd;Encrypt=false;Connection Timeout=30;", "Data Source=localhost;Initial Catalog=learnsite;uid=sa;pwd=YourStrong!Passw0rd;Encrypt=false;Connection Timeout=30;"
+          Set-Content web.config $content
+        shell: powershell
+
+      - name: Start IIS Express
+        run: |
+          $iisExpress = "${env:ProgramFiles}\IIS Express\iisexpress.exe"
+          $args = "/path:${env:GITHUB_WORKSPACE} /port:8080"
+          Start-Process -FilePath $iisExpress -ArgumentList $args -NoNewWindow
+          Start-Sleep -Seconds 10
+        shell: powershell
+
+      - name: Check Web Service Status
+        run: |
+          curl http://localhost:8080 || echo "Web service not ready yet"
+        shell: bash
+
+      - name: Run Tests
+        run: bash ./run_tests.sh
+        env:
+          BASE_URL: http://localhost:8080

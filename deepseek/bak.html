@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人工智能 - 探索未知之境</title>
+    <!-- Markdown 渲染库 -->
+    <script src="marked.min.js"></script>
+    <!-- 代码高亮库 -->
+    <link rel="stylesheet" href="github-dark.min.css">
+    <script src="highlight.min.js"></script>
+    <!-- Font Awesome 图标库 -->
+    <link rel="stylesheet" href="all.min.css">
+	
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            padding: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			user-select:none;
+            font-family: Verdant;
+			display: flex;
+			align-items: center;
+        }
+		#chatbar{
+			width : 280px ;
+		}
+		.chattitle{
+			margin: 10px;
+            padding: 10px;	
+			overflow:hidden; white-space:nowrap; text-overflow:ellipsis;		
+		}
+		.chattitle:hover{
+            background-color: #DBEAFE;			
+            border-radius: 8px;
+		}
+
+        /* 聊天区域 */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fff;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 消息样式 */
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message span {
+        }
+
+        .message.user span {
+            display: inline-block;
+            padding: 15px;
+            border-radius: 12px;
+            max-width: 70%;
+            word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #3371B2;
+            color: #fff;
+            border-radius: 12px 12px 0 12px;
+        }
+
+        .message.bot span {
+        }
+
+        /* Markdown 内容样式 */
+        .message.bot span code {
+            background-color: #2d2d2d;
+            color: #f8f8f8;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+        }
+
+        .message.bot span pre {
+            position: relative;
+            background-color: #2d2d2d;
+            color: #f8f8f8;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: Consolas, monospace;
+        }
+
+        .message.bot span pre .copy-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .message.bot span pre .copy-icon:hover {
+            opacity: 1;
+        }
+
+        .message.bot span ul,
+        .message.bot span ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .message.bot span li {
+            margin-bottom: 5px;
+        }
+
+        .message.bot span a {
+            color: #3371B2;
+            text-decoration: none;
+        }
+
+        .message.bot span a:hover {
+            text-decoration: underline;
+        }
+
+		/* 加载区域 */
+		.loading-container{
+			height:16px;
+		}
+
+        /* 输入框区域 */
+        .input-container {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+			
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+        }
+
+        .input-container textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: none;
+            font-size: 14px;
+            line-height: 1.5;
+            outline: none;
+			max-height:300px;
+        }
+
+        .input-container button {
+            padding: 10px 20px;
+            background-color: #3371B2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .input-container button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 加载状态 */
+        #loading {
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 95%;
+                margin: 10px auto;
+                padding: 10px;
+            }
+
+            .input-container {
+                padding: 10px;
+            }
+
+            .input-container textarea {
+                font-size: 14px;
+                outline: none;
+            }
+
+            .input-container button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+		.wall{
+			text-align:center;
+			padding:20px;
+		}
+		.photo{
+			width:60%;
+		}
+
+
+/* 容器样式 */
+.container {
+    display: flex;
+}
+
+/* 左侧栏样式 */
+.left-column {
+    width: 300px; /* 固定宽度 */
+    padding: 20px;
+}
+
+/* 右侧栏样式 */
+.right-column {
+    flex: 1; /* 自动填充剩余空间 */
+	padding-right: 20px;
+}
+
+/* 响应式设计：在小屏幕上堆叠两栏 */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left-column {
+        width: 100%; /* 在小屏幕上占满宽度 */
+        margin-right: 0;
+        margin-bottom: 10px; /* 添加底部边距 */
+    }
+
+    .right-column {
+        width: 100%; /* 在小屏幕上占满宽度 */
+    }
+}
+    </style>
+
+    <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">	
+        <div class="left-column">
+			<!-- 导航栏 -->
+			<div class="navbar">
+			🐳 人工智能 AI
+			</div>
+			<!-- 聊天记录栏 -->
+			<div id ="chatbar">			
+			</div>			
+
+        </div>
+		
+        <div class="right-column">		
+			<!-- 聊天区域 -->
+			<div class="chat-container" id="chatHistory">
+				<!-- 聊天记录将动态加载到这里 -->
+				<div class="wall">
+				<h2>🐳 我是 人工智能 AI，很高兴见到你！</h2>
+				<div>我可以帮你写作、编程、绘画等各种创意内容，请把你的任务交给我吧~</div>
+				</div>
+			</div>
+			
+			<!-- 输入框区域 -->
+			<div class="loading-container">
+			<!-- 加载状态 -->
+			<div id="loading" style="display: none;"><img src="loading.gif" />加载中...</div>
+			
+			</div>
+
+			<!-- 输入框区域 -->
+			<div class="input-container">
+				<textarea id="userInput" placeholder="输入你的问题..." rows="1"></textarea>
+				<button id="btnmsg" onclick="sendMessage()" title="人工智能聊天" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0">对话</button>
+				<button id="btnphoto"  onclick="sendPhoto()" title="文本生成图片" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0">图片</button>
+			</div>
+        </div>
+
+ </div>
+    <script>
+        let messageHistory = []; // 新增：存储对话历史的数组
+        const apiChatUrl = "http://192.168.1.5:3000/chat";
+        const apiPhotoUrl = "http://192.168.1.5:3000/photo";
+			
+		const userTextarea = document.getElementById("userInput");
+		const userchatbar = document.getElementById("chatbar");
+        const sendButtonmsg = document.getElementById("btnmsg");
+        const sendButtonphoto = document.getElementById("btnphoto");
+
+        async function sendMessage() {
+            const userInput = document.getElementById("userInput").value.trim();
+            if (!userInput) return;
+			
+            sendButtonmsg.disabled = true;
+            sendButtonphoto.disabled = true;
+			userTextarea.disabled = true;
+
+            // 新增：将用户消息添加到历史记录
+            const userMessage = { role: "user", content: userInput };
+            messageHistory.push(userMessage);
+            addMessage("user", userInput);
+
+            try {
+                document.getElementById("loading").style.display = "block";
+                const response = await fetch(apiChatUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ messages: messageHistory }) // 改为发送完整对话历史
+                });
+                
+                const data = await response.json();
+                
+                // 新增：将AI回复添加到历史记录
+                const botMessage = { role: "assistant", content: data.response };
+                messageHistory.push(botMessage);
+                addMessage("bot", data.response);
+			
+				const chatTitle = document.createElement("div");
+				chatTitle.className="chattitle";
+				chatTitle.innerHTML=userInput;
+				userchatbar.appendChild(chatTitle);
+			
+            } catch (error) {
+                console.error("Error:", error);
+                const errorMessage = { role: "assistant", content: `Error: ${error.message}` };
+                messageHistory.push(errorMessage);
+                addMessage("bot", `Error: ${error.message}`);
+            } finally {
+                document.getElementById("loading").style.display = "none";
+                sendButtonmsg.disabled = false;
+                sendButtonphoto.disabled = false;
+				userTextarea.disabled = false;
+                document.getElementById("userInput").value = "";
+            }
+        }
+		
+		
+        async function sendPhoto() {
+			let photoHistory = []; // 新增：存储对话历史的数组
+            const userInput = document.getElementById("userInput").value.trim();
+            if (!userInput) return;
+			
+            sendButtonmsg.disabled = true;
+            sendButtonphoto.disabled = true;
+			userTextarea.disabled = true;
+
+            // 新增：将用户消息添加到历史记录
+            const userMessage = { role: "user", content: userInput };
+            photoHistory.push(userMessage);
+            addMessage("user", userInput);
+			
+			const chatTitle = document.createElement("div");
+			chatTitle.className="chattitle";
+			chatTitle.innerHTML=userInput;
+			userchatbar.appendChild(chatTitle);
+
+            try {
+                document.getElementById("loading").style.display = "block";
+                const response = await fetch(apiPhotoUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ messages: photoHistory }) // 改为发送完整对话历史
+                });
+                
+                const data = await response.json();
+                
+                // 新增：将AI回复添加到历史记录
+                addMessage("bot", data.response);
+            } catch (error) {
+                console.error("Error:", error);
+                const errorMessage = { role: "assistant", content: `Error: ${error.message}` };
+                addMessage("bot", `Error: ${error.message}`);
+            } finally {
+                document.getElementById("loading").style.display = "none";
+                sendButtonmsg.disabled = false;
+                sendButtonphoto.disabled = false;
+				userTextarea.disabled = false;
+                document.getElementById("userInput").value = "";
+            }
+        }
+
+		function addMessage(role, content) {
+			const chatHistory = document.getElementById("chatHistory");
+			const messageDiv = document.createElement("div");
+			messageDiv.className = `message ${role}`;
+
+			// 如果是机器人消息，则渲染 Markdown
+			if (role === "bot") {
+				// 使用 marked.parse 渲染 Markdown
+				const renderedContent = marked.parse(content);
+				messageDiv.innerHTML = `<span>${renderedContent}</span>`;
+
+				// 高亮代码块
+				setTimeout(() => {
+					document.querySelectorAll('pre code').forEach((block) => {
+						hljs.highlightBlock(block);
+					});
+
+					// 为每个代码块添加复制图标
+					document.querySelectorAll('pre').forEach((pre) => {
+						const copyIcon = document.createElement('i');
+						copyIcon.className = 'fas fa-copy copy-icon';
+						copyIcon.title = '复制代码';
+						copyIcon.onclick = () => {
+							const code = pre.querySelector('code').innerText;
+							if (navigator.clipboard) {
+								navigator.clipboard.writeText(code).then(() => {
+									copyIcon.style.color = '#4CAF50'; // 复制成功后改变颜色
+									setTimeout(() => {
+										copyIcon.style.color = '#fff'; // 恢复颜色
+									}, 1000);
+								}).catch((err) => {
+									console.error('复制失败:', err);
+								});
+							} else {
+								// 如果不支持 clipboard API，使用备用方法
+								const textarea = document.createElement('textarea');
+								textarea.value = code;
+								document.body.appendChild(textarea);
+								textarea.select();
+								document.execCommand('copy');
+								document.body.removeChild(textarea);
+								copyIcon.style.color = '#4CAF50'; // 复制成功后改变颜色
+								setTimeout(() => {
+									copyIcon.style.color = '#fff'; // 恢复颜色
+								}, 1000);
+							}
+						};
+						pre.appendChild(copyIcon);
+					});
+				}, 30);
+			} else {
+				messageDiv.innerHTML = `<span>${content}</span>`;
+			}
+
+			chatHistory.appendChild(messageDiv);
+
+			// 滚动到底部
+			chatHistory.scrollTop = chatHistory.scrollHeight;
+		}
+
+        // 监听输入框的 Enter 键
+        document.getElementById("userInput").addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault(); // 阻止默认换行行为
+                sendMessage();
+            }
+        });
+
+        // 自动调整输入框高度
+        document.getElementById("userInput").addEventListener("input", (event) => {
+            event.target.style.height = "auto";
+            event.target.style.height = event.target.scrollHeight + "px";
+        });
+		
+    </script>
+</body>
+</html>

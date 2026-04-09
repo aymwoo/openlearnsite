@@ -1,0 +1,34 @@
+name: Dev Branch Tests
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Make scripts executable
+        run: chmod +x run_tests.sh
+
+      - name: Run Unit Tests
+        run: ./run_tests.sh --no-e2e
+
+      - name: Test Basic Compilation
+        run: |
+          # 测试基本编译
+          echo "=== Testing Basic Compilation ==="
+          ls -la
+          echo "Project files found:"
+          find . -name "*.csproj" -o -name "*.sln"

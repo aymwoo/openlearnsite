@@ -1,0 +1,170 @@
+body {
+			margin: 0;
+			overflow: hidden;
+		}
+		.html_banner {
+			height: 32px;
+			line-height:30px;
+			vertical-align: middle;
+			padding-left: 20px;
+			font-weight: bold;
+			background-color: #eee;
+			color: #666;
+			user-select: none;
+			box-shadow: 2px 2px 2px Gainsboro;
+			padding:4px;
+		}
+		#main {
+			display: flex;
+		}
+		#left {
+			width: calc(50% - 6px);
+		}
+		#resize {
+			width: 4px;
+			height: 100vh;
+			cursor: ew-resize;
+			background-color:WhiteSmoke;
+			box-shadow: 2px 2px 2px #999;
+		}
+		#resize:hover {
+			background-color: Gainsboro;			
+		}
+		#right {
+			width: 50%;
+			margin:4px;
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center;
+		}
+		#tooltip{
+			position: absolute;
+			top: 8px;
+			left:155px;
+			user-select: none;
+			display:flex;
+			flex-wrap:wrap;
+			gap:8px;
+			align-items:center;
+			padding:8px 12px;
+			z-index:666;
+			font-size:14px;
+			border-radius:14px;
+			background:rgba(255,255,255,.92);
+			box-shadow:0 14px 28px -22px rgba(15,23,42,.45);
+			max-width:calc(100% - 380px);
+		}
+		.keyword{
+			display:inline-block;		
+			margin:auto;
+			padding:4px 10px;
+			color:#334155;	
+			cursor: hand;
+			min-width:auto;
+			text-align:center;
+			box-shadow:none;
+			border-radius:999px;
+			background:linear-gradient(135deg,#e2e8f0 0%,#cbd5e1 100%);
+			font-weight:700;
+		}
+		.keyword:hover{
+			cursor: hand;
+			color:#fff;
+			background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);
+		}
+		
+		#tool{ display:flex; flex-direction:column; gap:14px; }
+		#tool i{
+			display:inline-flex;
+			align-items:center;
+			justify-content:center;
+			width:38px;
+			height:38px;
+			color:#e2e8f0;
+			background:linear-gradient(135deg,#475569 0%,#334155 100%);
+			border-radius:12px;
+			box-shadow:0 12px 24px -18px rgba(15,23,42,.75);
+		}
+		#tool i:hover{
+			cursor: hand;
+			color:#fff;
+			filter:brightness(1.08);
+		}
+		
+		#sidebyleft{
+	        position:absolute;
+	        left:400px;
+	        top:6px;	
+            z-index: 999;
+            color: #333;
+			line-height:30px;
+        }
+		#sideby{
+	        position:absolute;
+	        right:0px;
+	        top:4px;	
+            z-index: 999;
+            color: #333;
+			line-height:30px;
+        }
+		.sp{
+		  width: 30px;
+		  display:inline-block;
+		}
+		.spl{
+		  width: 5px;
+		  display:inline-block;
+		}		
+		.buttonshow{
+			border: 1px #999 solid;			
+		}
+		.buttonshow:hover{		
+			background-color: #b7c79a;
+			color:#000;
+		}		
+		button{
+			border: 1px #999 solid;	
+			border-radius:6px;		
+		}
+		button:hover{		
+			background-color: #FCC796;//#b7c79a;
+			color:#000;
+		}
+		.icon{	
+			background-color: #555;
+			color:#eee;
+			border-radius:6px;
+			padding:3px;
+		}
+		#tool{
+			position:absolute;
+			float:left;
+			left:4px;
+			bottom:50px;
+			z-index:1000;
+		}
+		#html_page{	
+			border: 0px ;		
+			outline: none;
+			font-size:16px;
+			background-color:transparent;
+			padding:4px;
+			width:100px;
+		}
+		#html_page:hover{
+			border: 1px solid #ddd ;
+			background-color:#fff;
+		}
+		#preview-frame{
+			width: 100%;
+			height: 100%;
+			border: 0px;
+		}
+
+.html-toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-end; }
+		.html-toolbar__btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-width:112px; height:40px; padding:0 16px; border:0 !important; border-radius:12px; background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%); color:#fff; font-size:14px; font-weight:700; white-space:nowrap; box-shadow:0 14px 28px -18px rgba(37,99,235,.82); cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, filter .2s ease; }
+		.html-toolbar__btn:hover { transform:translateY(-1px); box-shadow:0 18px 30px -18px rgba(37,99,235,.9); filter:brightness(1.03); background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%) !important; color:#fff !important; }
+		.html-toolbar__btn--secondary { background:linear-gradient(135deg,#0f766e 0%,#0f766e 100%); box-shadow:0 14px 28px -18px rgba(15,118,110,.78); }
+		.html-toolbar__btn--neutral { background:linear-gradient(135deg,#475569 0%,#334155 100%); box-shadow:0 14px 28px -18px rgba(51,65,85,.72); }
+
+\r\n\n\t

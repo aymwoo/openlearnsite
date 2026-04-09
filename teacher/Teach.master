@@ -1,0 +1,389 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Teach.master.cs" Inherits="Teach" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>信息科技教师网站</title>
+    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/StyleSheet.css") %>" />
+    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/course-workspace.css") %>" />
+    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/course-content-add.css") %>" />
+    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/js/css/tailwind-utilities-2.2.19.min.css") %>" />
+    <script src="<%= ResolveUrl("~/js/MenuCookie.js") %>" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/js/jquery-1.8.2.min.js") %>" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/kindeditor/plugins/code/prettify.js") %>" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/js/ruffle.js") %>" type="text/javascript"></script>
+	<script type="text/javascript">
+		window.RufflePlayer = window.RufflePlayer || {};
+		window.RufflePlayer.config = {
+			"autoplay": "on",
+	}
+	</script>
+    <asp:ContentPlaceHolder id="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body onload="prettyPrint();" class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+    <form id="form1" runat="server">
+        <!-- Header -->
+        <header class="w-full h-16 bg-white text-slate-800 border-b border-slate-200 shadow-sm relative" style="box-sizing: border-box; overflow: hidden;">
+            <div class="flex h-full w-full items-center justify-between gap-4 px-4 sm:px-6">
+                <div class="flex items-center cursor-pointer group min-w-0 flex-shrink transition-all" onclick="ShowMenu()">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="text-lg sm:text-xl font-semibold tracking-tight text-slate-900 truncate"><%= SiteTitle %></span>
+                        <span class="hidden md:inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500">Teacher Console</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 text-sm font-medium flex-shrink-0 min-w-0">
+                     <asp:HyperLink ID="LogoutBtn" runat="server" NavigateUrl="~/teacher/logout.aspx" ToolTip="退出登录"
+                       onclick="return confirm('确定要退出登录吗？');"
+                       style="display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;background:#ffffff;border:1px solid #d1d5db;color:#374151;transition:all 0.2s;flex-shrink:0;"
+                       onmouseover="this.style.background='#f9fafb';this.style.borderColor='#cbd5e1';this.style.color='#111827';"
+                       onmouseout="this.style.background='#ffffff';this.style.borderColor='#d1d5db';this.style.color='#374151';">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span class="text-sm font-medium">退出</span>
+                    </asp:HyperLink>
+                </div>
+            </div>
+        </header>
+
+        <div class="min-h-[calc(100vh-4rem)] flex overflow-hidden relative">
+
+            <!-- Main Layout: Sidebar + Content -->
+            <div class="flex flex-1 overflow-hidden relative">
+
+                <!-- Modern Sidebar -->
+                <aside id="MenuDiv" class="w-48 lg:w-52 flex-shrink-0 bg-slate-50 border-r border-slate-200/80 flex flex-col z-10 transition-all duration-300">
+                    <nav class="flex-1 overflow-y-auto py-3 custom-scrollbar">
+                        <ul class="flex flex-col space-y-1.5 px-2.5">
+                            <li><a href="<%= ResolveUrl("~/teacher/start.aspx") %>" data-section="start" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v4m8-4v4"></path><rect x="4" y="7" width="16" height="12" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">上课</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/teacher/course.aspx") %>" data-section="course" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h7a3 3 0 0 1 3 3v11H7a3 3 0 0 0-3 3z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 5h-7a3 3 0 0 0-3 3v11h7a3 3 0 0 1 3 3z"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">备课</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/teacher/gauge.aspx") %>" data-section="gauge" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h14v14H5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9h6M9 12h6M9 15h4"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">量规</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/teacher/works.aspx") %>" data-section="works" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 14 3-3 2 2 3-4"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">作品</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/teacher/teachermanage.aspx") %>" data-section="manage" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 4v4M16 10v4M12 16v4"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">管理</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/exam/examlist.aspx") %>" data-section="exam" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 3h7l5 5v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3v5h5"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 13 2 2 4-4"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">考试</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/teacher/soft.aspx") %>" data-section="soft" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16"></path><rect x="4" y="7" width="16" height="12" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6M9 15h4"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">资源</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/teacher/aiconfig.aspx") %>" data-section="ai" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2"></circle><circle cx="18" cy="6" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h4m2.5-4.5-3 3m3 3-3-3"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">AI</span>
+                            </a></li>
+
+                            <li><a href="<%= ResolveUrl("~/teacher/typer.aspx") %>" data-section="typing" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M6 11h2m2 0h2m2 0h2m2 0h2M5 17h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">打字</span>
+                            </a></li>
+
+                            <li><a href="<%= ResolveUrl("~/teacher/infomation.aspx") %>" data-section="info" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3v5h5"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6M9 17h4"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">信息</span>
+                            </a></li>
+
+                            <li><a href="<%= ResolveUrl("~/teacher/helper.aspx") %>" data-section="helper" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.1 9a3 3 0 1 1 5.8 1c-.6 1.1-1.9 1.7-2.4 2.4-.3.4-.5.8-.5 1.6"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17h.01"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">帮助</span>
+                            </a></li>
+                            <li><a href="<%= ResolveUrl("~/teacher/systeminfo.aspx") %>" data-section="systeminfo" class="nav-item group flex items-center gap-2.5 py-2.5 px-3 rounded-xl text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
+                                <svg class="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 2"></path></svg>
+                                <span class="text-[13px] font-semibold tracking-wide leading-none">状态</span>
+                            </a></li>
+                            <li class="menu-version-item px-3 pt-3 mt-1">
+                                <div class="menu-version border-t border-slate-200 pt-3">
+                                    <div class="menu-footer flex items-center justify-center gap-1">
+                                        <button id="MenuToggleBtn" type="button" class="menu-toggle group inline-flex h-8 w-8 items-center justify-center rounded-lg border border-transparent bg-transparent text-slate-500 transition-all duration-200 hover:bg-slate-100 hover:text-indigo-600" onclick="ToggleMenuCollapse()" aria-label="收起菜单" title="收起菜单">
+                                            <svg class="menu-toggle-icon h-5 w-5 flex-shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M15 19l-7-7 7-7"></path></svg>
+                                        </button>
+                                        <div class="menu-version-meta text-center">
+                                            <asp:Label ID="LabelVer" runat="server" CssClass="menu-version-text block text-[9px] text-slate-500 font-mono transition-colors"></asp:Label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-6 lg:p-8 relative custom-scrollbar">
+                    <div class="mx-auto min-h-full w-full max-w-[1600px]">
+                        <div class="bg-white shadow-sm ring-1 ring-slate-200/50 rounded-2xl min-h-[calc(100vh-8rem)] overflow-hidden">
+                            <asp:ContentPlaceHolder id="Content" runat="server">
+                            </asp:ContentPlaceHolder>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <style type="text/css">
+            html, body, #form1 {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+            main .course-hero-content,
+            main .course-old-hero-content,
+            main .course-create-hero-content,
+            main .course-import-hero-content,
+            main .course-edit-hero-content,
+            main .content-add-hero-content,
+            main .admin-form-hero-content,
+            main .course-show-hero-content,
+            main [class$='-hero-content'],
+            main [class*=' hero-content'],
+            main [class$='__hero-content'],
+            main [class*=' hero__content'] {
+                text-align: left !important;
+            }
+            main .course-title,
+            main .course-old-title,
+            main .course-create-title,
+            main .course-import-title,
+            main .course-edit-title,
+            main .content-add-title,
+            main .admin-form-title,
+            main .course-show-title,
+            main [class$='-hero__title'],
+            main [class*=' hero__title'],
+            main [class$='-hero-title'],
+            main [class*=' hero-title'],
+            main .survey-settings-title,
+            main .survey-settings-toolbar-title,
+            main .typing-admin-title {
+                color: #ffffff !important;
+                text-align: left !important;
+            }
+            main .course-subtitle,
+            main .course-old-subtitle,
+            main .course-create-subtitle,
+            main .course-import-subtitle,
+            main .course-edit-subtitle,
+            main .content-add-subtitle,
+            main .admin-form-subtitle,
+            main [class$='-hero__subtitle'],
+            main [class*=' hero__subtitle'],
+            main [class$='-hero-subtitle'],
+            main [class*=' hero-subtitle'],
+            main .survey-settings-subtitle,
+            main .typing-admin-subtitle {
+                color: rgba(255, 255, 255, 0.88) !important;
+                text-align: left !important;
+            }
+            main .course-eyebrow,
+            main .course-old-eyebrow,
+            main .course-create-eyebrow,
+            main .course-import-eyebrow,
+            main .course-edit-eyebrow,
+            main .content-add-eyebrow,
+            main .admin-form-eyebrow,
+            main [class$='-hero__eyebrow'],
+            main [class*=' hero__eyebrow'],
+            main .survey-settings-toolbar-eyebrow,
+            main .presurvey-toolbar__eyebrow,
+            main .typing-admin-eyebrow {
+                text-align: left !important;
+            }
+            /* Reset Sidebar legacy styles */
+            #MenuDiv ul, #MenuDiv li {
+                list-style: none !important;
+                list-style-type: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #MenuDiv a, #MenuDiv a:hover, #MenuDiv a:visited {
+                text-decoration: none !important;
+            }
+            #MenuDiv a {
+                color: #64748b !important; /* text-slate-500 */
+                position: relative;
+            }
+            #MenuDiv a:hover {
+                color: #1d4ed8 !important;
+            }
+            #MenuDiv a.nav-item {
+                border: 1px solid transparent;
+                justify-content: flex-start;
+            }
+            #MenuDiv .menu-toggle {
+                justify-content: center;
+                background: transparent !important;
+            }
+            #MenuDiv a.nav-item:hover {
+                background: rgba(219, 234, 254, 0.82) !important;
+                border-color: #bfdbfe !important;
+                box-shadow: 0 4px 10px -8px rgba(37, 99, 235, 0.45) !important;
+            }
+            /* Active nav item */
+            #MenuDiv a.nav-item.is-active {
+                background: rgba(219, 234, 254, 0.65) !important;
+                color: #1d4ed8 !important;
+                border-color: transparent !important;
+                box-shadow: none !important;
+            }
+            #MenuDiv a.nav-item.is-active svg {
+                color: #2563eb;
+            }
+            #MenuDiv a.nav-item.is-active::after {
+                content: "";
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 18px;
+                width: 3px;
+                border-radius: 999px;
+                background: #2563eb;
+            }
+            #MenuDiv a.nav-item span {
+                white-space: nowrap;
+            }
+            #MenuDiv.is-collapsed {
+                width: 4.5rem !important;
+            }
+            #MenuDiv.is-collapsed a.nav-item {
+                justify-content: center;
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+            #MenuDiv.is-collapsed a.nav-item span,
+            #MenuDiv.is-collapsed .menu-version-meta,
+            #MenuDiv.is-collapsed .menu-version-text {
+                display: none;
+            }
+            #MenuDiv.is-collapsed .menu-toggle-icon {
+                transform: rotate(180deg);
+            }
+            #MenuDiv.is-collapsed a.nav-item.is-active::after {
+                left: 4px;
+            }
+            #MenuDiv.is-collapsed .menu-version-item {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            #MenuDiv.is-collapsed .menu-version {
+                padding-top: 0;
+                border-top: 0;
+            }
+            #MenuDiv.is-collapsed .menu-footer {
+                justify-content: center;
+            }
+            .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        </style>
+        <script type="text/javascript">
+        (function () {
+            var collapseStorageKey = 'teacher-menu-collapsed';
+
+            // Map each data-section value to page filename prefixes that belong to it
+            var sectionMap = {
+                'start':      ['start'],
+                'course':     ['course'],
+                'gauge':      ['gauge'],
+                'works':      ['works', 'workcheck', 'worklist'],
+                'manage':     ['teachermanage', 'student', 'studentstats', 'signinmanage', 'postclasscheck', 'check', 'seatmanage', 'studentnumedit', 'honorboardmanage', 'skdjshow'],
+                'exam':       ['examlist', 'exam'],
+                'soft':       ['soft', 'softlist'],
+                'typing':     ['typer', 'type', 'typechinese', 'printtyper'],
+                'ai':         ['aiprovider', 'aiconfig'],
+                'info':       ['infomation'],
+                'helper':     ['helper'],
+                'systeminfo': ['systeminfo', 'sysconfig']
+            };
+
+            var path = window.location.pathname.toLowerCase();
+            var file = path.substring(path.lastIndexOf('/') + 1).replace(/\.aspx.*$/, '');
+
+            var menuDiv = document.getElementById('MenuDiv');
+            var menuToggleBtn = document.getElementById('MenuToggleBtn');
+            var items = document.querySelectorAll('#MenuDiv a.nav-item');
+            for (var i = 0; i < items.length; i++) {
+                var section = items[i].getAttribute('data-section');
+                var navText = items[i].textContent.replace(/^\s+|\s+$/g, '');
+                if (navText) {
+                    items[i].setAttribute('title', navText);
+                }
+                if (!section) continue;
+                var prefixes = sectionMap[section] || [section];
+                for (var j = 0; j < prefixes.length; j++) {
+                    if (file === prefixes[j] || file.indexOf(prefixes[j]) === 0) {
+                        items[i].classList.add('is-active');
+                        break;
+                    }
+                }
+            }
+
+            function setMenuCollapsed(collapsed) {
+                if (!menuDiv) return;
+
+                if (collapsed) {
+                    menuDiv.classList.add('is-collapsed');
+                } else {
+                    menuDiv.classList.remove('is-collapsed');
+                }
+
+                if (menuToggleBtn) {
+                    var label = collapsed ? '展开菜单' : '收起菜单';
+                    menuToggleBtn.setAttribute('title', label);
+                    menuToggleBtn.setAttribute('aria-label', label);
+                }
+
+                try {
+                    window.localStorage.setItem(collapseStorageKey, collapsed ? '1' : '0');
+                } catch (error) {
+                }
+            }
+
+            function isMenuCollapsed() {
+                return !!menuDiv && menuDiv.classList.contains('is-collapsed');
+            }
+
+            function readStoredCollapsed() {
+                try {
+                    return window.localStorage.getItem(collapseStorageKey) === '1';
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            window.ToggleMenuCollapse = function () {
+                setMenuCollapsed(!isMenuCollapsed());
+            };
+
+            window.ShowMenu = function () {
+                setMenuCollapsed(false);
+            };
+
+            window.HideMenu = function () {
+                setMenuCollapsed(true);
+            };
+
+            setMenuCollapsed(readStoredCollapsed());
+        })();
+        </script>
+    </form>
+</body>
+</html>

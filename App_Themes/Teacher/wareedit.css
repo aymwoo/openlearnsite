@@ -1,0 +1,218 @@
+.ware-page {
+        --admin-form-page-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+        --admin-form-hero-bg: linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #06b6d4 100%);
+        --admin-form-hero-shadow: 0 22px 45px -28px rgba(29, 78, 216, 0.72);
+        --admin-form-primary-bg: #2563eb;
+        --admin-form-primary-hover: #1d4ed8;
+        --admin-form-primary-shadow: 0 14px 24px -18px rgba(37, 99, 235, 0.85);
+        --admin-form-secondary-border: #bfdbfe;
+        --admin-form-secondary-bg: #eff6ff;
+        --admin-form-secondary-hover: #dbeafe;
+        --admin-form-secondary-fg: #1d4ed8;
+    }
+
+    .ware-page .admin-form-panel {
+        overflow: hidden;
+    }
+
+    .ware-page .main-content {
+        border-radius: 1rem;
+        border: 1px solid #dbe4f0;
+        min-height: 560px;
+        background: #f8fafc;
+    }
+
+    .ware-page .upload-zone {
+        position: sticky;
+        top: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+        .ware-page .main-content {
+            flex-direction: column;
+        }
+
+        .ware-page .sidebar {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .ware-page .upload-zone {
+            position: relative;
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .ware-page .admin-form-grid .admin-form-field,
+        .ware-page .admin-form-grid .admin-form-field-wide {
+            grid-column: span 12;
+        }
+    }
+
+    .content {
+        flex: 1;
+        padding: 20px;
+    }   
+    .main-content {
+        display: flex;
+        background: #f8f9fa;
+        border-radius: 1rem;
+        min-height: 560px;
+        border: 1px solid #dbe4f0;
+        padding: 20px;
+    }
+            
+    .sidebar {
+        width: 300px;
+    }
+    .upload-zone {
+        border: 2px dashed #007bff;
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        background: #b5dbfa;
+        position: sticky;
+        top: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;    
+        width: 240px;
+        height: 380px;
+            
+    }
+            
+    .upload-zone:hover {
+        background: #e3f2fd;
+        border-color: #0056b3;
+    }
+            
+    .upload-zone.dragover {
+        background: #bbdefb;
+        border-color: #1976d2;
+    }
+    /* 进度条样式 */
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-inner {
+    height: 100%;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+    border-radius: 3px;
+}
+
+.upload-progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.upload-status {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 5px;
+    color: #6c757d;
+}
+            
+    /* 列表视图样式 */
+    .file-list.list-view {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+            
+    .file-item.list-view {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 8px;
+        border-bottom: 1px solid #eee;
+    }
+            
+    .file-item.list-view:last-child {
+        border-bottom: none;
+    }
+            
+    .file-item.list-view:hover {
+        background: #f8f9fa;
+    }
+            
+    .file-info.list-view {
+        display: flex;
+        align-items: center;
+        flex: 1;
+    }
+            
+    .file-thumbnail.list-view {
+        width: 60px;
+        height: 60px;
+        margin-right: 10px;
+        border-radius: 5px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+            
+    .file-thumbnail.list-view img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+            
+    .file-details.list-view {
+        flex: 1;
+        text-align: left;
+    }
+            
+    .file-name.list-view {
+        font-weight: bold;
+        margin-bottom: 5px;
+        word-break: break-all;
+    }
+            
+    .file-meta.list-view {
+        color: #6c757d;
+        font-size: 0.85em;
+        
+    }
+    
+              
+    .btn-info {
+        background: #17a2b8;
+        color: white;
+    }  
+            
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        margin-left:10px;
+        border: 0px;
+        cursor:pointer;
+    }
+    .btn-danger:hover{        
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* 添加阴影 */
+    }
+            
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border: 0px;
+        cursor:pointer;
+    }
+    .btn-success:hover {
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* 添加阴影 */
+    }
+            
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }

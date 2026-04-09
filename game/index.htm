@@ -1,0 +1,16 @@
+<!-- 页面中只显示触发元素，无真实链接 -->
+<a id="gameLink" href="javascript:;">进入游戏</a>
+
+<script>
+  // 真实地址拆分拼接，避免直接写全
+  const parts = [
+    'http://192.168.1.65/',
+    'h5游戏',
+    '/index.html'
+  ];
+  // 点击时拼接并跳转
+  document.getElementById('gameLink').addEventListener('click', () => {
+    const realUrl = parts[0] + parts[1] + parts[2];
+    window.location.href = realUrl;
+  });
+</script>

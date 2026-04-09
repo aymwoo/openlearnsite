@@ -1,0 +1,59 @@
+#editor{
+  position: absolute;
+  left: 0px;
+  height: 96vh;
+  right: 0px;
+  background-color: #fef8e4;
+  min-width:600px;
+  
+}
+#divmain{
+  padding: 0px;
+}
+#divright{
+  float: left;
+  color: #333;
+  top:  0px; 
+  padding:10px;
+  width: 602px;
+  overflow-x: hidden; 
+  text-align:left;
+}
+
+#divleft{
+    position: absolute;
+    top:  0px;
+    left: 720px;
+    bottom: 0px;
+    right: 0px;
+}
+#savemsg
+{
+  position: absolute;      
+  bottom: 10px;
+  right: 10px;
+  margin: 10px;
+  color:#ed7d31; 
+  font-size:22px;  
+}
+
+#title
+{
+  text-align:center;  
+}
+#output{
+  padding: 10px;  
+  font-size: 24px;
+  color: #333;
+  text-align:left;
+}
+
+.input{
+	border:1px solid #ccc;
+	width:400px;
+}
+
+#cv{
+    width:600px;
+    height:600px;
+}

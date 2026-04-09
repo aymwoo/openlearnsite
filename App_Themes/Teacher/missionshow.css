@@ -1,0 +1,390 @@
+.mission-show-page {
+            --admin-form-page-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+            --admin-form-hero-bg: linear-gradient(135deg, #0f766e 0%, #0f9b8e 55%, #22c55e 100%);
+            --admin-form-hero-shadow: 0 22px 45px -28px rgba(15, 118, 110, 0.72);
+            --admin-form-primary-bg: #0f766e;
+            --admin-form-primary-hover: #0d675f;
+            --admin-form-primary-shadow: 0 14px 24px -18px rgba(15, 118, 110, 0.85);
+            --admin-form-secondary-border: #99f6e4;
+            --admin-form-secondary-bg: #ecfeff;
+            --admin-form-secondary-hover: #cffafe;
+            --admin-form-secondary-fg: #115e59;
+        }
+
+        .mission-show-content {
+            line-height: 1.8;
+            word-break: break-word;
+        }
+
+        .mission-show-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .mission-show-toggle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .mission-show-toggle-card {
+            border: 1px solid #dbe4f0;
+            border-radius: 1rem;
+            background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+            padding: 1rem 1.1rem;
+        }
+
+        .mission-show-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .mission-show-toggle-copy {
+            min-width: 0;
+        }
+
+        .mission-show-toggle-title {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .mission-show-toggle-desc,
+        .mission-show-toggle-status {
+            font-size: 0.82rem;
+            color: #64748b;
+        }
+
+        .mission-show-toggle-desc {
+            margin-top: 0.3rem;
+            line-height: 1.55;
+        }
+
+        .mission-show-toggle-status {
+            margin-top: 0.5rem;
+        }
+
+        .mission-show-toggle-switch {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            width: 52px;
+            height: 30px;
+            border: none;
+            border-radius: 999px;
+            background: #cbd5e1;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+            padding: 3px;
+            box-sizing: border-box;
+        }
+
+        .mission-show-toggle-switch.is-on {
+            background: #0f766e;
+        }
+
+        .mission-show-toggle-knob {
+            display: block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+            transition: transform 0.2s ease;
+            transform: translateX(0);
+            pointer-events: none;
+        }
+
+        .mission-show-toggle-switch.is-on .mission-show-toggle-knob {
+            transform: translateX(22px);
+        }
+
+        .mission-markdown {
+            color: #334155;
+            line-height: 1.85;
+            font-size: 1.05rem;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .mission-markdown .vditor-reset {
+            padding: 0;
+            font-size: inherit;
+            line-height: inherit;
+            color: inherit;
+        }
+
+        .mission-markdown .vditor-reset pre {
+            position: relative;
+            padding-left: 56px;
+            overflow: auto;
+        }
+
+        .mission-markdown .code-block-wrap {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .mission-markdown .code-line-numbers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 44px;
+            padding: 16px 8px 16px 0;
+            border-right: 1px solid rgba(148, 163, 184, 0.35);
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.04);
+            text-align: right;
+            font-size: 12px;
+            line-height: 1.5;
+            user-select: none;
+            white-space: pre;
+            box-sizing: border-box;
+        }
+
+        .mission-markdown .mermaid-host,
+        .mission-markdown .reveal-host {
+            margin: 1rem 0;
+            border: 1px solid #dbeafe;
+            border-radius: 0.75rem;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            overflow: hidden;
+        }
+
+        .mission-markdown .reveal-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 10px 14px;
+            background: #eff6ff;
+            border-bottom: 1px solid #dbeafe;
+        }
+
+        .mission-markdown .reveal-toolbar-title,
+        .mission-markdown .reveal-page-indicator {
+            font-size: 12px;
+            color: #1e3a8a;
+        }
+
+        .mission-markdown .reveal-toolbar-title {
+            font-weight: 700;
+        }
+
+        .mission-markdown .reveal-toolbar-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        .mission-markdown .reveal-theme-select,
+        .mission-markdown .reveal-fullscreen-btn,
+        .mission-markdown .reveal-nav-btn {
+            min-height: 32px;
+            padding: 0 12px;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .mission-markdown .reveal-stage {
+            position: relative;
+            width: 100%;
+            max-width: min(100%, 1280px);
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            min-height: 360px;
+            max-height: 78vh;
+            background: var(--r-background-color, #0f172a);
+        }
+
+        .mission-markdown .reveal {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--r-background-color, #0f172a);
+            color: var(--r-main-color, #e2e8f0);
+            --r-main-font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            --r-heading-font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            --r-code-font: "Cascadia Mono", "Consolas", monospace;
+            --r-main-font-size: 32px;
+        }
+
+        .mission-markdown .reveal .slides {
+            text-align: left;
+        }
+
+        .mission-markdown .reveal .slides section {
+            box-sizing: border-box;
+            padding: 28px 40px;
+        }
+
+        .mission-markdown .reveal pre {
+            font-size: 0.72em;
+            padding: 0.7em 0.9em;
+            border-radius: 0.4em;
+            background: rgba(15, 23, 42, 0.35);
+            color: inherit;
+        }
+
+        .mission-markdown .render-note {
+            margin-top: 0.75rem;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .mission-show-page .mission-markdown {
+            color: #334155;
+            line-height: 1.85;
+            font-size: 1.05rem;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .mission-show-page .mission-markdown .vditor-reset {
+            padding: 0;
+            font-size: inherit;
+            line-height: inherit;
+            color: inherit;
+        }
+
+        .mission-show-page .mission-markdown .vditor-reset pre {
+            position: relative;
+            padding-left: 56px;
+            overflow: auto;
+        }
+
+        .mission-show-page .mission-markdown .code-block-wrap {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .mission-show-page .mission-markdown .code-line-numbers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 44px;
+            padding: 16px 8px 16px 0;
+            border-right: 1px solid rgba(148, 163, 184, 0.35);
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.04);
+            text-align: right;
+            font-size: 12px;
+            line-height: 1.5;
+            user-select: none;
+            white-space: pre;
+            box-sizing: border-box;
+        }
+
+        .mission-show-page .mission-markdown .mermaid-host,
+        .mission-show-page .mission-markdown .reveal-host {
+            margin: 1rem 0;
+            border: 1px solid #dbeafe;
+            border-radius: 0.75rem;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            overflow: hidden;
+        }
+
+        .mission-show-page .mission-markdown .reveal-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 10px 14px;
+            background: #eff6ff;
+            border-bottom: 1px solid #dbeafe;
+        }
+
+        .mission-show-page .mission-markdown .reveal-toolbar-title,
+        .mission-show-page .mission-markdown .reveal-page-indicator {
+            font-size: 12px;
+            color: #1e3a8a;
+        }
+
+        .mission-show-page .mission-markdown .reveal-toolbar-title {
+            font-weight: 700;
+        }
+
+        .mission-show-page .mission-markdown .reveal-toolbar-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        .mission-show-page .mission-markdown .reveal-theme-select,
+        .mission-show-page .mission-markdown .reveal-fullscreen-btn,
+        .mission-show-page .mission-markdown .reveal-nav-btn {
+            min-height: 32px;
+            padding: 0 12px;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .mission-show-page .mission-markdown .reveal-stage {
+            position: relative;
+            width: 100%;
+            max-width: min(100%, 1280px);
+            margin: 0 auto;
+            aspect-ratio: 16 / 9;
+            min-height: 360px;
+            max-height: 78vh;
+            background: var(--r-background-color, #0f172a);
+        }
+
+        .mission-show-page .mission-markdown .reveal {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--r-background-color, #0f172a);
+            color: var(--r-main-color, #e2e8f0);
+            --r-main-font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            --r-heading-font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            --r-code-font: "Cascadia Mono", "Consolas", monospace;
+            --r-main-font-size: 32px;
+        }
+
+        .mission-show-page .mission-markdown .reveal .slides {
+            text-align: left;
+        }
+
+        .mission-show-page .mission-markdown .reveal .slides section {
+            box-sizing: border-box;
+            padding: 28px 40px;
+        }
+
+        .mission-show-page .mission-markdown .reveal pre {
+            font-size: 0.72em;
+            padding: 0.7em 0.9em;
+            border-radius: 0.4em;
+            background: rgba(15, 23, 42, 0.35);
+            color: inherit;
+        }
+
+        .mission-show-page .mission-markdown .render-note {
+            margin-top: 0.75rem;
+            font-size: 12px;
+            color: #64748b;
+        }

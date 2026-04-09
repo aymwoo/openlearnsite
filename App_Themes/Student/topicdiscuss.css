@@ -1,0 +1,15 @@
+.topictext { user-select: none; }
+	.topictext:hover { background-color:#FFF8EB; }
+	.topictext img {
+		max-height:200px; height:auto;
+		-webkit-user-drag: none;
+		cursor:pointer;
+		border-radius: 0.5rem;
+	}
+	.imgstu {
+	    width:28px; height:28px; border-radius:50%;
+	    opacity:0.85; object-fit:cover;
+	    border: 2px solid #e0e7ff;
+	    transition: all 0.2s;
+	}
+	.imgstu:hover { opacity:1; transform: scale(1.15); border-color: #4f46e5; }

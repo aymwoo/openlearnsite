@@ -1,0 +1,82 @@
+#editor{
+  top:  8px;
+  left: 0px;
+  height:320px;
+  background-color: #fef8e4;
+  max-width:980px;
+}
+
+.btn{
+  border: 1px solid #e0dbcb; 
+  text-decoration: none;
+  background-color: #f1ebd4;
+   width:80px;
+}
+
+#savemsg
+{  
+  bottom: 60px;
+  margin: 10px;
+  z-index: 999;
+  color:#ed7d31; 
+  font-size:32px; 
+  width: 100%;
+  text-align:center;  
+}
+#result{ 
+  top:  0px;
+  left: 600px;
+  height:160px;
+  min-width:550px;  
+  background-color: #666;
+  color:#ccc;
+  max-width:980px;
+}
+#output{ 
+    text-align:left;
+    padding:10px;
+}
+
+.input
+{
+	font-size:14px;
+    height:20px;
+	border:1px solid #ccc;
+}
+.input:focus{
+    height:20px;
+	outline: none;
+	border:1px solid #ccc;
+}
+#centerbar{
+  position: absolute;
+  margin: 10px;
+  z-index: 999;
+  top: 250px;  
+  width: 800px;
+  text-align:right;
+}
+
+.problem-editor-switch {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:8px 0;
+}
+
+.problem-editor-switch select {
+  min-height:36px;
+  padding:0 28px 0 10px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  background:#fff;
+  color:#0f172a;
+}
+
+#problem-wangeditor-wrap,
+#problem-vditor-wrap,
+#mcontent,
+.ke-container {
+  max-width:980px;
+  width:980px !important;
+}

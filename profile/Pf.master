@@ -1,0 +1,20 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Pf.master.cs" Inherits="Student_Profile_Pf" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <meta charset="UTF-8" />
+    <title>信息技术学习网站</title>   
+    <link href="../App_Themes/Student/StyleSheet.css" rel="stylesheet" type="text/css" />    
+    
+    <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">
+</head>
+<body style="margin:0;padding:0;">
+    <form id="form1" runat="server">
+      <asp:ContentPlaceHolder ID="Cstu" runat="server">
+      </asp:ContentPlaceHolder>
+    </form>
+	
+</body>
+</html>

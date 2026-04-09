@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能试卷生成系统 - 专业预览版</title>
+    <link href="bootstrap.min.css" rel="stylesheet">   
+    <link href="summernote-bs5.min.css" rel="stylesheet">  
+    <link rel="stylesheet" href="github.min.css">   
+    <script src="jquery-3.6.0.min.js"></script>    
+    <script src="bootstrap.bundle.min.js"></script>   
+    <script src="summernote-bs5.min.js"></script>   
+    <script src="summernote-zh-CN.min.js"></script>   
+    <script src="highlight.min.js"></script>    
+    <link href="paper.css" rel="stylesheet">
+
+    <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 编辑区域 -->
+        <div class="panel edit-area" id="editArea">
+        </div>
+        
+        <!-- 右侧悬浮按钮栏 -->
+        <div class="floating-action-bar">
+            <button class="floating-btn floating-btn-preview-modal px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" id="previewModalBtn" title="模态预览">
+                <span class="btn-icon">👁</span>
+                <span class="btn-text">模态预览</span>
+            </button>
+            <button class="floating-btn floating-btn-preview-page px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" id="previewPageBtn" title="独立预览页面">
+                <span class="btn-icon">📄</span>
+                <span class="btn-text">独立预览</span>
+            </button>
+            <button class="floating-btn floating-btn-save px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" id="saveExamBtn" title="保存为JSON文件">
+                <span class="btn-icon">💾</span>
+                <span class="btn-text">保存</span>
+            </button>
+            <button class="floating-btn floating-btn-import px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" id="importBtn" title="导入JSON文件">
+                <span class="btn-icon">📁</span>
+                <span class="btn-text">导入</span>
+            </button>
+            <button class="floating-btn floating-btn-clear px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" id="clearExamBtn" title="清空所有试题">
+                <span class="btn-icon">🗑️</span>
+                <span class="btn-text">清空</span>
+            </button>
+            <a href="#" class="floating-btn floating-btn-single-editor" title="返回学案">
+                <span class="btn-icon">📝</span>
+                <span class="btn-text">返回</span>
+            </a>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        </div>
+    </div>
+    
+    <!-- 预览模态框 -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-content">
+            <span class="close">&times;</span>
+            <div id="previewArea">
+                <!-- 预览内容将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入外部JavaScript文件 -->
+     <script type="javascript">
+        const mycid = 1;
+        const myeid = 1;
+     </script>
+    <script src="exam.js"></script>
+</body>
+</html>

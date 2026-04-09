@@ -1,0 +1,53 @@
+.html-add-page {
+            --content-add-page-bg: linear-gradient(180deg, #f8fafc 0%, #fff7ed 100%);
+            --content-add-hero-bg: linear-gradient(135deg, #9a3412 0%, #ea580c 55%, #fb923c 100%);
+            --content-add-hero-shadow: 0 22px 45px -28px rgba(234, 88, 12, 0.7);
+            --content-add-primary-bg: #ea580c;
+            --content-add-primary-hover: #c2410c;
+            --content-add-primary-shadow: 0 14px 24px -18px rgba(234, 88, 12, 0.8);
+            --content-add-secondary-bg: #fff7ed;
+            --content-add-secondary-fg: #9a3412;
+            --content-add-secondary-border: #fdba74;
+            --content-add-secondary-hover: #ffedd5;
+            --content-add-focus: #ea580c;
+            --content-add-focus-ring: rgba(234, 88, 12, 0.14);
+        }
+
+        .html-add-editor-stage textarea {
+            width: 830px;
+            height: 450px;
+        }
+
+        .html-add-editor-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .html-add-editor-select {
+            min-height: 38px;
+            padding: 0 32px 0 12px;
+            border: 1px solid #fdba74;
+            border-radius: .75rem;
+            background: #fff7ed;
+            color: #9a3412;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364738b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .html-add-editor-stage #wangeditor-wrap,
+        .html-add-editor-stage #vditor-wrap,
+        .html-add-editor-stage textarea,
+        .html-add-editor-stage .ke-container {
+            width: 100% !important;
+            max-width: 100%;
+        }

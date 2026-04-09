@@ -1,0 +1,39 @@
+/* File type badge colors */
+    .ft-badge {
+        display: inline-block; padding: 2px 8px; border-radius: 6px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+        text-transform: uppercase; font-family: monospace;
+    }
+    .ft-zip  { background:#fef3c7; color:#92400e; }
+    .ft-exe  { background:#fee2e2; color:#991b1b; }
+    .ft-pdf  { background:#fde8d8; color:#c2410c; }
+    .ft-doc,.ft-docx { background:#dbeafe; color:#1e40af; }
+    .ft-xls,.ft-xlsx { background:#dcfce7; color:#166534; }
+    .ft-ppt,.ft-pptx { background:#fce7f3; color:#9d174d; }
+    .ft-mp4,.ft-avi,.ft-mov { background:#ede9fe; color:#5b21b6; }
+    .ft-mp3,.ft-wav { background:#d1fae5; color:#065f46; }
+    .ft-png,.ft-jpg,.ft-gif { background:#e0f2fe; color:#0c4a6e; }
+    .ft-default { background:#f1f5f9; color:#475569; }
+
+    /* Category sidebar button */
+    .cat-btn {
+        display: flex; align-items: center; gap: 8px; width: 100%;
+        padding: 8px 12px; border-radius: 10px; text-align: left;
+        font-size: 14px; font-weight: 500; color: #3730a3;
+        background: transparent; transition: all 0.18s ease;
+        text-decoration: none !important;
+        border-bottom: 1px solid rgba(99,102,241,0.08);
+    }
+    .cat-btn:hover, .cat-btn:visited { color: #3730a3 !important; }
+    .cat-btn:hover { background: rgba(99,102,241,0.08); color: #312e81 !important; }
+    .cat-btn-icon { color: #6366f1; flex-shrink: 0; }
+
+    /* GridView row hover override from code-behind inline styles */
+    #GVSoftWrapper table tr:hover td { background-color: #f0f4ff !important; }
+
+    /* Download count badge */
+    .dl-count {
+        display: inline-flex; align-items: center; gap: 3px;
+        background: #ecfdf5; color: #065f46;
+        padding: 2px 8px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    }

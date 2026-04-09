@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>试卷预览 - 智能试卷生成系统</title>
+    
+    <!-- Highlight.js 代码高亮样式 -->
+    <link rel="stylesheet" href="github.min.css">
+    
+    <!-- Highlight.js 代码高亮库 -->
+    <script src="highlight.min.js"></script>
+    
+    <!-- 预览页面样式 -->
+    <link href="preview.css" rel="stylesheet">
+
+    <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="preview-container">
+        <!-- 右侧悬浮按钮 -->
+        <div class="floating-buttons">
+            <button class="floating-btn btn-back px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" id="backBtn" title="返回编辑">
+                <span class="btn-icon">←</span>
+                <span class="btn-text">返回</span>
+            </button>
+            <button class="floating-btn btn-submit px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" id="submitBtn" title="提交试卷">
+                <span class="btn-icon">✓</span>
+                <span class="btn-text">提交</span>
+            </button>
+        </div>
+
+        <!-- 试卷内容区域 -->
+            <div class="exam-paper" id="examPaper">
+                <!-- 试卷头部信息 -->
+                <div class="exam-info">
+                    <h1 class="exam-title" id="examTitle">试卷标题</h1>
+                    <p class="exam-desc" id="examDescription">试卷描述</p>
+                    <div class="student-info-simple">
+                        <span class="student-name" id="studentName">姓名：</span>
+                        <span class="student-id" id="studentId">学号：</span>
+                    </div>
+                </div>
+
+                <!-- 题目列表 -->
+                <div class="questions-container" id="questionsContainer">
+                    <!-- 题目将在这里动态生成 -->
+                </div>
+
+                <!-- 空状态提示 -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <p>暂无题目，请先添加题目</p>
+                </div>
+            </div>
+    </div>
+
+    <!-- 预览页面脚本 -->
+    <script src="previewold.js"></script>
+</body>
+</html>

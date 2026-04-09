@@ -1,0 +1,66 @@
+name: Release Build and Publish
+
+on:
+  workflow_run:
+    workflows: ["Compile and Test"]
+    types: [completed]
+    branches: [master, main]
+  workflow_dispatch:
+    branches: [master, main]
+    inputs:
+      release_type:
+        description: 'Release Type (latest / alpha)'
+        required: true
+        default: 'latest'
+        type: choice
+        options:
+          - latest
+          - alpha
+
+permissions:
+  contents: write
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.release_type == 'latest' || github.event.inputs.release_type == 'alpha' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Make scripts executable
+        run: chmod +x run_tests.sh build_release.sh
+
+      - name: Run Unit Tests
+        run: ./run_tests.sh --no-e2e
+
+      - name: Build and Precompile Release
+        run: ./build_release.sh
+
+      - name: Zip Precompiled Release
+        run: |
+          cd publish_output
+          zip -r ../learnsite-${{ github.event.inputs.release_type }}.zip .
+
+      - name: Get Current Date and Time
+        id: datetime
+        run: echo "datetime=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.release_type }}-${{ steps.datetime.outputs.datetime }}
+          name: LearnSite ${{ github.event.inputs.release_type }}-${{ steps.datetime.outputs.datetime }}
+          files: learnsite-${{ github.event.inputs.release_type }}.zip
+          draft: false
+          prerelease: ${{ github.event.inputs.release_type == 'alpha' }}

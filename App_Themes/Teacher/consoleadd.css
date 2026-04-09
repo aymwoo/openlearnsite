@@ -1,0 +1,20 @@
+.console-add-page {
+            --content-add-page-bg: linear-gradient(180deg, #f8fafc 0%, #f0f4ff 100%);
+            --content-add-hero-bg: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #7c3aed 100%);
+            --content-add-hero-shadow: 0 22px 45px -28px rgba(109, 40, 217, 0.75);
+            --content-add-primary-bg: #7c3aed;
+            --content-add-primary-hover: #6d28d9;
+            --content-add-primary-shadow: 0 14px 24px -18px rgba(124, 58, 237, 0.85);
+        }
+        .console-add-editor-stage textarea {
+            width: 100%;
+            height: 500px;
+        }
+
+        .console-add-editor-stage #wangeditor-wrap,
+        .console-add-editor-stage #vditor-wrap,
+        .console-add-editor-stage textarea,
+        .console-add-editor-stage .ke-container {
+            width: 100% !important;
+            max-width: 100%;
+        }

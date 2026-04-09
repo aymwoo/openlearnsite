@@ -1,0 +1,137 @@
+.pixel-add-page {
+            --content-add-page-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+            --content-add-hero-bg: linear-gradient(135deg, #1e293b 0%, #3730a3 55%, #4f46e5 100%);
+            --content-add-hero-shadow: 0 22px 45px -28px rgba(79, 70, 229, 0.72);
+            --content-add-primary-bg: #4f46e5;
+            --content-add-primary-hover: #4338ca;
+            --content-add-primary-shadow: 0 14px 24px -18px rgba(79, 70, 229, 0.85);
+        }
+
+        .pixel-add-editor-stage textarea {
+            width: 930px;
+            height: 450px;
+        }
+
+        .pixel-add-editor-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .pixel-add-editor-select {
+            min-height: 38px;
+            padding: 0 32px 0 12px;
+            border: 1px solid #c7d2fe;
+            border-radius: .75rem;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364738b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .pixel-add-editor-stage #wangeditor-wrap,
+        .pixel-add-editor-stage #vditor-wrap,
+        .pixel-add-editor-stage textarea,
+        .pixel-add-editor-stage .ke-container {
+            width: 100% !important;
+            max-width: 100%;
+        }
+
+        .pixel-add-device-list {
+            padding: 0.9rem 1rem;
+            border: 1px solid #dbeafe;
+            border-radius: 0.9rem;
+            background: #f8fbff;
+            color: #334155;
+        }
+
+        .pixel-add-device-list table,
+        .pixel-add-device-list tbody,
+        .pixel-add-device-list tr,
+        .pixel-add-device-list td {
+            display: block;
+        }
+
+        .pixel-add-device-list input {
+            margin-right: 0.35rem;
+        }
+
+        .pixel-add-device-list label {
+            margin-right: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 0.45rem;
+        }
+
+        .pixel-add-type-note {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 1rem 1.1rem;
+            border: 1px solid #dbeafe;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+        }
+
+        .pixel-add-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 2rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .pixel-add-chip img {
+            width: 1.15rem;
+            height: 1.15rem;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .pixel-add-type-copy {
+            flex: 1;
+            min-width: 220px;
+            color: #334155;
+            line-height: 1.75;
+        }
+
+        .pixel-add-type-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: .85rem;
+            margin-top: 1rem;
+        }
+
+        .pixel-add-type-item {
+            padding: .9rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.75;
+        }
+
+        .pixel-add-type-item strong {
+            display: block;
+            margin-bottom: .35rem;
+            color: #0f172a;
+        }
+
+        .pixel-add-route {
+            color: #2563eb;
+            font-weight: 700;
+            word-break: break-all;
+        }

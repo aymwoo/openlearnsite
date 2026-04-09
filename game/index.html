@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏导航</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        h1 {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards;
+            animation-delay: 0.3s;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (min-width: 768px) {
+            .game-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .game-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        .game-link {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #e0e0e0;
+            cursor: pointer;
+        }
+        .game-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .game-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .game-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .access-denied {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            color: #ff6b6b;
+        }
+        .access-denied h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="access-denied" class="access-denied">
+        <h2>访问受限</h2>
+        <p>请从正确的页面访问游戏！</p>
+        <p><a href="../student/default.aspx" style="color: #4ecdc4;">点击这里返回首页</a></p>
+    </div>
+    
+    <div id="game-content" style="display: none;">
+        <h1>网页游戏导航</h1>
+        <div class="game-grid">
+            <a href="3D棒球游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">3D棒球游戏</div>
+            </a>
+            <a href="3D滑翔机/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">3D滑翔机</div>
+            </a>
+            <a href="10s点击/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">10s点击</div>
+            </a>
+            <a href="color/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">color</div>
+            </a>
+            <a href="fly太空/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">fly太空</div>
+            </a>
+            <a href="奔月游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">奔月游戏</div>
+            </a>
+            <a href="捕鱼达人游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">捕鱼达人游戏</div>
+            </a>
+            <a href="捕鱼游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">捕鱼游戏</div>
+            </a>
+            <a href="步步惊心/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">步步惊心</div>
+            </a>
+            <a href="猜数字小游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">猜数字小游戏</div>
+            </a>
+            <a href="超级玛丽/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">超级玛丽</div>
+            </a>
+            <a href="城堡防御游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">城堡防御游戏</div>
+            </a>
+            <a href="抽打蛇精猫/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">抽打蛇精猫</div>
+            </a>
+            <a href="戳泡泡/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">戳泡泡</div>
+            </a>
+            <a href="打飞机/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">打飞机</div>
+            </a>
+            <a href="打飞机游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">打飞机游戏</div>
+            </a>
+            <a href="打砖块游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">打砖块游戏</div>
+            </a>
+            <a href="打字游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">打字游戏</div>
+            </a>
+            <a href="大力射手/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">大力射手</div>
+            </a>
+            <a href="大鱼吃小鱼/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">大鱼吃小鱼</div>
+            </a>
+            <a href="大战冰桶/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">大战冰桶</div>
+            </a>
+            <a href="单机版雷霆/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">单机版雷霆</div>
+            </a>
+            <a href="电灯泡游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">电灯泡游戏</div>
+            </a>
+            <a href="钓鱼/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">钓鱼</div>
+            </a>
+            <a href="钓鱼游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">钓鱼游戏</div>
+            </a>
+            <a href="斗地主/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">斗地主</div>
+            </a>
+            <a href="堆木头游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">堆木头游戏</div>
+            </a>
+            <a href="堆箱子/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">堆箱子</div>
+            </a>
+            <a href="俄罗斯方块/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">俄罗斯方块</div>
+            </a>
+            <a href="翻牌对对碰/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">翻牌对对碰</div>
+            </a>
+            <a href="方块跳跃/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">方块跳跃</div>
+            </a>
+            <a href="飞机大战/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">飞机大战</div>
+            </a>
+            <a href="飞机大战游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">飞机大战游戏</div>
+            </a>
+            <a href="飞机发射/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">飞机发射</div>
+            </a>
+            <a href="弓游戏霍比特人/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">弓游戏霍比特人</div>
+            </a>
+            <a href="功夫猫/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">功夫猫</div>
+            </a>
+            <a href="过关小游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">过关小游戏</div>
+            </a>
+            <a href="黄金矿工改版/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">黄金矿工改版</div>
+            </a>
+            <a href="激光防线/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">激光防线</div>
+            </a>
+            <a href="激射神经猫/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">激射神经猫</div>
+            </a>
+            <a href="吉普车/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">吉普车</div>
+            </a>
+            <a href="记忆大师/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">记忆大师</div>
+            </a>
+            <a href="捡钱游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">捡钱游戏</div>
+            </a>
+            <a href="僵尸游戏《幸存的士兵》/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">僵尸游戏《幸存的士兵》</div>
+            </a>
+            <a href="僵尸之夜/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">僵尸之夜</div>
+            </a>
+            <a href="降温摇可乐/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">降温摇可乐</div>
+            </a>
+            <a href="交互式3D魔方小游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">交互式3D魔方小游戏</div>
+            </a>
+            <a href="街区赛道挑战赛游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">街区赛道挑战赛游戏</div>
+            </a>
+            <a href="卡通连连看/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">卡通连连看</div>
+            </a>
+            <a href="开发的石头剪刀布/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">开发的石头剪刀布</div>
+            </a>
+            <a href="石头剪刀布/index.html" target="_blank" class="game-link">
+                <div class="game-icon">✊✋✌️</div>
+                <div class="game-name">石头剪刀布</div>
+            </a>
+            <a href="开心消消乐/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">开心消消乐</div>
+            </a>
+            <a href="连连看/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">连连看</div>
+            </a>
+            <a href="连圈圈大作战/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">连圈圈大作战</div>
+            </a>
+            <a href="龙丢石头/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">龙丢石头</div>
+            </a>
+            <a href="罗斯魔影/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">罗斯魔影</div>
+            </a>
+            <a href="密室逃离/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">密室逃离</div>
+            </a>
+            <a href="密室逃脱/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">密室逃脱</div>
+            </a>
+            <a href="命悬一线/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">命悬一线</div>
+            </a>
+            <a href="跑动的小人游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">跑动的小人游戏</div>
+            </a>
+            <a href="跑酷游戏迷失之岛/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">跑酷游戏迷失之岛</div>
+            </a>
+            <a href="拼图/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">拼图</div>
+            </a>
+            <a href="拼图游戏实现/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">拼图游戏实现</div>
+            </a>
+            <a href="签名/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">签名</div>
+            </a>
+            <a href="抢钱大战/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">抢钱大战</div>
+            </a>
+            <a href="切水果游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">切水果游戏</div>
+            </a>
+            <a href="全民飞机大战游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">全民飞机大战游戏</div>
+            </a>
+            <a href="赛车漂移源码/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">赛车漂移源码</div>
+            </a>
+            <a href="赛车游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">赛车游戏</div>
+            </a>
+            <a href="三消游戏源码/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">三消游戏源码</div>
+            </a>
+            <a href="神经猫/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">神经猫</div>
+            </a>
+            <a href="神手/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">神手</div>
+            </a>
+            <a href="实现俄罗斯方块/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">实现俄罗斯方块</div>
+            </a>
+            <a href="实现压扁小鸟/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">实现压扁小鸟</div>
+            </a>
+            <a href="水果忍者/source/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">水果忍者</div>
+            </a>
+            <a href="太空袭击战/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">太空袭击战</div>
+            </a>
+            <a href="坦克大战/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">坦克大战</div>
+            </a>
+            <a href="踢足球/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">踢足球</div>
+            </a>
+            <a href="挑战冰桶小游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">挑战冰桶小游戏</div>
+            </a>
+            <a href="挑战火眼金睛/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">挑战火眼金睛</div>
+            </a>
+            <a href="头像裁剪/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">头像裁剪</div>
+            </a>
+            <a href="推箱子小游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">推箱子小游戏</div>
+            </a>
+            <a href="网页版2048/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">网页版2048</div>
+            </a>
+            <a href="网页版打地鼠源码/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">网页版打地鼠源码</div>
+            </a>
+            <a href="网页版弹球/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">网页版弹球</div>
+            </a>
+            <a href="网页版贪吃蛇/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">网页版贪吃蛇</div>
+            </a>
+            <a href="象棋/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">象棋</div>
+            </a>
+            <a href="五子棋游戏/Wuziqi/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">五子棋游戏</div>
+            </a>
+            <a href="五子棋/index.html" target="_blank" class="game-link">
+                <div class="game-icon">♟️</div>
+                <div class="game-name">五子棋</div>
+            </a>
+            <a href="消除游戏魔法石/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">消除游戏魔法石</div>
+            </a>
+            <a href="小鸟飞飞飞/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">小鸟飞飞飞</div>
+            </a>
+            <a href="小苹果游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">小苹果游戏</div>
+            </a>
+            <a href="小青蛙过河/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">小青蛙过河</div>
+            </a>
+            <a href="星球大战/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">星球大战</div>
+            </a>
+            <a href="熊出没/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">熊出没</div>
+            </a>
+            <a href="夜空欣赏烟花/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">夜空欣赏烟花</div>
+            </a>
+            <a href="勇闯马路/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">勇闯马路</div>
+            </a>
+            <a href="勇士斗恶龙/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">勇士斗恶龙</div>
+            </a>
+            <a href="游戏抵御海盗入侵/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">游戏抵御海盗入侵</div>
+            </a>
+            <a href="炸奇遇记/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">炸奇遇记</div>
+            </a>
+            <a href="战斗飞机/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">战斗飞机</div>
+            </a>
+            <a href="植物大战僵尸/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">植物大战僵尸</div>
+            </a>
+            <a href="纸飞机游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">纸飞机游戏</div>
+            </a>
+            <a href="中世纪的国防/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">中世纪的国防</div>
+            </a>
+            <a href="转盘/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">转盘</div>
+            </a>
+            <a href="中国象棋游戏/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">中国象棋游戏</div>
+            </a>
+            <a href="chess/index.html" target="_blank" class="game-link">
+                <div class="game-icon">♟️</div>
+                <div class="game-name">中国象棋(单人)</div>
+            </a>
+            <a href="chess/index-lan.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">中国象棋(局域网对战)</div>
+            </a>
+            <a href="桌球游戏/q/index.html" target="_blank" class="game-link">
+                <div class="game-icon">🎮</div>
+                <div class="game-name">桌球游戏</div>
+            </a>
+            <a href="minesweeper/index.html" target="_blank" class="game-link">
+                <div class="game-icon">💣</div>
+                <div class="game-name">扫雷(多人对战)</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var token = urlParams.get('token');
+            var referer = document.referrer;
+            
+            var validReferer = referer.indexOf('downfile.aspx') !== -1 || 
+                               referer.indexOf('student/') !== -1 ||
+                               referer.indexOf('LinkProxy.ashx') !== -1 ||
+                               referer.indexOf('GameProxy.aspx') !== -1 ||
+                               window.self !== window.top;
+            
+            if (token) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '../api/LinkProxy.ashx?action=verify', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            try {
+                                var result = JSON.parse(xhr.responseText);
+                                if (result.code === 1) {
+                                    showContent();
+                                } else {
+                                    showDenied();
+                                }
+                            } catch (e) {
+                                showDenied();
+                            }
+                        } else {
+                            showDenied();
+                        }
+                    }
+                };
+                xhr.send('token=' + encodeURIComponent(token));
+            } else if (validReferer) {
+                showContent();
+            } else {
+                showDenied();
+            }
+            
+            function showContent() {
+                document.getElementById('game-content').style.display = 'block';
+                document.getElementById('access-denied').style.display = 'none';
+            }
+            
+            function showDenied() {
+                document.getElementById('game-content').style.display = 'none';
+                document.getElementById('access-denied').style.display = 'block';
+            }
+            
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                alert('此页面禁止右键操作！');
+                return false;
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+                    e.preventDefault();
+                    alert('此页面禁止查看源代码！');
+                    return false;
+                }
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    alert('此页面禁止使用开发者工具！');
+                    return false;
+                }
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+                    e.preventDefault();
+                    alert('此页面禁止使用开发者工具！');
+                    return false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

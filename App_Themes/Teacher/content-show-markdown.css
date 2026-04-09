@@ -1,0 +1,283 @@
+.content-show-markdown {
+    color: #334155;
+    line-height: 1.85;
+    font-size: 1.05rem;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.content-show-markdown .vditor-reset {
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
+.content-show-markdown :is(h1, h2, h3, h4, h5, h6) {
+    margin: 1.25em 0 0.55em;
+    color: #0f172a;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.content-show-markdown p,
+.content-show-markdown ul,
+.content-show-markdown ol,
+.content-show-markdown blockquote {
+    margin: 0.8rem 0;
+}
+
+.content-show-markdown ul,
+.content-show-markdown ol {
+    padding-left: 1.5rem;
+}
+
+.content-show-markdown li + li {
+    margin-top: 0.28rem;
+}
+
+.content-show-markdown a {
+    color: #2563eb;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+}
+
+.content-show-markdown img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+}
+
+.content-show-markdown table {
+    width: 100%;
+    margin: 1rem 0;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 0.85rem;
+    border: 1px solid #dbe4f0;
+    background: #ffffff;
+    box-shadow: 0 12px 24px -24px rgba(15, 23, 42, 0.45);
+}
+
+.content-show-markdown th,
+.content-show-markdown td {
+    padding: 0.72rem 0.85rem;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    vertical-align: top;
+}
+
+.content-show-markdown th {
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.content-show-markdown tr:last-child td {
+    border-bottom: none;
+}
+
+.content-show-markdown blockquote {
+    margin-left: 0;
+    padding: 0.9rem 1rem;
+    border-left: 4px solid #93c5fd;
+    border-radius: 0 0.85rem 0.85rem 0;
+    background: linear-gradient(180deg, #eff6ff 0%, #f8fbff 100%);
+    color: #334155;
+}
+
+.content-show-markdown hr {
+    border: none;
+    border-top: 1px solid #dbe4f0;
+    margin: 1.4rem 0;
+}
+
+.content-show-markdown :not(pre) > code {
+    padding: 0.12rem 0.38rem;
+    border-radius: 0.38rem;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.92em;
+}
+
+.content-show-markdown pre {
+    position: relative;
+    margin: 1rem 0;
+    overflow: auto;
+    border-radius: 0.9rem;
+    background: #0f172a;
+    box-shadow: 0 18px 36px -30px rgba(15, 23, 42, 0.88);
+}
+
+.content-show-markdown pre code {
+    display: block;
+    min-width: 100%;
+    padding: 1rem 1.2rem;
+    background: transparent;
+    color: #e2e8f0;
+}
+
+.content-show-markdown .code-block-wrap {
+    position: relative;
+    margin: 1rem 0;
+}
+
+.content-show-markdown .code-block-wrap pre {
+    margin: 0;
+    padding-left: 56px;
+}
+
+.content-show-markdown .code-line-numbers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 44px;
+    padding: 16px 8px 16px 0;
+    border-right: 1px solid rgba(148, 163, 184, 0.35);
+    color: #94a3b8;
+    background: rgba(15, 23, 42, 0.04);
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.5;
+    user-select: none;
+    white-space: pre;
+    box-sizing: border-box;
+}
+
+.content-show-markdown .mermaid-host,
+.content-show-markdown .reveal-host {
+    margin: 1rem 0;
+    border: 1px solid #dbeafe;
+    border-radius: 0.9rem;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    overflow: hidden;
+}
+
+.content-show-markdown .mermaid-host {
+    padding: 1rem;
+}
+
+.content-show-markdown .mermaid {
+    overflow-x: auto;
+}
+
+.content-show-markdown .mermaid-error-card {
+    padding: 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 0.85rem;
+    background: linear-gradient(180deg, #fff7f7 0%, #fff1f2 100%);
+    color: #7f1d1d;
+}
+
+.content-show-markdown .mermaid-error-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #b91c1c;
+}
+
+.content-show-markdown .mermaid-error-message {
+    margin-top: 0.45rem;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: #7f1d1d;
+}
+
+.content-show-markdown .mermaid-error-details {
+    margin-top: 0.85rem;
+}
+
+.content-show-markdown .mermaid-error-details summary {
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #991b1b;
+}
+
+.content-show-markdown .mermaid-error-details pre {
+    margin-top: 0.75rem;
+}
+
+.content-show-markdown .reveal-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #eff6ff;
+    border-bottom: 1px solid #dbeafe;
+}
+
+.content-show-markdown .reveal-toolbar-title,
+.content-show-markdown .reveal-page-indicator {
+    font-size: 12px;
+    color: #1e3a8a;
+}
+
+.content-show-markdown .reveal-toolbar-title {
+    font-weight: 700;
+}
+
+.content-show-markdown .reveal-toolbar-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+
+.content-show-markdown .reveal-theme-select,
+.content-show-markdown .reveal-fullscreen-btn,
+.content-show-markdown .reveal-nav-btn {
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.content-show-markdown .reveal-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-show-markdown .reveal-stage {
+    position: relative;
+    width: 100%;
+    max-width: min(100%, 1280px);
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    min-height: 360px;
+    max-height: 78vh;
+    background: var(--r-background-color, #0f172a);
+}
+
+.content-show-markdown .reveal {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.content-show-markdown .render-note {
+    margin-top: 0.75rem;
+    padding: 0 1rem 1rem;
+    font-size: 12px;
+    color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .content-show-markdown {
+        font-size: 1rem;
+    }
+
+    .content-show-markdown .reveal-toolbar-actions {
+        margin-left: 0;
+    }
+
+}

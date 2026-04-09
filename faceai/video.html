@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script type="application/x-javascript" src="face-api.js"></script>
+  <link rel="stylesheet" href="index.css">
+
+    <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="main">
+    <div class="container">
+      <h1><a href="video.html">视频捕捉人脸</a></h1>
+    </div>
+    
+    <div class="container">
+      <div class="left">
+        <video src="videos/test1.mp4" id="inputVideo" controls autoplay muted loop ></video>
+        <canvas id="overlay" class="overlay" />  
+      </div>
+      <div class="right">
+      </div>
+    </div>
+    <div class="container">
+      <div class="showarea">
+        <div class="left">
+          <button class="start-btn px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" onclick="videoChange()" style="display: none;">切换视频</button>
+        </div>
+        <div class="right">
+          <button class="start-btn px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 shadow-md border-0" onclick="faceDetector()">人脸检测</button>
+        </div>
+    </div>
+    </div>
+
+  </div>
+
+  <script type="text/javascript" defer src="jquery.min.js"></script>
+  <script type="text/javascript" defer src="video.js"></script>
+</body>
+
+</html>

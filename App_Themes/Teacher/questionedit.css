@@ -1,0 +1,74 @@
+#editor{
+      position: absolute;
+      left: 0px;
+	  height: calc(100vh - 20px);
+      right: 0px;
+      background-color: #fef8e4;
+      min-width:600px;
+  
+    }
+    #divmain{
+      padding: 0px;
+      height: 600px;
+    }
+    #divright{
+      float: left;
+      color: #333;
+      top:  0px; 
+      padding:10px;
+      width: 502px;
+      overflow-x: hidden; 
+      text-align:left;
+    }
+
+    #divleft{
+        position: absolute;
+        top:  0px;
+        left: 620px;
+        bottom: 0px;
+        right: 0px;
+        overflow-x: hidden;
+    }
+    #savemsg
+    {
+      position: absolute;      
+      top: 0px;
+      margin: 10px;
+      color:#ed7d31; 
+      font-size:24px;  
+    }
+
+    #title
+    {
+      text-align:center;
+      position: relative;
+    }
+
+    .question-toolbar {
+      margin-top: 16px;
+      justify-content: center;
+    }
+
+    .question-toolbar .ls-toolbar__btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      filter: grayscale(0.12);
+      box-shadow: none;
+      transform: none;
+    }
+    #output{
+      padding: 10px;  
+      font-size: 24px;
+      color: #333;
+      text-align:left;
+    }
+
+    .input{
+	    border:1px solid #ccc;
+	    width:400px;
+    }
+
+    #cv{
+      width:600px;
+      height:600px;
+    }
