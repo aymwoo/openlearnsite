@@ -36,13 +36,14 @@ namespace LearnSite.DBUtility
 
         public static string GetTargetVersion()
         {
-            return "1912";
+            return "1913";
         }
 
         public static string GetCurrentVersion()
         {
             try
             {
+                if (DbHelperSQL.TabExists("CourseActivityPlanDraft") && DbHelperSQL.ColumnExists("Survey", "Venableai") && HasCoreExamTables()) return "1913";
                 if (DbHelperSQL.ColumnExists("Survey", "Venableai") && HasCoreExamTables()) return "1912";
                 if (DbHelperSQL.TabExists("AIStudentExamAssessment") && HasCoreExamTables()) return "1911";
                 if (DbHelperSQL.ColumnExists("MenuWorks", "Kseconds")) return "1910";
@@ -84,6 +85,7 @@ namespace LearnSite.DBUtility
                         if (!HasCoreExamTables()) return false;
                         if (!DbHelperSQL.ColumnExists("MenuWorks", "Kseconds")) return false;
                         if (!DbHelperSQL.ColumnExists("Survey", "Venableai")) return false;
+                        if (!DbHelperSQL.TabExists("CourseActivityPlanDraft")) return false;
                         return DbHelperSQL.ColumnExists(CheckTabel, CheckField);
                     }
                     catch
@@ -2663,6 +2665,34 @@ namespace LearnSite.DBUtility
             {
                 DbHelperSQL.AddColumn(surveyTable, enableAi, "bit", 0);
                 DbHelperSQL.ExecuteSql("update Survey set Venableai = 0 where Venableai is null");
+            }
+        }
+
+        public static void UpdateTable1913()
+        {
+            if (!DbHelperSQL.TabExists("CourseActivityPlanDraft"))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(" CREATE TABLE [dbo].[CourseActivityPlanDraft] (");
+                sb.Append(" [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,");
+                sb.Append(" [Cid] INT NOT NULL,");
+                sb.Append(" [Hid] INT NOT NULL,");
+                sb.Append(" [Topic] NVARCHAR(200) NOT NULL,");
+                sb.Append(" [Grade] NVARCHAR(50) NULL,");
+                sb.Append(" [Duration] NVARCHAR(50) NULL,");
+                sb.Append(" [TeachingGoalsInput] NVARCHAR(500) NULL,");
+                sb.Append(" [ExistingCourseContentSnapshot] NVARCHAR(MAX) NULL,");
+                sb.Append(" [DraftJson] NVARCHAR(MAX) NOT NULL,");
+                sb.Append(" [CreatedAt] DATETIME NOT NULL DEFAULT GETDATE(),");
+                sb.Append(" [UpdatedAt] DATETIME NOT NULL DEFAULT GETDATE()");
+                sb.Append(" )");
+                DbHelperSQL.ExecuteSql(sb.ToString());
+            }
+
+            string checkIndexSql = "select count(1) from sys.indexes where name='UX_CourseActivityPlanDraft_Cid' and object_id = object_id('CourseActivityPlanDraft')";
+            if (DbHelperSQL.FindNum(checkIndexSql) == 0)
+            {
+                DbHelperSQL.ExecuteSql("create unique nonclustered index UX_CourseActivityPlanDraft_Cid on CourseActivityPlanDraft (Cid asc) include (Hid, UpdatedAt)");
             }
         }
 

@@ -963,6 +963,51 @@ public class CommonLogicTests : IDisposable
         Assert.Equal("回退内容", loaded.ExistingCourseContent);
     }
 
+    [Fact]
+    public void ActivityPlanDraftMigration_Source_IncludesDedicatedTableAndUniqueCourseIndex()
+    {
+        string source = ReadRepoFile("App_Code", "Utility", "UpdateGrade.cs");
+
+        Assert.Contains("public static void UpdateTable1913()", source, StringComparison.Ordinal);
+        Assert.Contains("CREATE TABLE [dbo].[CourseActivityPlanDraft]", source, StringComparison.Ordinal);
+        Assert.Contains("[Cid] INT NOT NULL", source, StringComparison.Ordinal);
+        Assert.Contains("[DraftJson] NVARCHAR(MAX) NOT NULL", source, StringComparison.Ordinal);
+        Assert.Contains("create unique nonclustered index UX_CourseActivityPlanDraft_Cid on CourseActivityPlanDraft (Cid asc)", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftMigrationRegistration_Source_RegistersUpgradeFlowEntry()
+    {
+        string source = ReadRepoFile("App_Code", "Utility", "DbMigration.cs");
+
+        Assert.Contains("Version = \"1.9.1.3\"", source, StringComparison.Ordinal);
+        Assert.Contains("Apply = UpdateGrade.UpdateTable1913", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftRoute_Source_ExposesStatusSaveLoadAndDeleteActions()
+    {
+        string source = ReadRepoFile("teacher", "aiprovider_api.ashx");
+
+        Assert.Contains("case \"activityPlanDraftStatus\":", source, StringComparison.Ordinal);
+        Assert.Contains("case \"activityPlanSaveDraft\":", source, StringComparison.Ordinal);
+        Assert.Contains("case \"activityPlanLoadDraft\":", source, StringComparison.Ordinal);
+        Assert.Contains("case \"activityPlanDeleteDraft\":", source, StringComparison.Ordinal);
+        Assert.Contains("private bool TryGetAuthorizedCourse", source, StringComparison.Ordinal);
+        Assert.Contains("course.Chid.GetValueOrDefault() != tcook.Hid", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftRoute_Source_KeepsSavedDraftFlowSeparateFromLessonBodyWrites()
+    {
+        string source = ReadRepoFile("teacher", "aiprovider_api.ashx");
+
+        Assert.Contains("AIActivityPlanSavedDraftHelper.BuildRecord", source, StringComparison.Ordinal);
+        Assert.Contains("draftBll.UpsertCurrent(record)", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("course.Ccontent =", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("coursesBll.Update(course)", source, StringComparison.Ordinal);
+    }
+
     private static LearnSite.Common.ActivityPlanDraft BuildValidActivityPlanDraft()
     {
         return new LearnSite.Common.ActivityPlanDraft
@@ -986,6 +1031,25 @@ public class CommonLogicTests : IDisposable
             Assessment = new List<string> { "观察学生是否能正确说出二分之一" },
             TeacherReminder = "注意让学生先说生活例子。"
         };
+    }
+
+    private static string ReadRepoFile(params string[] relativeSegments)
+    {
+        string current = AppContext.BaseDirectory;
+        DirectoryInfo dir = new DirectoryInfo(current);
+        while (dir != null)
+        {
+            string solutionPath = Path.Combine(dir.FullName, "openlearnsite.sln");
+            if (File.Exists(solutionPath))
+            {
+                string path = Path.Combine(new[] { dir.FullName }.Concat(relativeSegments).ToArray());
+                return File.ReadAllText(path);
+            }
+
+            dir = dir.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate repository root from test base directory.");
     }
 
     [Fact]

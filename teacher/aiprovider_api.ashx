@@ -55,6 +55,18 @@ public class aiprovider_api : IHttpHandler {
                 case "activityPlanRegenerateSection":
                     ActivityPlanRegenerateSection(context);
                     break;
+                case "activityPlanDraftStatus":
+                    ActivityPlanDraftStatus(context);
+                    break;
+                case "activityPlanSaveDraft":
+                    ActivityPlanSaveDraft(context);
+                    break;
+                case "activityPlanLoadDraft":
+                    ActivityPlanLoadDraft(context);
+                    break;
+                case "activityPlanDeleteDraft":
+                    ActivityPlanDeleteDraft(context);
+                    break;
                 case "listSkills":
                     GetSkillList(context);
                     break;
@@ -538,6 +550,169 @@ public class aiprovider_api : IHttpHandler {
             }
         });
         context.Response.Write(successResp);
+    }
+
+    private void ActivityPlanDraftStatus(HttpContext context)
+    {
+        int cid;
+        if (!TryGetAuthorizedCourse(context, out cid, out _))
+        {
+            return;
+        }
+
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.Model.CourseActivityPlanDraft record = draftBll.GetCurrentByCourse(cid, tcook.Hid);
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                hasDraft = record != null,
+                updatedAt = record == null ? string.Empty : record.UpdatedAt.ToString("s")
+            }
+        }));
+    }
+
+    private void ActivityPlanSaveDraft(HttpContext context)
+    {
+        int cid;
+        LearnSite.Model.Courses course;
+        if (!TryGetAuthorizedCourse(context, out cid, out course))
+        {
+            return;
+        }
+
+        LearnSite.Common.ActivityPlanDraft draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseDraft(context.Request["currentDraft"]);
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.Model.CourseActivityPlanDraft record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildRecord(
+            cid,
+            tcook.Hid,
+            context.Request["topic"],
+            context.Request["grade"],
+            context.Request["duration"],
+            context.Request["teachingGoals"],
+            context.Request["existingCourseContent"],
+            draft);
+
+        if (record == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Saved draft is invalid." }));
+            return;
+        }
+
+        record.ExistingCourseContentSnapshot = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(record.ExistingCourseContentSnapshot, 4000);
+        if (course != null && string.IsNullOrEmpty(record.ExistingCourseContentSnapshot))
+        {
+            record.ExistingCourseContentSnapshot = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(course.Ccontent, 4000);
+        }
+
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        bool saved = draftBll.UpsertCurrent(record);
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = saved,
+            msg = saved ? "Saved draft updated." : "Failed to save draft."
+        }));
+    }
+
+    private void ActivityPlanLoadDraft(HttpContext context)
+    {
+        int cid;
+        if (!TryGetAuthorizedCourse(context, out cid, out _))
+        {
+            return;
+        }
+
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        LearnSite.Model.CourseActivityPlanDraft record = draftBll.GetCurrentByCourse(cid, tcook.Hid);
+        LearnSite.Common.ActivityPlanSavedDraftPayload payload = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseRecord(record, cid, tcook.Hid);
+        if (payload == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Saved draft is invalid." }));
+            return;
+        }
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                topic = payload.Topic,
+                grade = payload.Grade,
+                duration = payload.Duration,
+                teachingGoals = payload.TeachingGoals,
+                existingCourseContent = payload.ExistingCourseContent,
+                updatedAt = payload.UpdatedAt.ToString("s"),
+                draft = new
+                {
+                    teachingGoals = payload.Draft.TeachingGoals,
+                    activitySteps = payload.Draft.ActivitySteps.Select(step => new
+                    {
+                        sort = step.Sort,
+                        title = step.Title,
+                        minutes = step.Minutes,
+                        teacherAction = step.TeacherAction,
+                        studentAction = step.StudentAction,
+                        interactionMethod = step.InteractionMethod,
+                        resourceSuggestion = step.ResourceSuggestion,
+                        assessmentCheck = step.AssessmentCheck
+                    }).ToList(),
+                    resources = payload.Draft.Resources,
+                    assessment = payload.Draft.Assessment,
+                    teacherReminder = payload.Draft.TeacherReminder
+                }
+            }
+        }));
+    }
+
+    private void ActivityPlanDeleteDraft(HttpContext context)
+    {
+        int cid;
+        if (!TryGetAuthorizedCourse(context, out cid, out _))
+        {
+            return;
+        }
+
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        bool deleted = draftBll.DeleteCurrent(cid, tcook.Hid);
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = deleted,
+            msg = deleted ? "Saved draft deleted." : "Saved draft not found."
+        }));
+    }
+
+    private bool TryGetAuthorizedCourse(HttpContext context, out int cid, out LearnSite.Model.Courses course)
+    {
+        cid = 0;
+        course = null;
+
+        if (!int.TryParse(context.Request["cid"], out cid) || cid <= 0)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Course id is invalid." }));
+            return false;
+        }
+
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        if (tcook == null || tcook.Hid <= 0)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Unauthorized" }));
+            return false;
+        }
+
+        LearnSite.BLL.Courses coursesBll = new LearnSite.BLL.Courses();
+        course = coursesBll.GetModel(cid);
+        if (course == null || course.Chid.GetValueOrDefault() != tcook.Hid)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Course access denied." }));
+            return false;
+        }
+
+        return true;
     }
 
     private void WriteAiChatResponse(HttpContext context, string prompt, double temperature, int maxTokens, string errorPrefix)
