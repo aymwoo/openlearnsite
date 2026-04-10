@@ -90,17 +90,75 @@
                 <script src="../teacher/editor-upload-helper.js" type="text/javascript"></script>
                 
 
-                <div class="course-edit-editor-stage custom-scrollbar">
-                    <div id="wangeditor-wrap" style="display:none; width:100%; position:relative; border: 1px solid #ccc; z-index: 100;">
-                        <div id="wangeditor-toolbar" style="border-bottom: 1px solid #ccc;"></div>
-                        <div id="wangeditor-text" style="height: 350px;"></div>
+                <div class="editor-ai-layout course-edit-ai-layout">
+                    <div class="editor-container course-edit-main-editor">
+                        <div class="course-edit-editor-stage custom-scrollbar">
+                            <div id="wangeditor-wrap" style="display:none; width:100%; position:relative; border: 1px solid #ccc; z-index: 100;">
+                                <div id="wangeditor-toolbar" style="border-bottom: 1px solid #ccc;"></div>
+                                <div id="wangeditor-text" style="height: 350px;"></div>
+                            </div>
+
+                            <div id="vditor-wrap" style="display:none; width:100%; position:relative; margin-bottom: 10px;">
+                                <div id="vditor-container"></div>
+                            </div>
+
+                            <textarea id="mcontent" runat="server" style="width:100%; height:400px;"></textarea>
+                        </div>
                     </div>
 
-                    <div id="vditor-wrap" style="display:none; width:100%; position:relative; margin-bottom: 10px;">
-                        <div id="vditor-container"></div>
-                    </div>
-
-                    <textarea id="mcontent" runat="server" style="width:100%; height:400px;"></textarea>
+                    <aside class="ai-assistant-panel courseedit-plan-panel" id="courseedit-plan-panel">
+                        <div class="ai-panel-header">
+                            <span class="ai-panel-icon" aria-hidden="true">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 3.6L18 8.4l-3 2.9.7 4.1-3.7-1.9-3.7 1.9.7-4.1-3-2.9 4.2-.8L12 3z"></path></svg>
+                            </span>
+                            <div class="ai-panel-heading">
+                                <strong class="ai-panel-title">活动计划助手</strong>
+                                <p class="ai-panel-desc">围绕当前主题快速生成课堂活动计划，保留学案编辑为主、计划辅助为辅。</p>
+                            </div>
+                        </div>
+                        <div class="ai-panel-body">
+                            <div class="ai-panel-tip">
+                                <span class="ai-panel-tip-badge">使用建议</span>
+                                <p class="ai-panel-tip-text">先输入主题或知识点，再按需补充年级、课时和教学目标。当前学案内容会自动作为支持背景发送。</p>
+                            </div>
+                            <div class="ai-panel-group">
+                                <label class="ai-panel-label" for="activity-plan-topic">主题 / 知识点 <span style="color:#dc2626;">*</span></label>
+                                <textarea id="activity-plan-topic" class="ai-prompt-input" placeholder="例如：分数的初步认识"></textarea>
+                            </div>
+                            <div class="ai-panel-group">
+                                <button type="button" id="activity-plan-toggle" class="ai-action-btn" onclick="toggleActivityPlanFields()">展开可选信息</button>
+                            </div>
+                            <div id="activity-plan-fields" class="ai-panel-group" style="display:none;">
+                                <label class="ai-panel-label" for="activity-plan-grade">授课年级</label>
+                                <input id="activity-plan-grade" type="text" class="course-edit-input" placeholder="默认读取当前学案年级，可手动覆盖" />
+                                <label class="ai-panel-label" for="activity-plan-duration" style="margin-top:10px;">课时/时长</label>
+                                <input id="activity-plan-duration" type="text" class="course-edit-input" placeholder="例如：1课时 / 40分钟" />
+                                <label class="ai-panel-label" for="activity-plan-goals" style="margin-top:10px;">教学目标</label>
+                                <textarea id="activity-plan-goals" class="ai-prompt-input" placeholder="例如：理解分数含义，能结合情境表达分数"></textarea>
+                            </div>
+                            <button type="button" id="activity-plan-generate-btn" class="ai-generate-btn" onclick="generateActivityPlan()">
+                                <div id="activity-plan-loading" class="ai-loading-spinner"></div>
+                                <span id="activity-plan-btn-text">生成活动计划</span>
+                            </button>
+                            <div id="activity-plan-progress-wrap" class="ai-progress-wrap">
+                                <div class="ai-progress-header">
+                                    <span id="activity-plan-progress-text" class="ai-progress-text">准备生成</span>
+                                    <span id="activity-plan-progress-percent" class="ai-progress-percent">0%</span>
+                                </div>
+                                <div class="ai-progress-track">
+                                    <div id="activity-plan-progress-bar" class="ai-progress-bar"></div>
+                                </div>
+                                <div id="activity-plan-progress-note" class="ai-progress-note">输入主题后，系统会调用默认 AI Provider 生成活动计划。</div>
+                            </div>
+                            <div class="ai-panel-group">
+                                <label class="ai-panel-label" for="activity-plan-result">生成结果</label>
+                                <div id="activity-plan-result" class="ai-result-area"></div>
+                            </div>
+                        </div>
+                        <div class="ai-panel-footer">
+                            <button type="button" class="ai-action-btn" onclick="copyActivityPlanResult()">复制结果</button>
+                        </div>
+                    </aside>
                 </div>
             </section>
 
@@ -180,6 +238,7 @@
         window.__courseeditConfig = {
             myCid: '<%=myCid() %>',
             mcontentId: '<%= mcontent.ClientID %>',
+            gradeId: '<%= DDLcobj.ClientID %>',
             hiddenBannerUrlId: '<%= HiddenBannerUrl.ClientID %>',
             hLbannerId: '<%= HLbanner.ClientID %>',
             hiddenCourseId: '<%= HiddenCourseId.ClientID %>',

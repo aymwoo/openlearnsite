@@ -688,6 +688,20 @@ public class TeacherRegressionTests
         Assert.Contains("string url = \"~/teacher/wareedit.aspx?mcid=\" + Mcid + \"&mid=\" + Mid;", wareShowCodeBehind, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void CourseEdit_ShouldContainActivityPlanAssistantPanelMarkup()
+    {
+        var courseEdit = File.ReadAllText(Path.Combine(TeacherRoot, "courseedit.aspx"));
+
+        Assert.Contains("活动计划助手", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-topic\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-grade\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-duration\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-goals\"", courseEdit, StringComparison.Ordinal);
+        Assert.DoesNotContain("学科", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("OnClientClick=\"return syncContent();\"", courseEdit, StringComparison.Ordinal);
+    }
+
     [Theory]
     [MemberData(nameof(GetContentPagesReturningToCourse))]
     public void ContentPages_ShouldKeepReturnToCourseCopy(string relativePath)
@@ -865,7 +879,7 @@ public class TeacherRegressionTests
         var current = AppContext.BaseDirectory;
         while (!string.IsNullOrEmpty(current))
         {
-            if (File.Exists(Path.Combine(current, "learnsite-wz.sln")))
+            if (File.Exists(Path.Combine(current, "learnsite-wz.sln")) || File.Exists(Path.Combine(current, "openlearnsite.sln")))
             {
                 return current;
             }
