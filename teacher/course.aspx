@@ -1,4 +1,4 @@
-<%@ Page Title="" Language="C#" MasterPageFile="~/teacher/Teach.master"   StylesheetTheme="Teacher" AutoEventWireup="true"  CodeFile="course.aspx.cs" Inherits="Teacher_course" ResponseEncoding="utf-8" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/teacher/Teach.master"   StylesheetTheme="Teacher" AutoEventWireup="true"  CodeFile="course.aspx.cs" Inherits="Teacher_course" ResponseEncoding="utf-8" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
     <link rel="stylesheet" type="text/css" href="../webform/bootstrap-icons.min.css" />
@@ -75,12 +75,14 @@
                                 <ItemStyle HorizontalAlign="Left" />
                             </asp:BoundField>
                             <asp:TemplateField HeaderText="打包">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:HyperLink ID="HlPackage" runat="server" NavigateUrl='<%# "~/teacher/package.aspx?cid=" + Eval("Cid") %>' Text='<i class="bi bi-download"></i>' ToolTip="打包下载" CssClass="course-icon-btn course-icon-primary"></asp:HyperLink>
                                 </ItemTemplate>
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="发布" ShowHeader="False">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:LinkButton ID="LbtnCpublish" runat="server" CausesValidation="false"
                                         CommandArgument='<%# Bind("Cid") %>' CommandName="Cp" Text='<%# Eval("Cpublish") %>'></asp:LinkButton>
@@ -88,18 +90,21 @@
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="作品">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:HyperLink ID="HlAnalyse" runat="server" NavigateUrl='<%# "~/teacher/courseanalyse.aspx?cid=" + Eval("Cid") %>' Text='<i class="bi bi-bar-chart-line"></i>' ToolTip="作品分析" CssClass="course-icon-btn course-icon-info"></asp:HyperLink>
                                 </ItemTemplate>
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="探讨">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:HyperLink ID="Hl" runat="server" Text='<i class="bi bi-chat-dots"></i>' ToolTip="探讨反思" CssClass="course-icon-btn course-icon-info"></asp:HyperLink>
                                 </ItemTemplate>
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="推荐" ShowHeader="False">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:LinkButton ID="LbtnCgood" runat="server" CausesValidation="false"
                                         CommandArgument='<%# Bind("Cid") %>' CommandName="Cg" ToolTip="默认为True，学生平台作品收藏学案列表中显示；False则不显示!" Text='<%# Eval("Cgood") %>'></asp:LinkButton>
@@ -107,12 +112,14 @@
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="内容">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:HyperLink ID="HlEdit" runat="server" NavigateUrl='<%# "~/teacher/courseedit.aspx?cid=" + Eval("Cid") %>' Text='<i class="bi bi-pencil-square"></i>' ToolTip="编辑内容" CssClass="course-icon-btn course-icon-warning"></asp:HyperLink>
                                 </ItemTemplate>
                                 <ItemStyle Width="40px" HorizontalAlign="Center" />
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="日期" SortExpression="Cdate">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:Label ID="Label2" runat="server"
                                         Text='<%# DataBinder.Eval(Container.DataItem,"Cdate","{0:d}")%>'></asp:Label>
@@ -121,6 +128,7 @@
                                 <ItemStyle HorizontalAlign="Center" />
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="管理" ShowHeader="False">
+                                <HeaderStyle HorizontalAlign="Center" />
                                 <ItemTemplate>
                                     <asp:LinkButton ID="LbtnCold" runat="server" CausesValidation="false"
                                         CommandArgument='<%# Bind("Cid") %>' ToolTip="转移到学案仓库中保留" CommandName="Cu" Text='<i class="bi bi-archive"></i>' CssClass="course-icon-btn course-icon-danger"></asp:LinkButton>

@@ -1,9 +1,10 @@
-<%@ Page Title="" Language="C#" EnableEventValidation = "false" StylesheetTheme="Student" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" EnableEventValidation = "false" StylesheetTheme="Student" AutoEventWireup="true"
     CodeFile="mytotal.aspx.cs" Inherits="Student_mytotal" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+    <meta charset="utf-8" />
 <title></title>
 <style type="text/css">
     .compact-table {

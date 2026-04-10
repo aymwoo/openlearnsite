@@ -1,9 +1,10 @@
-<%@ Page Title="我的荣誉" Language="C#" StylesheetTheme="Student" AutoEventWireup="true"
+﻿<%@ Page Title="我的荣誉" Language="C#" StylesheetTheme="Student" AutoEventWireup="true"
     CodeFile="myhonors.aspx.cs" Inherits="LearnSite.Student.myhonors" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
+    <meta charset="utf-8" />
     <title>我的荣誉</title>
     <style>
         .my-honor-container {
