@@ -751,7 +751,7 @@ function syncContent() {
                           xhr.send('action=activityPlanDeleteDraft&cid=' + encodeURIComponent(cid));
                       }
 
-                      function checkSavedActivityPlanDraftStatus() {
+                      function checkSavedActivityPlanDraftStatus(callback) {
                           var xhr = new XMLHttpRequest();
                           xhr.open('POST', 'aiprovider_api.ashx', true);
                           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -765,9 +765,19 @@ function syncContent() {
                                       var res = JSON.parse(xhr.responseText || '{}');
                                       if (res.success && res.data) {
                                           setActivityPlanDraftStatus(!!res.data.hasDraft, res.data.updatedAt || '');
+                                          if (callback) {
+                                              callback({ hasDraft: !!res.data.hasDraft, updatedAt: res.data.updatedAt || '' });
+                                          }
+                                      } else if (callback) {
+                                          callback({ hasDraft: false, updatedAt: '' });
                                       }
                                   } catch (e) {
+                                      if (callback) {
+                                          callback({ hasDraft: activityPlanDraftStatus.hasDraft, updatedAt: activityPlanDraftStatus.updatedAt || '' });
+                                      }
                                   }
+                              } else if (callback) {
+                                  callback({ hasDraft: activityPlanDraftStatus.hasDraft, updatedAt: activityPlanDraftStatus.updatedAt || '' });
                               }
                           };
 
@@ -775,24 +785,26 @@ function syncContent() {
                       }
 
                       function maybeHandleSavedDraftBeforeGenerate(requestContext, continueGenerate) {
-                          if (!activityPlanDraftStatus.hasDraft) {
-                              continueGenerate();
-                              return;
-                          }
-
-                          var keepEditing = window.confirm('当前课程已有已保存草案。选择“确定”将继续上次草案，选择“取消”将替换旧草案并重新生成。');
-                          if (keepEditing) {
-                              resumeSavedActivityPlanDraft();
-                              return;
-                          }
-
-                          deleteSavedActivityPlanDraft(function (success, msg) {
-                              if (!success) {
-                                  alert(msg || '替换旧草案失败');
+                          checkSavedActivityPlanDraftStatus(function (status) {
+                              if (!status || !status.hasDraft) {
+                                  continueGenerate();
                                   return;
                               }
 
-                              continueGenerate();
+                              var keepEditing = window.confirm('当前课程已有已保存草案。选择“确定”将继续上次草案，选择“取消”将替换旧草案并重新生成。');
+                              if (keepEditing) {
+                                  resumeSavedActivityPlanDraft();
+                                  return;
+                              }
+
+                              deleteSavedActivityPlanDraft(function (success, msg) {
+                                  if (!success) {
+                                      alert(msg || '替换旧草案失败');
+                                      return;
+                                  }
+
+                                  continueGenerate();
+                              });
                           });
                       }
 
