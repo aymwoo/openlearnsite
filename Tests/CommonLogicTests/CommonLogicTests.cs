@@ -889,6 +889,67 @@ public class CommonLogicTests : IDisposable
         Assert.False(LearnSite.BLL.AIActivityPlanSkillBootstrap.HasAnyActiveScopedSkill(skills));
     }
 
+    [Fact]
+    public void ActivityPlanSavedDraftHelper_BuildRecord_PersistsRequestContextAndDraftJson()
+    {
+        var draft = BuildValidActivityPlanDraft();
+
+        var record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildRecord(12, 5, "认识分数", "五年级", "40分钟", "理解分数含义", "旧内容", draft);
+
+        Assert.NotNull(record);
+        Assert.Equal(12, record.Cid);
+        Assert.Equal(5, record.Hid);
+        Assert.Equal("认识分数", record.Topic);
+        Assert.Equal("五年级", record.Grade);
+        Assert.Equal("40分钟", record.Duration);
+        Assert.Contains("teachingGoals", record.DraftJson, StringComparison.Ordinal);
+
+        var loaded = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseRecord(record, 12, 5);
+
+        Assert.NotNull(loaded);
+        Assert.Equal("理解分数含义", loaded.TeachingGoals);
+        Assert.Equal("旧内容", loaded.ExistingCourseContent);
+        Assert.Equal(draft.TeacherReminder, loaded.Draft.TeacherReminder);
+    }
+
+    [Fact]
+    public void ActivityPlanSavedDraftHelper_ParseRecord_RevalidatesDraftJsonAndFailsClosed()
+    {
+        var record = new LearnSite.Model.CourseActivityPlanDraft
+        {
+            Cid = 12,
+            Hid = 5,
+            Topic = "认识分数",
+            DraftJson = "{\"teachingGoals\":[]}",
+            UpdatedAt = new DateTime(2026, 4, 10, 8, 30, 0)
+        };
+
+        Assert.Null(LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseRecord(record, 12, 5));
+        Assert.Null(LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseRecord(record, 99, 5));
+    }
+
+    [Fact]
+    public void ActivityPlanSavedDraftHelper_BuildRecord_RejectsMissingTopicOrCourseIdentifiers()
+    {
+        var draft = BuildValidActivityPlanDraft();
+
+        Assert.Null(LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildRecord(0, 5, "认识分数", "", "", "", "", draft));
+        Assert.Null(LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildRecord(12, 0, "认识分数", "", "", "", "", draft));
+        Assert.Null(LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildRecord(12, 5, "   ", "", "", "", "", draft));
+        Assert.Null(LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildRecord(12, 5, "认识分数", "", "", "", "", null));
+    }
+
+    [Fact]
+    public void CourseActivityPlanDraftDal_BuildUpsertSql_UsesSingleCurrentDraftPerCourse()
+    {
+        var sql = LearnSite.DAL.CourseActivityPlanDraft.BuildUpsertSql();
+
+        Assert.Contains("if exists", sql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("where Cid=@Cid", sql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("update CourseActivityPlanDraft", sql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("insert into CourseActivityPlanDraft", sql, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static LearnSite.Common.ActivityPlanDraft BuildValidActivityPlanDraft()
     {
         return new LearnSite.Common.ActivityPlanDraft
