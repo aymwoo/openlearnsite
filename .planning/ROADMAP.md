@@ -76,7 +76,10 @@ improve only the parts that need revision.
      discarding the rest of the draft.
   3. Teacher can keep accepted sections while replacing weaker sections in the
      same draft review flow.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 03-01-PLAN.md — Add server-side section regeneration, validation, and merged draft return on the existing AI route.
+- [ ] 03-02-PLAN.md — Add section-level regenerate controls with local retry state in the course-editor preview.
 **UI hint**: yes
 
 ### Phase 4: Selective apply and draft continuity
