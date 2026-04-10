@@ -16,7 +16,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing" /><Reference Include="System.Web.Extensions" /><Reference Include="System.Web.DataVisualization" /><Reference Include="System.Web.Services" /><Reference Include="System.DirectoryServices" />
   </ItemGroup>
 
   <ItemGroup>
