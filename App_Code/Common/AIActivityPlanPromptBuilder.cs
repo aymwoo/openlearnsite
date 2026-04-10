@@ -15,6 +15,10 @@ namespace LearnSite.Common
 
     public static class AIActivityPlanPromptBuilder
     {
+        public const int MaxTopicLength = 200;
+        public const int MaxGradeLength = 50;
+        public const int MaxDurationLength = 50;
+        public const int MaxTeachingGoalsLength = 500;
         private const int MaxExistingCourseContentLength = 4000;
 
         public static string Build(AIActivityPlanPromptRequest request)
@@ -29,23 +33,23 @@ namespace LearnSite.Common
             {
                 throw new ArgumentException("Topic is required.", "request");
             }
+            topic = BoundText(topic, MaxTopicLength);
+
+            string grade = BoundText(request.Grade, MaxGradeLength);
+            string duration = BoundText(request.Duration, MaxDurationLength);
+            string teachingGoals = BoundText(request.TeachingGoals, MaxTeachingGoalsLength);
 
             List<string> sections = new List<string>();
             sections.Add("你是一名面向一线教师的活动计划助手，请根据教师当前输入生成可直接用于课堂实施的活动计划。");
             sections.Add("当前教师意图：" + topic);
 
-            AppendStructuredField(sections, "授课年级", request.Grade);
-            AppendStructuredField(sections, "课时/时长", request.Duration);
-            AppendStructuredField(sections, "教学目标", request.TeachingGoals);
+            AppendStructuredField(sections, "授课年级", grade);
+            AppendStructuredField(sections, "课时/时长", duration);
+            AppendStructuredField(sections, "教学目标", teachingGoals);
 
-            string existingCourseContent = SafeTrim(request.ExistingCourseContent);
+            string existingCourseContent = BoundText(request.ExistingCourseContent, MaxExistingCourseContentLength);
             if (!string.IsNullOrEmpty(existingCourseContent))
             {
-                if (existingCourseContent.Length > MaxExistingCourseContentLength)
-                {
-                    existingCourseContent = existingCourseContent.Substring(0, MaxExistingCourseContentLength);
-                }
-
                 StringBuilder backgroundBuilder = new StringBuilder();
                 backgroundBuilder.AppendLine("支持背景：以下是教师当前编辑器中的已有内容，仅作为补充参考。");
                 backgroundBuilder.AppendLine("如果与当前输入的主题冲突，以教师刚输入的主题为准。已有内容不要覆盖当前教师意图。");
@@ -69,6 +73,22 @@ namespace LearnSite.Common
         private static string SafeTrim(string value)
         {
             return value == null ? string.Empty : value.Trim();
+        }
+
+        public static string BoundText(string value, int maxLength)
+        {
+            string trimmed = SafeTrim(value);
+            if (string.IsNullOrEmpty(trimmed) || maxLength <= 0)
+            {
+                return trimmed;
+            }
+
+            if (trimmed.Length <= maxLength)
+            {
+                return trimmed;
+            }
+
+            return trimmed.Substring(0, maxLength);
         }
     }
 }

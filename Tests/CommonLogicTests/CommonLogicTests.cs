@@ -737,6 +737,25 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void ActivityPlanPromptBuilder_BoundsOversizedSupportingFields()
+    {
+        var prompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = new string('题', LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength + 20),
+            Grade = new string('年', LearnSite.Common.AIActivityPlanPromptBuilder.MaxGradeLength + 20),
+            Duration = new string('时', LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength + 20),
+            TeachingGoals = new string('目', LearnSite.Common.AIActivityPlanPromptBuilder.MaxTeachingGoalsLength + 50),
+            ExistingCourseContent = new string('内', 4500)
+        });
+
+        Assert.DoesNotContain(new string('题', LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength + 1), prompt, StringComparison.Ordinal);
+        Assert.DoesNotContain(new string('年', LearnSite.Common.AIActivityPlanPromptBuilder.MaxGradeLength + 1), prompt, StringComparison.Ordinal);
+        Assert.DoesNotContain(new string('时', LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength + 1), prompt, StringComparison.Ordinal);
+        Assert.DoesNotContain(new string('目', LearnSite.Common.AIActivityPlanPromptBuilder.MaxTeachingGoalsLength + 1), prompt, StringComparison.Ordinal);
+        Assert.DoesNotContain(new string('内', 4001), prompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void BllDataTableMappers_MapSoftCategoryList_MapsCategoryFields()
     {
         DataTable dt = new DataTable();

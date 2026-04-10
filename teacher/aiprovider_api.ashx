@@ -49,6 +49,9 @@ public class aiprovider_api : IHttpHandler {
                 case "chat":
                     Chat(context);
                     break;
+                case "activityPlan":
+                    ActivityPlan(context);
+                    break;
                 case "listSkills":
                     GetSkillList(context);
                     break;
@@ -383,14 +386,38 @@ public class aiprovider_api : IHttpHandler {
             return;
         }
 
-        LearnSite.BLL.AIProvider bll = new LearnSite.BLL.AIProvider();
-        List<LearnSite.Model.AIProvider> providers = bll.GetModelList("");
-        LearnSite.Model.AIProvider defaultProvider = providers.FirstOrDefault(p => p.IsDefault);
-        
-        if (defaultProvider == null && providers.Count > 0)
+        WriteAiChatResponse(context, prompt, 0.7, 1200, "Chat error: ");
+    }
+
+    private void ActivityPlan(HttpContext context)
+    {
+        context.Server.ScriptTimeout = 180;
+
+        string topic = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["topic"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength);
+        if (string.IsNullOrEmpty(topic))
         {
-            defaultProvider = providers[0];
+            string respStr = JsonConvert.SerializeObject(new { success = false, msg = "Topic is required." });
+            context.Response.Write(respStr);
+            return;
         }
+
+        LearnSite.Common.AIActivityPlanPromptRequest request = new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = topic,
+            Grade = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["grade"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxGradeLength),
+            Duration = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["duration"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength),
+            TeachingGoals = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["teachingGoals"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTeachingGoalsLength),
+            ExistingCourseContent = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["existingCourseContent"], 4000)
+        };
+
+        LearnSite.BLL.AIActivityPlanSkillBootstrap.EnsureDefaultSkill();
+        string prompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(request);
+        WriteAiChatResponse(context, prompt, 0.4, 1200, "Activity plan error: ");
+    }
+
+    private void WriteAiChatResponse(HttpContext context, string prompt, double temperature, int maxTokens, string errorPrefix)
+    {
+        LearnSite.Model.AIProvider defaultProvider = GetDefaultProvider();
 
         if (defaultProvider == null)
         {
@@ -399,19 +426,15 @@ public class aiprovider_api : IHttpHandler {
             return;
         }
 
-        string baseUrl = defaultProvider.BaseUrl;
-        string apiKey = defaultProvider.ApiKey;
-        string modelName = defaultProvider.ModelName;
-        
         try
         {
-            string chatUrl = baseUrl.TrimEnd('/') + "/chat/completions";
+            string chatUrl = defaultProvider.BaseUrl.TrimEnd('/') + "/chat/completions";
             
             var requestBody = new
             {
-                model = modelName,
-                temperature = 0.7,
-                max_tokens = 1200,
+                model = defaultProvider.ModelName,
+                temperature = temperature,
+                max_tokens = maxTokens,
                 messages = new[]
                 {
                     new { role = "user", content = prompt }
@@ -426,9 +449,9 @@ public class aiprovider_api : IHttpHandler {
             request.Timeout = 120000; // 120 seconds timeout for generation
             request.ReadWriteTimeout = 120000;
             
-            if (!string.IsNullOrEmpty(apiKey))
+            if (!string.IsNullOrEmpty(defaultProvider.ApiKey))
             {
-                request.Headers.Add("Authorization", "Bearer " + apiKey);
+                request.Headers.Add("Authorization", "Bearer " + defaultProvider.ApiKey);
             }
 
             byte[] byteArray = Encoding.UTF8.GetBytes(payload);
@@ -495,9 +518,23 @@ public class aiprovider_api : IHttpHandler {
         }
         catch (Exception ex)
         {
-            string respStr = JsonConvert.SerializeObject(new { success = false, msg = "Chat error: " + ex.Message });
+            string respStr = JsonConvert.SerializeObject(new { success = false, msg = errorPrefix + ex.Message });
             context.Response.Write(respStr);
         }
+    }
+
+    private LearnSite.Model.AIProvider GetDefaultProvider()
+    {
+        LearnSite.BLL.AIProvider bll = new LearnSite.BLL.AIProvider();
+        List<LearnSite.Model.AIProvider> providers = bll.GetModelList("");
+        LearnSite.Model.AIProvider defaultProvider = providers.FirstOrDefault(p => p.IsDefault);
+
+        if (defaultProvider == null && providers.Count > 0)
+        {
+            defaultProvider = providers[0];
+        }
+
+        return defaultProvider;
     }
 
     private void GetSkillList(HttpContext context)
