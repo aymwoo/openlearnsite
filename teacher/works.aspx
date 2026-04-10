@@ -49,9 +49,14 @@
         .course-hero-action { display: flex; gap: 12px; flex-wrap: wrap; }
         .course-secondary-btn, .course-primary-btn {
             border-radius: 14px;
-            padding: 11px 16px;
+            min-width: 118px;
+            height: 44px;
+            padding: 0 18px;
+            box-sizing: border-box;
             font-weight: 700;
             font-size: 14px;
+            line-height: 44px;
+            text-align: center;
             cursor: pointer;
             transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
@@ -65,7 +70,24 @@
             border: 1px solid #4ade80;
             color: #052e16;
         }
+        .course-term-btn {
+            background: linear-gradient(135deg, rgba(59,130,246,0.22) 0%, rgba(67,56,202,0.3) 100%);
+            border-color: rgba(191,219,254,0.5);
+            color: #f8fafc;
+            box-shadow: 0 12px 28px rgba(30, 41, 59, 0.22);
+            backdrop-filter: blur(10px);
+        }
         .course-secondary-btn:hover, .course-primary-btn:hover { transform: translateY(-1px); }
+        .course-term-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #3730a3 100%);
+            border-color: rgba(191,219,254,0.72);
+            color: #ffffff;
+            box-shadow: 0 16px 34px rgba(30, 64, 175, 0.34);
+        }
+        .course-term-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(191,219,254,0.22), 0 16px 34px rgba(15, 23, 42, 0.24);
+        }
         .course-toolbar, .course-table-panel {
             background: #fff;
             border: 1px solid #e2e8f0;
@@ -232,7 +254,7 @@
                             <i class="bi bi-box-seam"></i> 作品打包
                         </button>
                         <asp:Button ID="Btnterm" runat="server" Text="学期总评" onclick="Btnterm_Click"
-                            ToolTip="跳转到学期总评页面" CssClass="course-primary-btn" />
+                            ToolTip="跳转到学期总评页面" CssClass="course-primary-btn course-term-btn" />
                     </div>
                 </div>
             </section>

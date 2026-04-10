@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="learnrate.aspx.cs" Inherits="teacher_learnrate" ResponseEncoding="utf-8" Culture="zh-CN" UICulture="zh-CN" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="learnrate.aspx.cs" Inherits="teacher_learnrate" ResponseEncoding="utf-8" Culture="zh-CN" UICulture="zh-CN" %>
 
 <%@ Register assembly="Anthem" namespace="Anthem" tagprefix="anthem" %>
 
@@ -6,7 +6,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta charset="utf-8" />
     <title></title>
 
     <link href="../js/css/tailwind-utilities-2.2.19.min.css" rel="stylesheet">

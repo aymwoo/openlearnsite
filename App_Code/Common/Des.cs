@@ -60,6 +60,11 @@ namespace LearnSite.Common
 
             try
             {
+                if (string.IsNullOrEmpty(pToDecrypt) || pToDecrypt.Length % 2 != 0)
+                {
+                    throw new Exception("Invalid encrypted string");
+                }
+                
                 DESCryptoServiceProvider des = new DESCryptoServiceProvider();
                 byte[] inputByteArray = new byte[pToDecrypt.Length / 2];
                 for (int x = 0; x < pToDecrypt.Length / 2; x++)
@@ -73,12 +78,10 @@ namespace LearnSite.Common
                 CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write);
                 cs.Write(inputByteArray, 0, inputByteArray.Length);
                 cs.FlushFinalBlock();
-                StringBuilder ret = new StringBuilder();
-
             }
             catch
             {
-
+                throw;
             }
 
             return System.Text.Encoding.Default.GetString(ms.ToArray());

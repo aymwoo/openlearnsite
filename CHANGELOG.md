@@ -8,10 +8,12 @@
 
 ### 升级增强
 - **学生入口页信息展示复用现有站点配置**：相关后台代码统一补齐 `SiteTitle` 读取、页面标题设置与页脚状态展示逻辑，减少学生入口页与首页之间的信息割裂，便于后续继续统一公共入口体验
+- **课程页面按钮样式优化**：`teacher/works.aspx` 优化课程操作按钮的尺寸、对齐和交互效果，新增学期总评按钮专用样式，提升按钮可点击区域和视觉层次
 
 ### 涉及文件
 - 首页与公共入口：`index.aspx`、`index.aspx.cs`
 - 学生入口页：`student/mynum.aspx`、`student/mynum.aspx.cs`、`student/myrule.aspx`、`student/myrule.aspx.cs`、`student/register.aspx`、`student/register.aspx.cs`
+- 课程页面：`teacher/works.aspx`
 
 ## 2026-04-09
 

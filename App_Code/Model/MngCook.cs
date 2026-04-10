@@ -13,10 +13,23 @@ namespace LearnSite.Model
     {
         public MngCook()
         {
-            if (HttpContext.Current.Request.Cookies[LearnSite.Common.CookieHelp.mngCookieNname] != null)
+            try
             {
-                string mcook = HttpContext.Current.Request.Cookies[LearnSite.Common.CookieHelp.mngCookieNname].Value;
-                this.ToModel(mcook);
+                if (HttpContext.Current != null && HttpContext.Current.Request != null && HttpContext.Current.Request.Cookies != null)
+                {
+                    if (HttpContext.Current.Request.Cookies[LearnSite.Common.CookieHelp.mngCookieNname] != null)
+                    {
+                        string mcook = HttpContext.Current.Request.Cookies[LearnSite.Common.CookieHelp.mngCookieNname].Value;
+                        if (!string.IsNullOrEmpty(mcook))
+                        {
+                            this.ToModel(mcook);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine("MngCook构造函数失败: " + ex.Message);
             }
         }
 
@@ -59,11 +72,23 @@ namespace LearnSite.Model
         {
             try
             {
+                if (string.IsNullOrEmpty(ciphervalue))
+                {
+                    LearnSite.Common.CookieHelp.ClearManagerCookies();
+                    return;
+                }
+                
                 string value = Common.DesCode.StringDecder(ciphervalue);
+                if (string.IsNullOrEmpty(value))
+                {
+                    LearnSite.Common.CookieHelp.ClearManagerCookies();
+                    return;
+                }
+                
                 string[] result = value.Split('|');
                 if (result.Length == 7)
                 {
-                    _hid = Int32.Parse(result[0]); ;
+                    _hid = Int32.Parse(result[0]);
                     _hname = result[1];
                     _hpermiss = bool.Parse(result[2]);
                     _hnick = result[3];
@@ -72,10 +97,13 @@ namespace LearnSite.Model
                     _sessionid = result[6];
                 }
                 else
+                {
                     LearnSite.Common.CookieHelp.ClearManagerCookies();
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Trace.WriteLine("MngCook.ToModel失败: " + ex.Message);
                 LearnSite.Common.CookieHelp.ClearManagerCookies();
             }
         }

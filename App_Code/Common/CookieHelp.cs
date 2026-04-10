@@ -342,19 +342,28 @@ namespace LearnSite.Common
         }
         public static bool IsManagerLogin()
         {
-            if (HttpContext.Current.Request.Cookies[mngCookieNname] != null)
+            try
             {
-                Model.MngCook mcook = new Model.MngCook();
-                if (mcook.Ss == mngCookieNname)
-                    return true;
+                if (HttpContext.Current.Request.Cookies[mngCookieNname] != null)
+                {
+                    Model.MngCook mcook = new Model.MngCook();
+                    if (mcook.IsExist() && mcook.Ss == mngCookieNname)
+                        return true;
+                    else
+                    {
+                        ClearManagerCookies();
+                        return false;
+                    }
+                }
                 else
                 {
-                    ClearManagerCookies();
                     return false;
                 }
             }
-            else
+            catch (Exception ex)
             {
+                System.Diagnostics.Trace.WriteLine("IsManagerLogin失败: " + ex.Message);
+                ClearManagerCookies();
                 return false;
             }
         }
@@ -450,9 +459,16 @@ namespace LearnSite.Common
         {
             try
             {
+                if (HttpContext.Current == null || HttpContext.Current.Request == null || HttpContext.Current.Response == null)
+                {
+                    return;
+                }
+                
                 if (HttpContext.Current.Request.Cookies[mngCookieNname] == null)//没登录跳出
                 {
-                    HttpContext.Current.Response.Redirect("~/teacher/index.aspx", true);
+                    HttpContext.Current.Response.Redirect("~/teacher/index.aspx", false);
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    return;
                 }
                 else
                 {
@@ -467,15 +483,25 @@ namespace LearnSite.Common
                         ClearManagerCookies();//非法cookies，清除再跳转
                         Others.ClearClientPageCache();
                         System.Threading.Thread.Sleep(500);
-                        HttpContext.Current.Response.Redirect("~/teacher/index.aspx", true);
+                        HttpContext.Current.Response.Redirect("~/teacher/index.aspx", false);
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                        return;
                     }
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.WriteLine("JudgeIsAdmin失败: " + ex.Message);
-                ClearManagerCookies();
-                HttpContext.Current.Response.Redirect("~/teacher/index.aspx", true);
+                try
+                {
+                    ClearManagerCookies();
+                    if (HttpContext.Current != null && HttpContext.Current.Response != null)
+                    {
+                        HttpContext.Current.Response.Redirect("~/teacher/index.aspx", false);
+                        HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    }
+                }
+                catch { }
             }
         }
         /// <summary>
