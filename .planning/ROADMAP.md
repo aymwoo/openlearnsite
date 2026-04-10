@@ -94,7 +94,10 @@ continue unfinished planning work later.
      overwritten until the teacher confirms the apply action.
   3. Teacher can save a generated plan draft and reopen it later to continue
      reviewing, editing, or applying sections.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [x] 04-01-PLAN.md — Add per-course saved-draft persistence, migration, and authenticated draft status/save/load actions.
+- [ ] 04-02-PLAN.md — Add append-only selective apply plus explicit save/resume/replace UI flows in the course-editor panel.
 **UI hint**: yes
 
 ## Progress
