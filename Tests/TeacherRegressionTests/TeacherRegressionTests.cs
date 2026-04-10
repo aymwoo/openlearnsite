@@ -766,6 +766,8 @@ public class TeacherRegressionTests
         Assert.Contains("action=activityPlanSaveDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("action=activityPlanLoadDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("action=activityPlanDeleteDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("maybeHandleSavedDraftBeforeGenerate", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("checkSavedActivityPlanDraftStatus(function (status)", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("window.confirm", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("action=saveCourse", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("Btnedit.click()", courseEditScript, StringComparison.Ordinal);
