@@ -401,7 +401,7 @@
                 <svg class="index-logo h-8 w-8 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <h1 class="index-site-title text-xl sm:text-2xl font-bold text-gray-800 tracking-tight"><%= SiteTitle %></h1>
+                <h1 class="index-site-title text-xl sm:text-2xl font-bold text-gray-800 tracking-tight"><asp:Literal ID="LitSiteTitle" runat="server" /></h1>
             </div>
             <div>
                 <span class="index-welcome text-sm text-gray-500">欢迎来到学习平台</span>
@@ -452,22 +452,22 @@
 
                     <div class="register-form">
                         <div class="register-field">
-                            <label class="register-label" for="<%= DDLgrade.ClientID %>">年级选择</label>
+                            <asp:Label runat="server" AssociatedControlID="DDLgrade" CssClass="register-label">年级选择</asp:Label>
                             <asp:DropDownList ID="DDLgrade" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DDLgrade_SelectedIndexChanged" CssClass="register-select"></asp:DropDownList>
                         </div>
 
                         <div class="register-field">
-                            <label class="register-label" for="<%= DDLclass.ClientID %>">班级选择</label>
+                            <asp:Label runat="server" AssociatedControlID="DDLclass" CssClass="register-label">班级选择</asp:Label>
                             <asp:DropDownList ID="DDLclass" runat="server" CssClass="register-select"></asp:DropDownList>
                         </div>
 
                         <div class="register-field">
-                            <label class="register-label" for="<%= DDLsex.ClientID %>">性别选择</label>
+                            <asp:Label runat="server" AssociatedControlID="DDLsex" CssClass="register-label">性别选择</asp:Label>
                             <asp:DropDownList ID="DDLsex" runat="server" CssClass="register-select"></asp:DropDownList>
                         </div>
 
                         <div class="register-field">
-                            <label class="register-label" for="<%= Tsname.ClientID %>">姓名</label>
+                            <asp:Label runat="server" AssociatedControlID="Tsname" CssClass="register-label">姓名</asp:Label>
                             <asp:TextBox ID="Tsname" runat="server" CssClass="register-input"></asp:TextBox>
                         </div>
 

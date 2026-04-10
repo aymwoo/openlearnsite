@@ -15,6 +15,7 @@ public partial class Student_register : System.Web.UI.Page
         {
             SiteTitle = "信息科技学习网站";
         }
+        LitSiteTitle.Text = SiteTitle;
 
         if (LearnSite.Common.CookieHelp.IsStudentLogin())
         {

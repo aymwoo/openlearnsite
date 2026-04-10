@@ -18,6 +18,7 @@ public partial class Student_mynum : System.Web.UI.Page
         {
             SiteTitle = "信息科技学习网站";
         }
+        LitSiteTitle.Text = SiteTitle;
 
         if (!IsPostBack)
         {
