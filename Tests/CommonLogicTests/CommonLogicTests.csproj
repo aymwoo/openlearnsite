@@ -34,6 +34,8 @@
     <Compile Include="..\..\App_Code\Common\CustomActivityCatalog.cs" Link="CustomActivityCatalog.cs" />
     <Compile Include="..\..\App_Code\Common\AIGaugeSkillHelper.cs" Link="AIGaugeSkillHelper.cs" />
     <Compile Include="..\..\App_Code\Common\AIStudentExamSkillHelper.cs" Link="AIStudentExamSkillHelper.cs" />
+    <Compile Include="..\..\App_Code\Common\AIActivityPlanPromptBuilder.cs" Link="AIActivityPlanPromptBuilder.cs" />
+    <Compile Include="..\..\App_Code\Bll\AIActivityPlanSkillBootstrap.cs" Link="AIActivityPlanSkillBootstrap.cs" />
     <Compile Include="..\..\App_Code\Model\Typer.cs" Link="Model.Typer.cs" />
     <Compile Include="..\..\App_Code\Model\QuizGrade.cs" Link="Model.QuizGrade.cs" />
     <Compile Include="..\..\App_Code\Model\TermTotal.cs" Link="Model.TermTotal.cs" />

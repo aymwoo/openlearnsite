@@ -669,6 +669,74 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void ActivityPlanPromptBuilder_RequiresTopicAndUsesTopicAsPrimaryIntent()
+    {
+        Assert.Throws<ArgumentException>(() => LearnSite.Common.AIActivityPlanPromptBuilder.Build(new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = "   "
+        }));
+
+        var prompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = "认识分数"
+        });
+
+        Assert.Contains("当前教师意图", prompt, StringComparison.Ordinal);
+        Assert.Contains("认识分数", prompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanPromptBuilder_IncludesOptionalStructuredFieldsOnlyWhenProvided()
+    {
+        var prompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = "认识分数",
+            Grade = "五年级",
+            Duration = "40分钟",
+            TeachingGoals = "理解真分数与假分数"
+        });
+
+        Assert.Contains("授课年级：五年级", prompt, StringComparison.Ordinal);
+        Assert.Contains("课时/时长：40分钟", prompt, StringComparison.Ordinal);
+        Assert.Contains("教学目标：理解真分数与假分数", prompt, StringComparison.Ordinal);
+
+        var minimalPrompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = "认识分数"
+        });
+
+        Assert.DoesNotContain("授课年级：", minimalPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("课时/时长：", minimalPrompt, StringComparison.Ordinal);
+        Assert.DoesNotContain("教学目标：", minimalPrompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanPromptBuilder_TreatsExistingContentAsSupportingBackground()
+    {
+        var prompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = "认识分数",
+            ExistingCourseContent = "旧内容：小数加减法"
+        });
+
+        Assert.Contains("支持背景", prompt, StringComparison.Ordinal);
+        Assert.Contains("如果与当前输入的主题冲突，以教师刚输入的主题为准", prompt, StringComparison.Ordinal);
+        Assert.Contains("旧内容：小数加减法", prompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanSkillBootstrap_UsesDedicatedActivityPlanScopeAndPrompt()
+    {
+        var model = LearnSite.BLL.AIActivityPlanSkillBootstrap.CreateDefaultSkillModel();
+
+        Assert.Equal("activity_plan_courseedit", model.SkillScope);
+        Assert.True(model.IsActive);
+        Assert.Contains("活动计划", model.SkillName, StringComparison.Ordinal);
+        Assert.Contains("活动计划", model.PromptContent, StringComparison.Ordinal);
+        Assert.DoesNotContain("写作", model.PromptContent, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void BllDataTableMappers_MapSoftCategoryList_MapsCategoryFields()
     {
         DataTable dt = new DataTable();
