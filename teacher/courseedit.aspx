@@ -2,6 +2,94 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
     <link rel="stylesheet" type="text/css" href="/App_Themes/Teacher/courseshow.css" />
+    <style type="text/css">
+        .activity-plan-draft {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            white-space: normal;
+        }
+
+        .activity-plan-draft-meta {
+            padding: 0.75rem 0.85rem;
+            border-radius: 0.9rem;
+            background: rgba(99, 102, 241, 0.08);
+            color: #4338ca;
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+
+        .activity-plan-card {
+            border: 1px solid rgba(99, 102, 241, 0.14);
+            border-radius: 0.95rem;
+            padding: 0.9rem;
+            background: #ffffff;
+            box-shadow: 0 10px 24px -22px rgba(79, 70, 229, 0.55);
+        }
+
+        .activity-plan-card-title {
+            margin: 0 0 0.65rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #312e81;
+        }
+
+        .activity-plan-list {
+            margin: 0;
+            padding-left: 1.1rem;
+            color: #334155;
+        }
+
+        .activity-plan-list li + li,
+        .activity-plan-step + .activity-plan-step {
+            margin-top: 0.6rem;
+        }
+
+        .activity-plan-step {
+            padding: 0.8rem;
+            border-radius: 0.85rem;
+            background: linear-gradient(180deg, #fafbfd 0%, #f8f7ff 100%);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .activity-plan-step-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 0.65rem;
+        }
+
+        .activity-plan-step-title {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .activity-plan-step-minutes {
+            color: #5b21b6;
+            font-size: 0.82rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .activity-plan-step-grid {
+            display: grid;
+            gap: 0.55rem;
+        }
+
+        .activity-plan-field-label {
+            display: block;
+            margin-bottom: 0.15rem;
+            color: #6366f1;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .activity-plan-field-value {
+            color: #334155;
+            line-height: 1.65;
+        }
+    </style>
     
 
     <div class="course-edit-page">
@@ -151,12 +239,12 @@
                                 <div id="activity-plan-progress-note" class="ai-progress-note">输入主题后，系统会调用默认 AI Provider 生成活动计划。</div>
                             </div>
                             <div class="ai-panel-group">
-                                <label class="ai-panel-label" for="activity-plan-result">生成结果</label>
-                                <div id="activity-plan-result" class="ai-result-area"></div>
+                                <label class="ai-panel-label" for="activity-plan-result">计划草案预览</label>
+                                <div id="activity-plan-result" class="ai-result-area" aria-live="polite"></div>
                             </div>
                         </div>
                         <div class="ai-panel-footer">
-                            <button type="button" class="ai-action-btn" onclick="copyActivityPlanResult()">复制结果</button>
+                            <button type="button" class="ai-action-btn" onclick="copyActivityPlanResult()">复制草案</button>
                         </div>
                     </aside>
                 </div>

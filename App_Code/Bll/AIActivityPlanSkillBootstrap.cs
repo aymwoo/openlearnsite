@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LearnSite.BLL
 {
@@ -12,23 +12,27 @@ namespace LearnSite.BLL
         {
             try
             {
-                object skillBll = Activator.CreateInstance(Type.GetType("LearnSite.BLL.AICustomSkill"));
+                List<LearnSite.Model.AICustomSkill> scopedSkills = GetScopedSkills();
+                if (HasAnyActiveScopedSkill(scopedSkills))
+                {
+                    return;
+                }
+
+                object skillBll = CreateSkillBll();
                 if (skillBll == null)
                 {
                     return;
                 }
 
-                object existingSkills = skillBll.GetType().GetMethod("GetModelList").Invoke(skillBll, new object[]
+                LearnSite.Model.AICustomSkill reusableSkill = GetScopedSkillToActivate(scopedSkills);
+                if (reusableSkill != null)
                 {
-                    "SkillScope like '%" + ActivityPlanSkillScope + "%'"
-                });
-                if (HasAnyItem(existingSkills))
-                {
+                    reusableSkill.IsActive = true;
+                    skillBll.GetType().GetMethod("Update").Invoke(skillBll, new object[] { reusableSkill });
                     return;
                 }
 
-                LearnSite.Model.AICustomSkill model = CreateDefaultSkillModel();
-                skillBll.GetType().GetMethod("Add").Invoke(skillBll, new object[] { model });
+                skillBll.GetType().GetMethod("Add").Invoke(skillBll, new object[] { CreateDefaultSkillModel() });
             }
             catch
             {
@@ -40,29 +44,78 @@ namespace LearnSite.BLL
             return new LearnSite.Model.AICustomSkill
             {
                 SkillName = "活动计划助手（课程编辑）",
-                PromptContent = "你是活动计划助手。请围绕教师当前输入的主题、年级、课时和教学目标，生成结构清晰、适合课堂实施的活动计划。已有课程内容仅作为支持背景，如果与当前输入冲突，以当前输入的主题为准。",
+                PromptContent = "你是面向一线教师的活动计划助手。请围绕教师当前输入的主题、年级、课时和教学目标，给出适合课堂实施、便于教师审核的活动计划草案。已有课程内容仅作为支持背景，如果与当前输入冲突，以当前输入的主题为准。",
                 SkillScope = ActivityPlanSkillScope,
                 IsActive = true
             };
         }
 
-        private static bool HasAnyItem(object value)
+        internal static bool HasAnyActiveScopedSkill(IEnumerable<LearnSite.Model.AICustomSkill> skills)
         {
-            IEnumerable enumerable = value as IEnumerable;
-            if (enumerable == null)
+            if (skills == null)
             {
                 return false;
             }
 
-            foreach (object item in enumerable)
+            foreach (LearnSite.Model.AICustomSkill skill in skills)
             {
-                if (item != null)
+                if (skill != null && skill.IsActive && ScopeMatches(skill.SkillScope))
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        internal static LearnSite.Model.AICustomSkill GetScopedSkillToActivate(IEnumerable<LearnSite.Model.AICustomSkill> skills)
+        {
+            if (skills == null)
+            {
+                return null;
+            }
+
+            string defaultSkillName = CreateDefaultSkillModel().SkillName;
+            LearnSite.Model.AICustomSkill defaultScopedSkill = skills.FirstOrDefault(skill => skill != null
+                && ScopeMatches(skill.SkillScope)
+                && string.Equals(skill.SkillName, defaultSkillName, StringComparison.Ordinal));
+            if (defaultScopedSkill != null)
+            {
+                return defaultScopedSkill;
+            }
+
+            return skills.FirstOrDefault(skill => skill != null && ScopeMatches(skill.SkillScope));
+        }
+
+        private static object CreateSkillBll()
+        {
+            Type skillBllType = Type.GetType("LearnSite.BLL.AICustomSkill");
+            if (skillBllType == null)
+            {
+                return null;
+            }
+
+            return Activator.CreateInstance(skillBllType);
+        }
+
+        private static List<LearnSite.Model.AICustomSkill> GetScopedSkills()
+        {
+            object skillBll = CreateSkillBll();
+            if (skillBll == null)
+            {
+                return null;
+            }
+
+            return skillBll.GetType().GetMethod("GetModelList").Invoke(skillBll, new object[]
+            {
+                "SkillScope like '%" + ActivityPlanSkillScope + "%' "
+            }) as List<LearnSite.Model.AICustomSkill>;
+        }
+
+        private static bool ScopeMatches(string skillScope)
+        {
+            return !string.IsNullOrEmpty(skillScope)
+                && skillScope.IndexOf(ActivityPlanSkillScope, StringComparison.OrdinalIgnoreCase) >= 0;
         }
     }
 }

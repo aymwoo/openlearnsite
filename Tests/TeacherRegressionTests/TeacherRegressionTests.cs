@@ -698,6 +698,8 @@ public class TeacherRegressionTests
         Assert.Contains("id=\"activity-plan-grade\"", courseEdit, StringComparison.Ordinal);
         Assert.Contains("id=\"activity-plan-duration\"", courseEdit, StringComparison.Ordinal);
         Assert.Contains("id=\"activity-plan-goals\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("计划草案预览", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("复制草案", courseEdit, StringComparison.Ordinal);
         Assert.DoesNotContain("学科", courseEdit, StringComparison.Ordinal);
         Assert.Contains("OnClientClick=\"return syncContent();\"", courseEdit, StringComparison.Ordinal);
     }
@@ -715,7 +717,9 @@ public class TeacherRegressionTests
         Assert.Contains("activity-plan-duration", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-goals", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("existingCourseContent", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("resultArea.textContent = text;", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("renderActivityPlanDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("buildActivityPlanCopyText", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("document.createElement", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("resultArea.innerHTML = text", courseEditScript, StringComparison.Ordinal);
     }
 

@@ -40,8 +40,8 @@ namespace LearnSite.Common
             string teachingGoals = BoundText(request.TeachingGoals, MaxTeachingGoalsLength);
 
             List<string> sections = new List<string>();
-            sections.Add("你是一名面向一线教师的活动计划助手，请根据教师当前输入生成可直接用于课堂实施的活动计划。");
-            sections.Add("当前教师意图：" + topic);
+            sections.Add("请根据以下教师输入生成课堂活动计划草案。只返回 JSON 对象，不要解释，不要 Markdown 代码块。");
+            sections.Add("主题/知识点：" + topic);
 
             AppendStructuredField(sections, "授课年级", grade);
             AppendStructuredField(sections, "课时/时长", duration);
@@ -57,7 +57,10 @@ namespace LearnSite.Common
                 sections.Add(backgroundBuilder.ToString().Trim());
             }
 
-            sections.Add("请输出结构清晰、可执行的课堂活动计划，重点体现教学流程、师生活动与实施建议。");
+            sections.Add("返回 JSON 对象时，顶层字段固定为 teachingGoals、activitySteps、resources、assessment、teacherReminder。");
+            sections.Add("teachingGoals、resources、assessment 必须为字符串数组；teacherReminder 必须为简短字符串。");
+            sections.Add("activitySteps 必须按课堂顺序给出，并且每个步骤都必须包含 title、minutes、teacherAction、studentAction、interactionMethod、resourceSuggestion、assessmentCheck。");
+            sections.Add("minutes 需要使用明确时长表达，例如“5分钟”。请保持结果适合教师审核，不要自动应用到已有学案内容。");
             return string.Join("\n\n", sections.ToArray());
         }
 

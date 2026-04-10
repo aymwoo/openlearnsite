@@ -410,9 +410,50 @@ public class aiprovider_api : IHttpHandler {
             ExistingCourseContent = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["existingCourseContent"], 4000)
         };
 
-        LearnSite.BLL.AIActivityPlanSkillBootstrap.EnsureDefaultSkill();
-        string prompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(request);
-        WriteAiChatResponse(context, prompt, 0.4, 1200, "Activity plan error: ");
+        LearnSite.BLL.AIActivityPlanDraftGenerator generator = new LearnSite.BLL.AIActivityPlanDraftGenerator();
+        LearnSite.BLL.ActivityPlanDraftGenerationResult result = generator.Generate(request);
+        if (!result.Success || result.Draft == null)
+        {
+            string failResp = JsonConvert.SerializeObject(new
+            {
+                success = false,
+                msg = result == null ? "活动计划生成失败。" : result.Message,
+                providerDisplayName = result == null ? string.Empty : result.ProviderDisplayName,
+                skillName = result == null ? string.Empty : result.SkillName
+            });
+            context.Response.Write(failResp);
+            return;
+        }
+
+        string successResp = JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                providerDisplayName = result.ProviderDisplayName,
+                skillName = result.SkillName,
+                message = result.Message,
+                draft = new
+                {
+                    teachingGoals = result.Draft.TeachingGoals,
+                    activitySteps = result.Draft.ActivitySteps.Select(step => new
+                    {
+                        sort = step.Sort,
+                        title = step.Title,
+                        minutes = step.Minutes,
+                        teacherAction = step.TeacherAction,
+                        studentAction = step.StudentAction,
+                        interactionMethod = step.InteractionMethod,
+                        resourceSuggestion = step.ResourceSuggestion,
+                        assessmentCheck = step.AssessmentCheck
+                    }).ToList(),
+                    resources = result.Draft.Resources,
+                    assessment = result.Draft.Assessment,
+                    teacherReminder = result.Draft.TeacherReminder
+                }
+            }
+        });
+        context.Response.Write(successResp);
     }
 
     private void WriteAiChatResponse(HttpContext context, string prompt, double temperature, int maxTokens, string errorPrefix)

@@ -681,8 +681,9 @@ public class CommonLogicTests : IDisposable
             Topic = "认识分数"
         });
 
-        Assert.Contains("当前教师意图", prompt, StringComparison.Ordinal);
+        Assert.Contains("主题/知识点", prompt, StringComparison.Ordinal);
         Assert.Contains("认识分数", prompt, StringComparison.Ordinal);
+        Assert.Contains("只返回 JSON 对象", prompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -725,6 +726,21 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void ActivityPlanPromptBuilder_DeclaresStructuredDraftSchema()
+    {
+        var prompt = LearnSite.Common.AIActivityPlanPromptBuilder.Build(new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = "认识分数"
+        });
+
+        Assert.Contains("只返回 JSON 对象", prompt, StringComparison.Ordinal);
+        Assert.Contains("teachingGoals", prompt, StringComparison.Ordinal);
+        Assert.Contains("activitySteps", prompt, StringComparison.Ordinal);
+        Assert.Contains("teacherReminder", prompt, StringComparison.Ordinal);
+        Assert.Contains("assessmentCheck", prompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ActivityPlanSkillBootstrap_UsesDedicatedActivityPlanScopeAndPrompt()
     {
         var model = LearnSite.BLL.AIActivityPlanSkillBootstrap.CreateDefaultSkillModel();
@@ -753,6 +769,72 @@ public class CommonLogicTests : IDisposable
         Assert.DoesNotContain(new string('时', LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength + 1), prompt, StringComparison.Ordinal);
         Assert.DoesNotContain(new string('目', LearnSite.Common.AIActivityPlanPromptBuilder.MaxTeachingGoalsLength + 1), prompt, StringComparison.Ordinal);
         Assert.DoesNotContain(new string('内', 4001), prompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftHelper_ParseDraft_ParsesStructuredJsonCodeFence()
+    {
+        string response = "```json\n{\n  \"teachingGoals\": [\"理解分数含义\", \"能结合情境表达分数\"],\n  \"activitySteps\": [\n    {\n      \"title\": \"情境导入\",\n      \"minutes\": 5,\n      \"teacherAction\": \"展示分蛋糕图片并提问\",\n      \"studentAction\": \"观察图片并回答\",\n      \"interactionMethod\": \"提问交流\",\n      \"resourceSuggestion\": \"蛋糕图片或实物卡片\",\n      \"assessmentCheck\": \"根据学生表述判断是否理解平均分\"\n    }\n  ],\n  \"resources\": [\"分数卡片\"],\n  \"assessment\": [\"观察学生是否能正确说出二分之一\"],\n  \"teacherReminder\": \"注意让学生先说生活例子。\"\n}\n```";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseDraft(response);
+
+        Assert.NotNull(draft);
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsValidDraft(draft));
+        Assert.Equal("5分钟", draft.ActivitySteps[0].Minutes);
+        Assert.Equal("情境导入", draft.ActivitySteps[0].Title);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftHelper_ParseDraft_NormalizesCommonAlternateFieldNames()
+    {
+        string response = "{\n  \"goals\": \"1. 理解分数含义\\n2. 能说出分数\",\n  \"steps\": [\n    {\n      \"name\": \"合作探究\",\n      \"duration\": \"15分钟\",\n      \"teacher\": \"组织小组操作\",\n      \"student\": \"动手分一分并记录\",\n      \"interaction\": \"小组合作\",\n      \"resource\": \"纸条和圆片\",\n      \"check\": \"巡视学生是否会用分数表示结果\"\n    }\n  ],\n  \"resourceSuggestions\": \"1. 分数圆片；2. 投影示例\",\n  \"assessmentDesign\": \"1. 口头追问；2. 板演展示\",\n  \"teacherTip\": \"关注表述不完整的学生。\"\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseDraft(response);
+
+        Assert.NotNull(draft);
+        Assert.Equal(2, draft.TeachingGoals.Count);
+        Assert.Single(draft.ActivitySteps);
+        Assert.Equal("合作探究", draft.ActivitySteps[0].Title);
+        Assert.Contains("分数圆片", draft.Resources[0], StringComparison.Ordinal);
+        Assert.Contains("口头追问", draft.Assessment[0], StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftHelper_ParseDraft_FailsWhenAnyReturnedStepRemainsInvalid()
+    {
+        string response = "{\n  \"teachingGoals\": [\"理解分数含义\"],\n  \"activitySteps\": [\n    {\n      \"title\": \"情境导入\",\n      \"minutes\": 5,\n      \"teacherAction\": \"展示分蛋糕图片并提问\",\n      \"studentAction\": \"观察图片并回答\",\n      \"interactionMethod\": \"提问交流\",\n      \"resourceSuggestion\": \"蛋糕图片或实物卡片\",\n      \"assessmentCheck\": \"根据学生表述判断是否理解平均分\"\n    },\n    {\n      \"title\": \"错误步骤\",\n      \"minutes\": 8,\n      \"teacherAction\": \"只给出教师动作\"\n    }\n  ],\n  \"resources\": [\"分数卡片\"],\n  \"assessment\": [\"观察学生是否能正确说出二分之一\"],\n  \"teacherReminder\": \"注意让学生先说生活例子。\"\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseDraft(response);
+
+        Assert.Null(draft);
+    }
+
+    [Fact]
+    public void ActivityPlanSkillBootstrap_SelectsScopedSkillToActivate_WhenOnlyInactiveScopedRowsExist()
+    {
+        var skills = new List<LearnSite.Model.AICustomSkill>
+        {
+            new LearnSite.Model.AICustomSkill
+            {
+                Id = 2,
+                SkillName = "其他技能",
+                SkillScope = LearnSite.BLL.AIActivityPlanSkillBootstrap.ActivityPlanSkillScope,
+                IsActive = false
+            },
+            new LearnSite.Model.AICustomSkill
+            {
+                Id = 3,
+                SkillName = LearnSite.BLL.AIActivityPlanSkillBootstrap.CreateDefaultSkillModel().SkillName,
+                SkillScope = LearnSite.BLL.AIActivityPlanSkillBootstrap.ActivityPlanSkillScope,
+                IsActive = false
+            }
+        };
+
+        var skillToActivate = LearnSite.BLL.AIActivityPlanSkillBootstrap.GetScopedSkillToActivate(skills);
+
+        Assert.NotNull(skillToActivate);
+        Assert.Equal(3, skillToActivate.Id);
+        Assert.False(LearnSite.BLL.AIActivityPlanSkillBootstrap.HasAnyActiveScopedSkill(skills));
     }
 
     [Fact]
