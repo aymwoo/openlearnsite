@@ -20,17 +20,19 @@ public partial class Student_Scm : System.Web.UI.MasterPage
     protected string LsLtype = "";
     LearnSite.Model.Cook cook = new LearnSite.Model.Cook();
     protected void Page_Load(object sender, EventArgs e)
-    {
-        SiteTitle = LearnSite.Common.XmlHelp.SiteTitle();
-        // 初始化学生学习状态上报信息
-        if (cook.IsExist())
         {
-            LsSnum = cook.Snum;
-            LsSname = cook.Sname;
-            LsSgrade = cook.Sgrade.ToString();
-            LsSclass = cook.Sclass.ToString();
-            LsSid = cook.Sid.ToString();
-        }
+            SiteTitle = LearnSite.Common.XmlHelp.SiteTitle();
+            LiteralSiteTitle1.Text = SiteTitle;
+            LiteralSiteTitle2.Text = SiteTitle;
+            // 初始化学生学习状态上报信息
+            if (cook.IsExist())
+            {
+                LsSnum = cook.Snum;
+                LsSname = cook.Sname;
+                LsSgrade = cook.Sgrade.ToString();
+                LsSclass = cook.Sclass.ToString();
+                LsSid = cook.Sid.ToString();
+            }
         if (!IsPostBack)
         {
             ShowListMenu();
