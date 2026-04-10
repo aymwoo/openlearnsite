@@ -40,7 +40,10 @@ editing page with the minimum context needed for useful generation.
   4. When lesson or course content already exists in the editor, the planning
      request uses that context and follows the existing configured AI provider
      path without a separate setup flow.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — Add the server-side activity-plan request contract on the existing AI provider path.
+- [ ] 01-02-PLAN.md — Embed the course-editor activity-plan assistant UI and regression coverage.
 **UI hint**: yes
 
 ### Phase 2: Structured plan draft generation
@@ -98,7 +101,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Embedded planning entry | 0/TBD | Not started | - |
+| 1. Embedded planning entry | 0/2 | Planned | - |
 | 2. Structured plan draft generation | 0/TBD | Not started | - |
 | 3. Guided review and section regeneration | 0/TBD | Not started | - |
 | 4. Selective apply and draft continuity | 0/TBD | Not started | - |
