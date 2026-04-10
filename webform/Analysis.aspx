@@ -1,10 +1,9 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Analysis.aspx.cs" Inherits="webform_Analysis" ResponseEncoding="utf-8" Culture="zh-CN" UICulture="zh-CN" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Analysis.aspx.cs" Inherits="webform_Analysis" ResponseEncoding="utf-8" Culture="zh-CN" UICulture="zh-CN" %>
 
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head id="Head1" runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta charset="utf-8" />
     <title>学生成绩表</title>
     
 
