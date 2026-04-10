@@ -15,7 +15,7 @@ sections, to selectively applying approved content back into the editor.
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Embedded planning entry** - Teachers start planning from the
+- [x] **Phase 1: Embedded planning entry** - Teachers start planning from the
   existing editor with lightweight context and existing provider routing.
 - [ ] **Phase 2: Structured plan draft generation** - Teachers receive a
   complete classroom activity-plan draft from their topic and context.
@@ -42,8 +42,8 @@ editing page with the minimum context needed for useful generation.
      path without a separate setup flow.
 **Plans**: 2 plans
 Plans:
-- [ ] 01-01-PLAN.md — Add the server-side activity-plan request contract on the existing AI provider path.
-- [ ] 01-02-PLAN.md — Embed the course-editor activity-plan assistant UI and regression coverage.
+- [x] 01-01-PLAN.md — Add the server-side activity-plan request contract on the existing AI provider path.
+- [x] 01-02-PLAN.md — Embed the course-editor activity-plan assistant UI and regression coverage.
 **UI hint**: yes
 
 ### Phase 2: Structured plan draft generation
@@ -101,7 +101,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Embedded planning entry | 0/2 | Planned | - |
+| 1. Embedded planning entry | 2/2 | Complete | 2026-04-10 |
 | 2. Structured plan draft generation | 0/TBD | Not started | - |
 | 3. Guided review and section regeneration | 0/TBD | Not started | - |
 | 4. Selective apply and draft continuity | 0/TBD | Not started | - |

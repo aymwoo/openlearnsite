@@ -11,13 +11,13 @@ existing teacher lesson or course editing workflow.
 
 ### Input context
 
-- [ ] **INPUT-01**: Teacher can start generation by entering a lesson topic or
+- [x] **INPUT-01**: Teacher can start generation by entering a lesson topic or
   knowledge point
-- [ ] **INPUT-02**: Teacher can optionally provide grade, subject, or lesson
+- [x] **INPUT-02**: Teacher can optionally provide grade, subject, or lesson
   duration to improve plan quality
-- [ ] **INPUT-03**: Teacher can optionally provide teaching goals or key focus to
+- [x] **INPUT-03**: Teacher can optionally provide teaching goals or key focus to
   steer plan generation
-- [ ] **INPUT-04**: System can reuse current lesson or course content as prompt
+- [x] **INPUT-04**: System can reuse current lesson or course content as prompt
   context when generating a plan
 
 ### Plan generation
@@ -44,11 +44,11 @@ existing teacher lesson or course editing workflow.
 
 ### Workflow and trust
 
-- [ ] **FLOW-01**: The activity-plan assistant works inside the existing teacher
+- [x] **FLOW-01**: The activity-plan assistant works inside the existing teacher
   lesson or course editing page
 - [ ] **FLOW-02**: Generated plans remain teacher-reviewed drafts and are never
   auto-published or auto-applied without teacher confirmation
-- [ ] **FLOW-03**: System uses the existing AI provider and custom skill
+- [x] **FLOW-03**: System uses the existing AI provider and custom skill
   infrastructure for lesson-plan generation instead of introducing a separate AI
   stack
 
@@ -79,10 +79,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INPUT-01 | Phase 1 | Pending |
-| INPUT-02 | Phase 1 | Pending |
-| INPUT-03 | Phase 1 | Pending |
-| INPUT-04 | Phase 1 | Pending |
+| INPUT-01 | Phase 1 | Complete |
+| INPUT-02 | Phase 1 | Complete |
+| INPUT-03 | Phase 1 | Complete |
+| INPUT-04 | Phase 1 | Complete |
 | PLAN-01 | Phase 2 | Pending |
 | PLAN-02 | Phase 2 | Pending |
 | PLAN-03 | Phase 2 | Pending |
@@ -91,9 +91,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EDIT-02 | Phase 3 | Pending |
 | EDIT-03 | Phase 4 | Pending |
 | EDIT-04 | Phase 4 | Pending |
-| FLOW-01 | Phase 1 | Pending |
+| FLOW-01 | Phase 1 | Complete |
 | FLOW-02 | Phase 2 | Pending |
-| FLOW-03 | Phase 1 | Pending |
+| FLOW-03 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 15 total
@@ -102,4 +102,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-10*
-*Last updated: 2026-04-10 after roadmap creation*
+*Last updated: 2026-04-10 after Phase 1 completion*

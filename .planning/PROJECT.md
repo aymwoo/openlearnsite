@@ -26,12 +26,13 @@ without having to manually break the lesson into steps.
 - ✓ Teachers can use scoped AI skills for rubric generation and student exam
   assessment in `teacher/gauge.aspx`, `teacher/gaugeitem.aspx`, and
   `student/myexam.aspx` — existing
+- ✓ Teachers can start activity-plan generation from `teacher/courseedit.aspx`
+  with only a topic required, optional structured guidance, and existing lesson
+  content reused through the current AI provider route — Validated in Phase 1:
+  Embedded planning entry
 
 ### Active
 
-- [ ] Teachers can enter a lesson topic or knowledge point in the teacher
-  lesson or course editing flow and generate a structured classroom activity
-  plan
 - [ ] Generated activity plans include teaching goals, step-by-step activity
   flow, time allocation, interaction methods, resource suggestions, and
   assessment design
@@ -88,10 +89,16 @@ lesson or course editing surface, not a new standalone assistant.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Start from the teacher lesson or course editing page instead of a separate assistant | Teachers already prepare content in this surface, so the smallest useful change is to improve the existing flow | — Pending |
-| Focus v1 on activity-plan generation | The main pain is converting a topic into executable activities, not broad AI coverage everywhere | — Pending |
-| Require only a topic or knowledge point as the minimum prompt | Lower input friction increases the chance teachers actually use the tool during preparation | — Pending |
+| Start from the teacher lesson or course editing page instead of a separate assistant | Teachers already prepare content in this surface, so the smallest useful change is to improve the existing flow | Validated in Phase 1 |
+| Focus v1 on activity-plan generation | The main pain is converting a topic into executable activities, not broad AI coverage everywhere | Validated in Phase 1 |
+| Require only a topic or knowledge point as the minimum prompt | Lower input friction increases the chance teachers actually use the tool during preparation | Validated in Phase 1 |
 | Generate full pedagogical structure, not just prose content | The missing value is organization of goals, steps, interactions, resources, and assessment | — Pending |
+
+## Current State
+
+Phase 1 complete — teachers can open a dedicated activity-plan assistant inside
+`teacher/courseedit.aspx`, submit topic-first structured requests, and reuse the
+existing authenticated AI provider path.
 
 ## Evolution
 
@@ -111,4 +118,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-10 after initialization*
+*Last updated: 2026-04-10 after Phase 1 completion*

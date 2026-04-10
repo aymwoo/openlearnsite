@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-04-10T11:34:41.957Z"
-last_activity: 2026-04-10 -- Phase 01 planning complete
+status: ready
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-04-10T11:52:00Z"
+last_activity: 2026-04-10 -- Phase 01 completed
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 0
-  percent: 0
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -22,22 +22,22 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable
 activity plan without having to manually break the lesson into steps.
-**Current focus:** Phase 1: Embedded planning entry
+**Current focus:** Phase 2: Structured plan draft generation
 
 ## Current Position
 
-Phase: 1 of 4 (Embedded planning entry)
+Phase: 2 of 4 (Structured plan draft generation)
 Plan: 0 of TBD in current phase
 Status: Ready to execute
-Last activity: 2026-04-10 -- Phase 01 planning complete
+Last activity: 2026-04-10 -- Phase 01 completed
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 2
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -45,7 +45,7 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -66,6 +66,12 @@ Recent decisions affecting current work:
 - [Roadmap]: Keep teachers in control through preview, regeneration, selective
   apply, and saved drafts.
 
+- [Phase 01]: Build activity-plan requests on the server and reuse the default
+  AI provider route instead of exposing raw prompts in the browser.
+
+- [Phase 01]: Keep the course editor as the primary surface and embed the
+  activity-plan assistant as a right-side panel.
+
 ### Pending Todos
 
 None yet.
@@ -79,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-10T10:59:09.851Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-embedded-planning-entry/01-CONTEXT.md
+Last session: 2026-04-10T11:52:00Z
+Stopped at: Completed 01-02-PLAN.md
+Resume file: None
