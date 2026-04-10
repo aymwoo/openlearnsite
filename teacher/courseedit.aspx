@@ -35,6 +35,14 @@
             margin-bottom: 0.65rem;
         }
 
+        .activity-plan-card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
         .activity-plan-card-head .activity-plan-card-title {
             margin: 0;
         }
@@ -53,6 +61,22 @@
         .activity-plan-section-action[disabled] {
             cursor: not-allowed;
             opacity: 0.7;
+        }
+
+        .activity-plan-section-select {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.65rem;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.04);
+            color: #334155;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .activity-plan-section-select input {
+            margin: 0;
         }
 
         .activity-plan-section-status {
@@ -130,6 +154,42 @@
         .activity-plan-field-value {
             color: #334155;
             line-height: 1.65;
+        }
+
+        .activity-plan-draft-banner {
+            display: none;
+            margin-bottom: 0.85rem;
+            padding: 0.85rem 0.95rem;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(59, 130, 246, 0.16);
+            background: rgba(239, 246, 255, 0.95);
+            color: #1d4ed8;
+        }
+
+        .activity-plan-draft-banner-title {
+            margin: 0 0 0.25rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .activity-plan-draft-banner-text {
+            margin: 0;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #1e40af;
+        }
+
+        .activity-plan-draft-banner-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-top: 0.7rem;
+        }
+
+        .activity-plan-footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
         }
     </style>
     
@@ -251,6 +311,13 @@
                                 <span class="ai-panel-tip-badge">使用建议</span>
                                 <p class="ai-panel-tip-text">先输入主题或知识点，再按需补充年级、课时和教学目标。当前学案内容会自动作为支持背景发送。</p>
                             </div>
+                            <div id="activity-plan-draft-banner" class="activity-plan-draft-banner" aria-live="polite">
+                                <p class="activity-plan-draft-banner-title">继续上次草案</p>
+                                <p id="activity-plan-draft-banner-text" class="activity-plan-draft-banner-text">当前课程存在已保存的活动计划草案，可选择继续编辑或重新开始。</p>
+                                <div class="activity-plan-draft-banner-actions">
+                                    <button type="button" id="activity-plan-resume-btn" class="ai-action-btn" onclick="resumeSavedActivityPlanDraft()">继续上次草案</button>
+                                </div>
+                            </div>
                             <div class="ai-panel-group">
                                 <label class="ai-panel-label" for="activity-plan-topic">主题 / 知识点 <span style="color:#dc2626;">*</span></label>
                                 <textarea id="activity-plan-topic" class="ai-prompt-input" placeholder="例如：分数的初步认识"></textarea>
@@ -286,7 +353,11 @@
                             </div>
                         </div>
                         <div class="ai-panel-footer">
-                            <button type="button" class="ai-action-btn" onclick="copyActivityPlanResult()">复制草案</button>
+                            <div class="activity-plan-footer-actions">
+                                <button type="button" class="ai-action-btn" onclick="copyActivityPlanResult()">复制草案</button>
+                                <button type="button" id="activity-plan-save-draft-btn" class="ai-action-btn" onclick="saveCurrentActivityPlanDraft()">保存草案</button>
+                                <button type="button" id="activity-plan-apply-selected-btn" class="ai-action-btn" onclick="applySelectedActivityPlanSections()">应用所选章节</button>
+                            </div>
                         </div>
                     </aside>
                 </div>
