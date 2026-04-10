@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   complete classroom activity-plan draft from their topic and context.
 - [x] **Phase 3: Guided review and section regeneration** - Teachers inspect the
   draft safely and improve weak sections without losing strong ones.
-- [ ] **Phase 4: Selective apply and draft continuity** - Teachers move approved
+- [x] **Phase 4: Selective apply and draft continuity** - Teachers move approved (completed 2026-04-10)
   sections into lesson content and resume saved drafts later.
 
 ## Phase Details
@@ -97,7 +97,7 @@ continue unfinished planning work later.
 **Plans**: 2 plans
 Plans:
 - [x] 04-01-PLAN.md — Add per-course saved-draft persistence, migration, and authenticated draft status/save/load actions.
-- [ ] 04-02-PLAN.md — Add append-only selective apply plus explicit save/resume/replace UI flows in the course-editor panel.
+- [x] 04-02-PLAN.md — Add append-only selective apply plus explicit save/resume/replace UI flows in the course-editor panel.
 **UI hint**: yes
 
 ## Progress
@@ -110,4 +110,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Embedded planning entry | 2/2 | Complete | 2026-04-10 |
 | 2. Structured plan draft generation | 2/2 | Complete | 2026-04-10 |
 | 3. Guided review and section regeneration | 2/2 | Complete | 2026-04-10 |
-| 4. Selective apply and draft continuity | 0/TBD | Not started | - |
+| 4. Selective apply and draft continuity | 2/2 | Complete   | 2026-04-10 |

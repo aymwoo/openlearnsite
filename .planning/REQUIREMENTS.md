@@ -37,7 +37,7 @@ existing teacher lesson or course editing workflow.
   applied to existing lesson content
 - [x] **EDIT-02**: Teacher can regenerate individual sections of the plan without
   discarding the entire draft
-- [ ] **EDIT-03**: Teacher can selectively write chosen plan sections back into
+- [x] **EDIT-03**: Teacher can selectively write chosen plan sections back into
   the existing lesson or activity editor
 - [x] **EDIT-04**: System can save generated plan drafts so the teacher can
   continue editing later
@@ -89,7 +89,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAN-04 | Phase 2 | Complete |
 | EDIT-01 | Phase 3 | Complete |
 | EDIT-02 | Phase 3 | Complete |
-| EDIT-03 | Phase 4 | Pending |
+| EDIT-03 | Phase 4 | Complete |
 | EDIT-04 | Phase 4 | Complete |
 | FLOW-01 | Phase 1 | Complete |
 | FLOW-02 | Phase 2 | Complete |

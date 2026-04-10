@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-04-10T16:25:38.046Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-04-10T16:33:44.337Z"
 last_activity: 2026-04-10
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 8
-  completed_plans: 7
-  percent: 88
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
@@ -22,22 +22,22 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable
 activity plan without having to manually break the lesson into steps.
-**Current focus:** Phase 04 — selective-apply-and-draft-continuity
+**Current focus:** Phase 04 complete — selective-apply-and-draft-continuity
 
 ## Current Position
 
-Phase: 04 (selective-apply-and-draft-continuity) — EXECUTING
+Phase: 04 (selective-apply-and-draft-continuity) — COMPLETE
 Plan: 2 of 2
 Status: Phase complete — ready for verification
 Last activity: 2026-04-10
 
-Progress: [███████░░░] 75%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6
+- Total plans completed: 8
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -48,6 +48,7 @@ Progress: [███████░░░] 75%
 | 01 | 2 | - | - |
 | 02 | 2 | - | - |
 | 03 | 2 | - | - |
+| 04 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -55,7 +56,7 @@ Progress: [███████░░░] 75%
 - Trend: Stable
 
 | Phase 04 P01 | 38m | 2 tasks | 8 files |
-| Phase 04 P01 | 38m | 2 tasks | 8 files |
+| Phase 04 P02 | 26m | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -79,25 +80,19 @@ Recent decisions affecting current work:
 
 - [Phase 04]: Keep saved activity-plan continuity in a dedicated per-course draft table and expose it through the existing authenticated AI handler instead of mixing draft state into lesson content.
 - [Phase 04]: Require explicit draft-status checks and teacher-owned course authorization before any save, load, or delete draft action succeeds.
-- [Phase 04]: Keep saved activity-plan continuity in a dedicated per-course draft table and expose it through the existing authenticated AI handler instead of mixing draft state into lesson content.
-- [Phase 04]: Require explicit draft-status checks and teacher-owned course authorization before any save, load, or delete draft action succeeds.
+- [Phase 04]: Apply approved plan sections by appending labeled blocks into the existing editor content instead of calling a second lesson-save path.
+- [Phase 04]: Recheck saved-draft status on generate so replace-versus-continue prompts do not rely only on stale browser state.
 
 ### Pending Todos
 
-- Map approved plan sections into existing lesson editor content without losing
-  teacher control.
-
-- Decide draft persistence shape for save and resume behavior in phase 4.
+None for the scoped phase work.
 
 ### Blockers/Concerns
 
-- Confirm exact field mapping from generated plan sections into lesson and
-  activity editor fields.
-
-- Decide how saved drafts behave once apply and persistence are introduced.
+None.
 
 ## Session Continuity
 
-Last session: 2026-04-10T16:25:38.044Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-04-10T16:33:09.197Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
