@@ -105,7 +105,7 @@ CodeFile="index.aspx.cs" Inherits="index" %>
               />
             </svg>
             <h1 class="text-xl sm:text-2xl font-bold text-gray-800 tracking-tight">
-              <%= SiteTitle %>
+              <asp:Literal ID="LitSiteTitle" runat="server" />
             </h1>
           </div>
           <div class="hidden sm:block">
