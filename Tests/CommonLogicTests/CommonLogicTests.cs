@@ -940,14 +940,27 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
-    public void CourseActivityPlanDraftDal_BuildUpsertSql_UsesSingleCurrentDraftPerCourse()
+    public void ActivityPlanSavedDraftHelper_ParseRecord_UsesStoredContextFallbacks()
     {
-        var sql = LearnSite.DAL.CourseActivityPlanDraft.BuildUpsertSql();
+        var record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildRecord(12, 5, "认识分数", "五年级", "40分钟", "理解分数含义", "旧内容", BuildValidActivityPlanDraft());
+        record.Grade = "六年级";
+        record.Duration = "45分钟";
+        record.TeachingGoalsInput = "回退目标";
+        record.ExistingCourseContentSnapshot = "回退内容";
+        record.DraftJson = "{\"draft\":{" +
+            "\"teachingGoals\":[\"理解分数含义\"]," +
+            "\"activitySteps\":[{\"title\":\"情境导入\",\"minutes\":\"5分钟\",\"teacherAction\":\"展示图片\",\"studentAction\":\"回答问题\",\"interactionMethod\":\"提问交流\",\"resourceSuggestion\":\"图片\",\"assessmentCheck\":\"判断理解\"}]," +
+            "\"resources\":[\"分数卡片\"]," +
+            "\"assessment\":[\"口头追问\"]," +
+            "\"teacherReminder\":\"提醒学生联系生活。\"}}";
 
-        Assert.Contains("if exists", sql, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("where Cid=@Cid", sql, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("update CourseActivityPlanDraft", sql, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("insert into CourseActivityPlanDraft", sql, StringComparison.OrdinalIgnoreCase);
+        var loaded = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseRecord(record, 12, 5);
+
+        Assert.NotNull(loaded);
+        Assert.Equal("六年级", loaded.Grade);
+        Assert.Equal("45分钟", loaded.Duration);
+        Assert.Equal("回退目标", loaded.TeachingGoals);
+        Assert.Equal("回退内容", loaded.ExistingCourseContent);
     }
 
     private static LearnSite.Common.ActivityPlanDraft BuildValidActivityPlanDraft()
