@@ -686,6 +686,8 @@ public partial class UpGrade : System.Web.UI.Page
         LearnSite.DBUtility.UpdateGrade.UpdateTable1832();
         LearnSite.DBUtility.UpdateGrade.UpdateTable1833();
         LearnSite.DBUtility.UpdateGrade.UpdateTable1834();
+        LearnSite.DBUtility.UpdateGrade.UpdateTableSurveyVenableai();
+        LearnSite.DBUtility.UpdateGrade.UpdateTableSurveyQuestionFields();
     }
     protected void BtnCreateTable_Click(object sender, EventArgs e)
     {

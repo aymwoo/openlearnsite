@@ -3375,6 +3375,23 @@ namespace LearnSite.DBUtility
 
         public static void UpdateTable1834()
         {
+        }
+
+        /// <summary>
+        /// 更新Survey表，添加Venableai列
+        /// </summary>
+        public static void UpdateTableSurveyVenableai()
+        {
+            string SurveyTable = "Survey";
+            string Venableai = "Venableai";
+            if (!DbHelperSQL.ColumnExists(SurveyTable, Venableai))
+            {
+                DbHelperSQL.AddColumn(SurveyTable, Venableai, "bit", 0);
+            }
+        }
+
+        public static void UpdateTableSurveyQuestionFields()
+        {
             string SurveyQuestionTable = "SurveyQuestion";
             string[] fields = { "ChuTiRen", "ChuTiRenID", "ZhuangTai", "DianZan", "CanKaoYe", "Qtype", "QuestionConfig", "MinLength", "MaxLength", "Required", "SortOrder" };
             string[] types = { "nvarchar(50)", "nvarchar(50)", "int", "nvarchar(MAX)", "nvarchar(MAX)", "int", "nvarchar(MAX)", "int", "int", "bit", "int" };

@@ -12,6 +12,7 @@ public partial class Student_Stud : System.Web.UI.MasterPage
         if (!IsPostBack)
         {
             SiteTitle = LearnSite.Common.XmlHelp.SiteTitle();
+            LiteralSiteTitle.Text = SiteTitle;
             LearnSite.Model.Cook cook = new LearnSite.Model.Cook();
             if (cook.IsExist())
             {
