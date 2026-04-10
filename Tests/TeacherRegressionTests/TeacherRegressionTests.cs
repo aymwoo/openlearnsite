@@ -736,6 +736,56 @@ public class TeacherRegressionTests
         Assert.DoesNotContain("resultArea.innerHTML = text", courseEditScript, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void CourseEdit_ShouldExposeApplyAndResumePanelMarkup()
+    {
+        var courseEdit = File.ReadAllText(Path.Combine(TeacherRoot, "courseedit.aspx"));
+
+        Assert.Contains("id=\"activity-plan-draft-banner\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-resume-btn\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-save-draft-btn\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-apply-selected-btn\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("继续上次草案", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("保存草案", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("应用所选章节", courseEdit, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CourseEdit_ShouldKeepAppendOnlyApplyAndDraftResumeHooks()
+    {
+        var courseEditScript = File.ReadAllText(Path.Combine(RepoRoot, "js", "courseedit.js"));
+
+        Assert.Contains("var activityPlanDraftStatus =", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("var activityPlanSelectionState =", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("toggleActivityPlanSectionSelection", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("applySelectedActivityPlanSections", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("confirmActivityPlanApply", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("appendActivityPlanSectionsToEditor", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("escapeActivityPlanHtml", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=activityPlanDraftStatus", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=activityPlanSaveDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=activityPlanLoadDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=activityPlanDeleteDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("window.confirm", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("action=saveCourse", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("Btnedit.click()", courseEditScript, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CourseEdit_ShouldNameSectionsBeforeAppendAndAvoidOverwriteLogic()
+    {
+        var courseEditScript = File.ReadAllText(Path.Combine(RepoRoot, "js", "courseedit.js"));
+
+        Assert.Contains("教学目标", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("活动步骤", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("教学资源", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("评价设计", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("教师提醒", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("field.value = existingContent + appendedContent", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("replace(existingContent", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("dedupe", courseEditScript, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [MemberData(nameof(GetContentPagesReturningToCourse))]
     public void ContentPages_ShouldKeepReturnToCourseCopy(string relativePath)
