@@ -810,6 +810,58 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void ActivityPlanDraftHelper_OnlyAllowsSupportedSectionTargets()
+    {
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget("teachingGoals"));
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget("activitySteps"));
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget("resources"));
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget("assessment"));
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget("teacherReminder"));
+        Assert.False(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget("fullDraft"));
+        Assert.False(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget("activitySteps[0]"));
+    }
+
+    [Fact]
+    public void ActivityPlanPromptBuilder_BuildSectionRegeneration_RestrictsPromptToOneTopLevelKey()
+    {
+        var prompt = LearnSite.Common.AIActivityPlanPromptBuilder.BuildSectionRegeneration(new LearnSite.Common.AIActivityPlanSectionRegenerationRequest
+        {
+            Topic = "认识分数",
+            SectionTarget = "activitySteps",
+            CurrentDraft = BuildValidActivityPlanDraft()
+        });
+
+        Assert.Contains("本次只允许重写的顶层字段：activitySteps", prompt, StringComparison.Ordinal);
+        Assert.Contains("返回 JSON 时只能包含一个顶层字段，且该字段名必须是 activitySteps", prompt, StringComparison.Ordinal);
+        Assert.Contains("不要返回完整草案", prompt, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftHelper_MergeRegeneratedSection_ReplacesOnlyRequestedSection()
+    {
+        var currentDraft = BuildValidActivityPlanDraft();
+        string response = "{\"resources\":[\"分数圆片\",\"投影课件\"]}";
+
+        var mergedDraft = LearnSite.Common.AIActivityPlanDraftHelper.MergeRegeneratedSection(currentDraft, "resources", response);
+
+        Assert.NotNull(mergedDraft);
+        Assert.Equal(new[] { "分数圆片", "投影课件" }, mergedDraft.Resources);
+        Assert.Equal(currentDraft.TeacherReminder, mergedDraft.TeacherReminder);
+        Assert.Equal(currentDraft.TeachingGoals, mergedDraft.TeachingGoals);
+        Assert.Single(mergedDraft.ActivitySteps);
+    }
+
+    [Fact]
+    public void ActivityPlanDraftHelper_MergeRegeneratedSection_RejectsWrongKeyOrIncompleteContent()
+    {
+        var currentDraft = BuildValidActivityPlanDraft();
+
+        Assert.Null(LearnSite.Common.AIActivityPlanDraftHelper.MergeRegeneratedSection(currentDraft, "resources", "{\"assessment\":[\"口头追问\"]}"));
+        Assert.Null(LearnSite.Common.AIActivityPlanDraftHelper.MergeRegeneratedSection(currentDraft, "teacherReminder", "{\"teacherReminder\":\"   \"}"));
+        Assert.Null(LearnSite.Common.AIActivityPlanDraftHelper.MergeRegeneratedSection(currentDraft, "activitySteps", "{\"activitySteps\":[{\"title\":\"练习\",\"minutes\":\"10分钟\",\"teacherAction\":\"组织练习\"}]}"));
+    }
+
+    [Fact]
     public void ActivityPlanSkillBootstrap_SelectsScopedSkillToActivate_WhenOnlyInactiveScopedRowsExist()
     {
         var skills = new List<LearnSite.Model.AICustomSkill>
@@ -835,6 +887,31 @@ public class CommonLogicTests : IDisposable
         Assert.NotNull(skillToActivate);
         Assert.Equal(3, skillToActivate.Id);
         Assert.False(LearnSite.BLL.AIActivityPlanSkillBootstrap.HasAnyActiveScopedSkill(skills));
+    }
+
+    private static LearnSite.Common.ActivityPlanDraft BuildValidActivityPlanDraft()
+    {
+        return new LearnSite.Common.ActivityPlanDraft
+        {
+            TeachingGoals = new List<string> { "理解分数含义", "能结合情境表达分数" },
+            ActivitySteps = new List<LearnSite.Common.ActivityPlanDraftStep>
+            {
+                new LearnSite.Common.ActivityPlanDraftStep
+                {
+                    Sort = 1,
+                    Title = "情境导入",
+                    Minutes = "5分钟",
+                    TeacherAction = "展示分蛋糕图片并提问",
+                    StudentAction = "观察图片并回答",
+                    InteractionMethod = "提问交流",
+                    ResourceSuggestion = "蛋糕图片或实物卡片",
+                    AssessmentCheck = "根据学生表述判断是否理解平均分"
+                }
+            },
+            Resources = new List<string> { "分数卡片" },
+            Assessment = new List<string> { "观察学生是否能正确说出二分之一" },
+            TeacherReminder = "注意让学生先说生活例子。"
+        };
     }
 
     [Fact]

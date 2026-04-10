@@ -17,9 +17,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Embedded planning entry** - Teachers start planning from the
   existing editor with lightweight context and existing provider routing.
-- [ ] **Phase 2: Structured plan draft generation** - Teachers receive a
+- [x] **Phase 2: Structured plan draft generation** - Teachers receive a
   complete classroom activity-plan draft from their topic and context.
-- [ ] **Phase 3: Guided review and section regeneration** - Teachers inspect the
+- [x] **Phase 3: Guided review and section regeneration** - Teachers inspect the
   draft safely and improve weak sections without losing strong ones.
 - [ ] **Phase 4: Selective apply and draft continuity** - Teachers move approved
   sections into lesson content and resume saved drafts later.
@@ -78,8 +78,8 @@ improve only the parts that need revision.
      same draft review flow.
 **Plans**: 2 plans
 Plans:
-- [ ] 03-01-PLAN.md — Add server-side section regeneration, validation, and merged draft return on the existing AI route.
-- [ ] 03-02-PLAN.md — Add section-level regenerate controls with local retry state in the course-editor preview.
+- [x] 03-01-PLAN.md — Add server-side section regeneration, validation, and merged draft return on the existing AI route.
+- [x] 03-02-PLAN.md — Add section-level regenerate controls with local retry state in the course-editor preview.
 **UI hint**: yes
 
 ### Phase 4: Selective apply and draft continuity
@@ -105,6 +105,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Embedded planning entry | 2/2 | Complete | 2026-04-10 |
-| 2. Structured plan draft generation | 0/TBD | Not started | - |
-| 3. Guided review and section regeneration | 0/TBD | Not started | - |
+| 2. Structured plan draft generation | 2/2 | Complete | 2026-04-10 |
+| 3. Guided review and section regeneration | 2/2 | Complete | 2026-04-10 |
 | 4. Selective apply and draft continuity | 0/TBD | Not started | - |

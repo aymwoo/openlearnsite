@@ -22,20 +22,20 @@ existing teacher lesson or course editing workflow.
 
 ### Plan generation
 
-- [ ] **PLAN-01**: Teacher can generate a structured activity plan with teaching
+- [x] **PLAN-01**: Teacher can generate a structured activity plan with teaching
   goals, step flow, and time allocation
-- [ ] **PLAN-02**: Generated activity plan includes interaction methods such as
+- [x] **PLAN-02**: Generated activity plan includes interaction methods such as
   questioning, discussion, grouping, presentation, or hands-on practice
-- [ ] **PLAN-03**: Generated activity plan includes resource suggestions such as
+- [x] **PLAN-03**: Generated activity plan includes resource suggestions such as
   materials, tools, examples, or practice ideas
-- [ ] **PLAN-04**: Generated activity plan includes assessment design such as
+- [x] **PLAN-04**: Generated activity plan includes assessment design such as
   observation points, checks for understanding, or completion criteria
 
 ### Review and editing
 
-- [ ] **EDIT-01**: Teacher can preview the generated activity plan before it is
+- [x] **EDIT-01**: Teacher can preview the generated activity plan before it is
   applied to existing lesson content
-- [ ] **EDIT-02**: Teacher can regenerate individual sections of the plan without
+- [x] **EDIT-02**: Teacher can regenerate individual sections of the plan without
   discarding the entire draft
 - [ ] **EDIT-03**: Teacher can selectively write chosen plan sections back into
   the existing lesson or activity editor
@@ -46,7 +46,7 @@ existing teacher lesson or course editing workflow.
 
 - [x] **FLOW-01**: The activity-plan assistant works inside the existing teacher
   lesson or course editing page
-- [ ] **FLOW-02**: Generated plans remain teacher-reviewed drafts and are never
+- [x] **FLOW-02**: Generated plans remain teacher-reviewed drafts and are never
   auto-published or auto-applied without teacher confirmation
 - [x] **FLOW-03**: System uses the existing AI provider and custom skill
   infrastructure for lesson-plan generation instead of introducing a separate AI
@@ -83,16 +83,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INPUT-02 | Phase 1 | Complete |
 | INPUT-03 | Phase 1 | Complete |
 | INPUT-04 | Phase 1 | Complete |
-| PLAN-01 | Phase 2 | Pending |
-| PLAN-02 | Phase 2 | Pending |
-| PLAN-03 | Phase 2 | Pending |
-| PLAN-04 | Phase 2 | Pending |
-| EDIT-01 | Phase 3 | Pending |
-| EDIT-02 | Phase 3 | Pending |
+| PLAN-01 | Phase 2 | Complete |
+| PLAN-02 | Phase 2 | Complete |
+| PLAN-03 | Phase 2 | Complete |
+| PLAN-04 | Phase 2 | Complete |
+| EDIT-01 | Phase 3 | Complete |
+| EDIT-02 | Phase 3 | Complete |
 | EDIT-03 | Phase 4 | Pending |
 | EDIT-04 | Phase 4 | Pending |
 | FLOW-01 | Phase 1 | Complete |
-| FLOW-02 | Phase 2 | Pending |
+| FLOW-02 | Phase 2 | Complete |
 | FLOW-03 | Phase 1 | Complete |
 
 **Coverage:**
@@ -102,4 +102,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-10*
-*Last updated: 2026-04-10 after Phase 1 completion*
+*Last updated: 2026-04-10 after Phase 3 completion*

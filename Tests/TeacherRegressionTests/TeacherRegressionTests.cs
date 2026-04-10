@@ -699,6 +699,8 @@ public class TeacherRegressionTests
         Assert.Contains("id=\"activity-plan-duration\"", courseEdit, StringComparison.Ordinal);
         Assert.Contains("id=\"activity-plan-goals\"", courseEdit, StringComparison.Ordinal);
         Assert.Contains("计划草案预览", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-result\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("生成活动计划", courseEdit, StringComparison.Ordinal);
         Assert.Contains("复制草案", courseEdit, StringComparison.Ordinal);
         Assert.DoesNotContain("学科", courseEdit, StringComparison.Ordinal);
         Assert.Contains("OnClientClick=\"return syncContent();\"", courseEdit, StringComparison.Ordinal);
@@ -712,14 +714,25 @@ public class TeacherRegressionTests
         Assert.Contains("switchEditor(", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("syncContent()", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("action=activityPlan", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=activityPlanRegenerateSection", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-topic", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-grade", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-duration", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-goals", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("existingCourseContent", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("sectionTarget", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("currentDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("renderActivityPlanDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("buildActivityPlanCopyText", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("regenerateActivityPlanSection", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("lastActivityPlanDraftResponse = previousResponse", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("document.createElement", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("'teachingGoals'", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("'activitySteps'", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("'resources'", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("'assessment'", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("'teacherReminder'", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("regenerate-step", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("resultArea.innerHTML = text", courseEditScript, StringComparison.Ordinal);
     }
 

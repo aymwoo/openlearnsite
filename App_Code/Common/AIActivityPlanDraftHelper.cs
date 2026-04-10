@@ -37,6 +37,15 @@ namespace LearnSite.Common
 
     public static class AIActivityPlanDraftHelper
     {
+        private static readonly string[] AllowedSectionTargets = new[]
+        {
+            "teachingGoals",
+            "activitySteps",
+            "resources",
+            "assessment",
+            "teacherReminder"
+        };
+
         public static ActivityPlanDraft ParseDraft(string responseText)
         {
             JToken token = ParseRootToken(responseText);
@@ -63,6 +72,86 @@ namespace LearnSite.Common
             }
 
             return IsValidDraft(draft) ? draft : null;
+        }
+
+        public static bool IsSupportedSectionTarget(string sectionTarget)
+        {
+            string normalizedTarget = SafeTrim(sectionTarget);
+            return AllowedSectionTargets.Any(target => string.Equals(target, normalizedTarget, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static string[] GetAllowedSectionTargets()
+        {
+            return AllowedSectionTargets.ToArray();
+        }
+
+        public static ActivityPlanDraft MergeRegeneratedSection(ActivityPlanDraft currentDraft, string sectionTarget, string responseText)
+        {
+            if (!IsValidDraft(currentDraft) || !IsSupportedSectionTarget(sectionTarget))
+            {
+                return null;
+            }
+
+            JObject sectionObject = ParseSectionObject(responseText, sectionTarget);
+            if (sectionObject == null)
+            {
+                return null;
+            }
+
+            ActivityPlanDraft mergedDraft = CloneDraft(currentDraft);
+            string normalizedTarget = NormalizeSectionTarget(sectionTarget);
+            if (string.IsNullOrEmpty(normalizedTarget))
+            {
+                return null;
+            }
+
+            if (string.Equals(normalizedTarget, "teachingGoals", StringComparison.Ordinal))
+            {
+                List<string> goals = NormalizeStringList(sectionObject[normalizedTarget]);
+                if (goals == null || goals.Count == 0)
+                {
+                    return null;
+                }
+                mergedDraft.TeachingGoals = goals;
+            }
+            else if (string.Equals(normalizedTarget, "activitySteps", StringComparison.Ordinal))
+            {
+                List<ActivityPlanDraftStep> steps = NormalizeSteps(sectionObject[normalizedTarget]);
+                if (steps == null || steps.Count == 0)
+                {
+                    return null;
+                }
+                mergedDraft.ActivitySteps = steps;
+            }
+            else if (string.Equals(normalizedTarget, "resources", StringComparison.Ordinal))
+            {
+                List<string> resources = NormalizeStringList(sectionObject[normalizedTarget]);
+                if (resources == null || resources.Count == 0)
+                {
+                    return null;
+                }
+                mergedDraft.Resources = resources;
+            }
+            else if (string.Equals(normalizedTarget, "assessment", StringComparison.Ordinal))
+            {
+                List<string> assessment = NormalizeStringList(sectionObject[normalizedTarget]);
+                if (assessment == null || assessment.Count == 0)
+                {
+                    return null;
+                }
+                mergedDraft.Assessment = assessment;
+            }
+            else if (string.Equals(normalizedTarget, "teacherReminder", StringComparison.Ordinal))
+            {
+                string reminder = NormalizeString(sectionObject[normalizedTarget]);
+                if (string.IsNullOrEmpty(reminder))
+                {
+                    return null;
+                }
+                mergedDraft.TeacherReminder = reminder;
+            }
+
+            return IsValidDraft(mergedDraft) ? mergedDraft : null;
         }
 
         public static bool IsValidDraft(ActivityPlanDraft draft)
@@ -255,6 +344,72 @@ namespace LearnSite.Common
             step.AssessmentCheck = NormalizeString(GetFirstToken(stepObject, "assessmentCheck", "assessment", "check", "checkPoint", "评价检查", "评价点", "检测点"));
 
             return IsValidStep(step) ? step : null;
+        }
+
+        private static ActivityPlanDraft CloneDraft(ActivityPlanDraft draft)
+        {
+            ActivityPlanDraft copy = new ActivityPlanDraft();
+            copy.TeachingGoals = draft.TeachingGoals == null ? new List<string>() : new List<string>(draft.TeachingGoals);
+            copy.Resources = draft.Resources == null ? new List<string>() : new List<string>(draft.Resources);
+            copy.Assessment = draft.Assessment == null ? new List<string>() : new List<string>(draft.Assessment);
+            copy.TeacherReminder = draft.TeacherReminder ?? string.Empty;
+            copy.ActivitySteps = new List<ActivityPlanDraftStep>();
+
+            if (draft.ActivitySteps != null)
+            {
+                foreach (ActivityPlanDraftStep step in draft.ActivitySteps)
+                {
+                    copy.ActivitySteps.Add(new ActivityPlanDraftStep
+                    {
+                        Sort = step == null ? 0 : step.Sort,
+                        Title = step == null ? string.Empty : step.Title,
+                        Minutes = step == null ? string.Empty : step.Minutes,
+                        TeacherAction = step == null ? string.Empty : step.TeacherAction,
+                        StudentAction = step == null ? string.Empty : step.StudentAction,
+                        InteractionMethod = step == null ? string.Empty : step.InteractionMethod,
+                        ResourceSuggestion = step == null ? string.Empty : step.ResourceSuggestion,
+                        AssessmentCheck = step == null ? string.Empty : step.AssessmentCheck
+                    });
+                }
+            }
+
+            return copy;
+        }
+
+        private static JObject ParseSectionObject(string responseText, string sectionTarget)
+        {
+            JToken token = ParseRootToken(responseText);
+            if (token == null)
+            {
+                return null;
+            }
+
+            JObject sectionObject = ExtractSectionObject(token);
+            if (sectionObject == null)
+            {
+                return null;
+            }
+
+            string normalizedTarget = NormalizeSectionTarget(sectionTarget);
+            if (string.IsNullOrEmpty(normalizedTarget))
+            {
+                return null;
+            }
+
+            if (sectionObject.Properties().Count() != 1)
+            {
+                return null;
+            }
+
+            JProperty property = sectionObject.Properties().FirstOrDefault();
+            if (property == null || !string.Equals(property.Name, normalizedTarget, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            JObject normalizedObject = new JObject();
+            normalizedObject[normalizedTarget] = property.Value;
+            return normalizedObject;
         }
 
         private static List<string> NormalizeStringList(JToken token)
@@ -529,6 +684,38 @@ namespace LearnSite.Common
             {
                 return null;
             }
+        }
+
+        private static JObject ExtractSectionObject(JToken token)
+        {
+            JObject obj = token as JObject;
+            if (obj == null)
+            {
+                return null;
+            }
+
+            JToken nested = GetFirstToken(obj, "draft", "data", "result");
+            JObject nestedObject = nested as JObject;
+            if (nestedObject != null)
+            {
+                obj = nestedObject;
+            }
+
+            return obj;
+        }
+
+        private static string NormalizeSectionTarget(string sectionTarget)
+        {
+            string normalizedTarget = SafeTrim(sectionTarget);
+            foreach (string allowedTarget in AllowedSectionTargets)
+            {
+                if (string.Equals(allowedTarget, normalizedTarget, StringComparison.OrdinalIgnoreCase))
+                {
+                    return allowedTarget;
+                }
+            }
+
+            return string.Empty;
         }
 
         private static string SafeTrim(string value)

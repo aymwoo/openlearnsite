@@ -52,6 +52,9 @@ public class aiprovider_api : IHttpHandler {
                 case "activityPlan":
                     ActivityPlan(context);
                     break;
+                case "activityPlanRegenerateSection":
+                    ActivityPlanRegenerateSection(context);
+                    break;
                 case "listSkills":
                     GetSkillList(context);
                     break;
@@ -422,6 +425,87 @@ public class aiprovider_api : IHttpHandler {
                 skillName = result == null ? string.Empty : result.SkillName
             });
             context.Response.Write(failResp);
+            return;
+        }
+
+        string successResp = JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                providerDisplayName = result.ProviderDisplayName,
+                skillName = result.SkillName,
+                message = result.Message,
+                draft = new
+                {
+                    teachingGoals = result.Draft.TeachingGoals,
+                    activitySteps = result.Draft.ActivitySteps.Select(step => new
+                    {
+                        sort = step.Sort,
+                        title = step.Title,
+                        minutes = step.Minutes,
+                        teacherAction = step.TeacherAction,
+                        studentAction = step.StudentAction,
+                        interactionMethod = step.InteractionMethod,
+                        resourceSuggestion = step.ResourceSuggestion,
+                        assessmentCheck = step.AssessmentCheck
+                    }).ToList(),
+                    resources = result.Draft.Resources,
+                    assessment = result.Draft.Assessment,
+                    teacherReminder = result.Draft.TeacherReminder
+                }
+            }
+        });
+        context.Response.Write(successResp);
+    }
+
+    private void ActivityPlanRegenerateSection(HttpContext context)
+    {
+        context.Server.ScriptTimeout = 180;
+
+        string topic = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["topic"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength);
+        if (string.IsNullOrEmpty(topic))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Topic is required." }));
+            return;
+        }
+
+        string sectionTarget = context.Request["sectionTarget"];
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget(sectionTarget))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Section target is invalid." }));
+            return;
+        }
+
+        LearnSite.Common.ActivityPlanDraft currentDraft = LearnSite.Common.AIActivityPlanDraftHelper.ParseDraft(context.Request["currentDraft"]);
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidDraft(currentDraft))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Current draft is invalid." }));
+            return;
+        }
+
+        LearnSite.Common.AIActivityPlanSectionRegenerationRequest request = new LearnSite.Common.AIActivityPlanSectionRegenerationRequest
+        {
+            Topic = topic,
+            Grade = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["grade"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxGradeLength),
+            Duration = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["duration"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength),
+            TeachingGoals = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["teachingGoals"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTeachingGoalsLength),
+            ExistingCourseContent = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["existingCourseContent"], 4000),
+            SectionTarget = sectionTarget,
+            CurrentDraft = currentDraft
+        };
+
+        LearnSite.BLL.AIActivityPlanDraftGenerator generator = new LearnSite.BLL.AIActivityPlanDraftGenerator();
+        LearnSite.BLL.ActivityPlanDraftGenerationResult result = generator.RegenerateSection(request);
+        if (!result.Success || result.Draft == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new
+            {
+                success = false,
+                msg = result == null ? "活动计划局部重生成失败。" : result.Message,
+                providerDisplayName = result == null ? string.Empty : result.ProviderDisplayName,
+                skillName = result == null ? string.Empty : result.SkillName
+            }));
             return;
         }
 

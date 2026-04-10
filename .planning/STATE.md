@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-04-10T15:04:39.289Z"
-last_activity: 2026-04-10 -- Phase 03 planning complete
+stopped_at: Phase 3 execution complete
+last_updated: "2026-04-10T16:15:00.000Z"
+last_activity: 2026-04-10 -- Phase 03 execution complete
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State
@@ -22,22 +22,22 @@ See: .planning/PROJECT.md (updated 2026-04-10)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable
 activity plan without having to manually break the lesson into steps.
-**Current focus:** Phase 2: Structured plan draft generation
+**Current focus:** Phase 4: Selective apply and draft continuity
 
 ## Current Position
 
-Phase: 2 of 4 (Structured plan draft generation)
+Phase: 4 of 4 (Selective apply and draft continuity)
 Plan: 0 of TBD in current phase
 Status: Ready to execute
-Last activity: 2026-04-10 -- Phase 03 planning complete
+Last activity: 2026-04-10 -- Phase 03 execution complete
 
-Progress: [██░░░░░░░░] 25%
+Progress: [███████░░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 2
+- Total plans completed: 6
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -46,6 +46,8 @@ Progress: [██░░░░░░░░] 25%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 | 2 | - | - |
+| 02 | 2 | - | - |
+| 03 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -74,17 +76,19 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- Map approved plan sections into existing lesson editor content without losing
+  teacher control.
+- Decide draft persistence shape for save and resume behavior in phase 4.
 
 ### Blockers/Concerns
 
 - Confirm exact field mapping from generated plan sections into lesson and
   activity editor fields.
 
-- Decide how saved drafts behave when individual sections are regenerated.
+- Decide how saved drafts behave once apply and persistence are introduced.
 
 ## Session Continuity
 
 Last session: 2026-04-10T14:41:35.148Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-guided-review-and-section-regeneration/03-CONTEXT.md
+Stopped at: Phase 3 execution complete
+Resume file: .planning/phases/03-guided-review-and-section-regeneration/03-02-SUMMARY.md

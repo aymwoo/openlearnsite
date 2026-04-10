@@ -27,6 +27,48 @@
             box-shadow: 0 10px 24px -22px rgba(79, 70, 229, 0.55);
         }
 
+        .activity-plan-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .activity-plan-card-head .activity-plan-card-title {
+            margin: 0;
+        }
+
+        .activity-plan-section-action {
+            border: 1px solid rgba(99, 102, 241, 0.18);
+            background: rgba(99, 102, 241, 0.06);
+            color: #4338ca;
+            border-radius: 999px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .activity-plan-section-action[disabled] {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .activity-plan-section-status {
+            margin-top: 0.65rem;
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
+        .activity-plan-section-status.is-loading {
+            color: #4338ca;
+        }
+
+        .activity-plan-section-status.is-error {
+            color: #b91c1c;
+        }
+
         .activity-plan-card-title {
             margin: 0 0 0.65rem;
             font-size: 0.95rem;

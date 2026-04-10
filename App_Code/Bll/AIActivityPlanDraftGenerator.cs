@@ -23,6 +23,49 @@ namespace LearnSite.BLL
     {
         public ActivityPlanDraftGenerationResult Generate(AIActivityPlanPromptRequest request)
         {
+            return GenerateInternal(AIActivityPlanPromptBuilder.Build(request), false, null, null);
+        }
+
+        public ActivityPlanDraftGenerationResult RegenerateSection(AIActivityPlanSectionRegenerationRequest request)
+        {
+            if (request == null)
+            {
+                return new ActivityPlanDraftGenerationResult
+                {
+                    Success = false,
+                    ProviderDisplayName = "未配置 AI Provider",
+                    SkillName = GetDefaultSkillName(),
+                    Message = "活动计划局部重生成失败。请求无效。"
+                };
+            }
+
+            if (!AIActivityPlanDraftHelper.IsSupportedSectionTarget(request.SectionTarget))
+            {
+                return new ActivityPlanDraftGenerationResult
+                {
+                    Success = false,
+                    ProviderDisplayName = "未配置 AI Provider",
+                    SkillName = GetDefaultSkillName(),
+                    Message = "活动计划局部重生成失败。不支持的章节。"
+                };
+            }
+
+            if (!AIActivityPlanDraftHelper.IsValidDraft(request.CurrentDraft))
+            {
+                return new ActivityPlanDraftGenerationResult
+                {
+                    Success = false,
+                    ProviderDisplayName = "未配置 AI Provider",
+                    SkillName = GetDefaultSkillName(),
+                    Message = "活动计划局部重生成失败。当前草案无效。"
+                };
+            }
+
+            return GenerateInternal(AIActivityPlanPromptBuilder.BuildSectionRegeneration(request), true, request.CurrentDraft, request.SectionTarget);
+        }
+
+        private ActivityPlanDraftGenerationResult GenerateInternal(string userPrompt, bool isRegeneration, ActivityPlanDraft currentDraft, string sectionTarget)
+        {
             AIActivityPlanSkillBootstrap.EnsureDefaultSkill();
 
             LearnSite.Model.AIProvider provider = GetDefaultProvider();
@@ -41,12 +84,14 @@ namespace LearnSite.BLL
             LearnSite.Model.AICustomSkill skill = GetActivityPlanSkill();
             string skillName = skill == null ? GetDefaultSkillName() : skill.SkillName;
             string systemPrompt = skill == null ? AIActivityPlanSkillBootstrap.CreateDefaultSkillModel().PromptContent : skill.PromptContent;
-            string userPrompt = AIActivityPlanPromptBuilder.Build(request);
 
             try
             {
                 string responseText = CallProvider(provider, systemPrompt, userPrompt);
-                ActivityPlanDraft draft = AIActivityPlanDraftHelper.ParseDraft(responseText);
+                ActivityPlanDraft draft = isRegeneration
+                    ? AIActivityPlanDraftHelper.MergeRegeneratedSection(currentDraft, sectionTarget, responseText)
+                    : AIActivityPlanDraftHelper.ParseDraft(responseText);
+
                 if (!AIActivityPlanDraftHelper.IsValidDraft(draft))
                 {
                     return new ActivityPlanDraftGenerationResult
@@ -54,7 +99,9 @@ namespace LearnSite.BLL
                         Success = false,
                         ProviderDisplayName = providerName,
                         SkillName = skillName,
-                        Message = "AI 返回内容无法整理为完整的结构化活动计划，请稍后重试。"
+                        Message = isRegeneration
+                            ? "AI 返回内容无法整理为有效的章节重生成结果，请稍后重试。"
+                            : "AI 返回内容无法整理为完整的结构化活动计划，请稍后重试。"
                     };
                 }
 
@@ -63,7 +110,7 @@ namespace LearnSite.BLL
                     Success = true,
                     ProviderDisplayName = providerName,
                     SkillName = skillName,
-                    Message = "结构化活动计划草案已生成。",
+                    Message = isRegeneration ? "已更新指定章节的活动计划草案。" : "结构化活动计划草案已生成。",
                     Draft = draft
                 };
             }
@@ -74,7 +121,7 @@ namespace LearnSite.BLL
                     Success = false,
                     ProviderDisplayName = providerName,
                     SkillName = skillName,
-                    Message = "活动计划生成失败。" + CleanErrorMessage(ex.Message)
+                    Message = (isRegeneration ? "活动计划局部重生成失败。" : "活动计划生成失败。") + CleanErrorMessage(ex.Message)
                 };
             }
         }
