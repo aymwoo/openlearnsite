@@ -702,6 +702,23 @@ public class TeacherRegressionTests
         Assert.Contains("OnClientClick=\"return syncContent();\"", courseEdit, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void CourseEdit_ShouldKeepPlanningRequestAndSafeRenderingHooks()
+    {
+        var courseEditScript = File.ReadAllText(Path.Combine(RepoRoot, "js", "courseedit.js"));
+
+        Assert.Contains("switchEditor(", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("syncContent()", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=activityPlan", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-topic", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-grade", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-duration", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-goals", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("existingCourseContent", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("resultArea.textContent = text;", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("resultArea.innerHTML = text", courseEditScript, StringComparison.Ordinal);
+    }
+
     [Theory]
     [MemberData(nameof(GetContentPagesReturningToCourse))]
     public void ContentPages_ShouldKeepReturnToCourseCopy(string relativePath)
