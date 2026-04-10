@@ -1,5 +1,38 @@
 # 更新日志 (CHANGELOG)
 
+## 2026-04-10
+
+### 新功能
+- **首页站点标题支持配置化显示**：`index.aspx` 改为优先展示站点配置中的标题，首页品牌信息可以跟随站点设置统一调整，避免继续写死默认名称
+- **学生入口页补齐统一头尾信息**：`student/mynum.aspx`、`student/myrule.aspx`、`student/register.aspx` 新增与首页一致的站点头部和状态页脚，学生在学号查询、课堂守则和注册场景下也能直接看到站点标题、学期、机房主机和教师入口
+
+### 升级增强
+- **学生入口页信息展示复用现有站点配置**：相关后台代码统一补齐 `SiteTitle` 读取、页面标题设置与页脚状态展示逻辑，减少学生入口页与首页之间的信息割裂，便于后续继续统一公共入口体验
+
+### 涉及文件
+- 首页与公共入口：`index.aspx`、`index.aspx.cs`
+- 学生入口页：`student/mynum.aspx`、`student/mynum.aspx.cs`、`student/myrule.aspx`、`student/myrule.aspx.cs`、`student/register.aspx`、`student/register.aspx.cs`
+
+## 2026-04-09
+
+### 新功能
+- **量规项管理页面卡片式重构**：`teacher/gaugeitem.aspx` 重构为现代卡片式布局，引入独立样式表 `gaugeitem.css`，增加 Hero 区域、说明卡片和量规项列表分区，提升页面可读性和维护性
+- **帮助中心页面布局重构**：`teacher/helper.aspx` 统一使用 lesson-shell 布局模式，新增 `helper.css` 样式表，优化信息展示和工具链接网格布局
+- **任务添加页 AI 助手面板优化**：`teacher/missionadd.aspx` 的 AI 助手面板增加使用建议提示和更清晰的标题描述，样式通过 `missionadd.css` 独立管理
+- **教师端菜单折叠交互增强**：`teacher/Teach.master` 新增菜单折叠状态记忆（localStorage）和平滑过渡动画，提升教师端导航体验
+
+### 问题修复
+- **量规项删除按钮空值保护**：`teacher/gaugeitem.aspx.cs` 补齐删除按钮空值判断，避免异常数据下出现 `NullReferenceException`
+
+### 升级增强
+- **页面样式表外置化**：为 `gauge.aspx`、`aiconfig.aspx`、`helper.aspx`、`missionadd.aspx` 等页面新增/重构独立样式表，统一资源组织方式，提升离线可用性与后续维护性
+- **团队协作文档完善**：新增 `CONTRIBUTING.md` 贡献指南、`.github/pull_request_template.md` PR 模板，并在 `README.md` 中补充协作文档链接
+
+### 涉及文件
+- 教师端页面重构：`teacher/gaugeitem.aspx`、`teacher/gauge.aspx`、`teacher/helper.aspx`、`teacher/missionadd.aspx`、`teacher/aiconfig.aspx`、`teacher/Teach.master`
+- 样式表资源：`App_Themes/Teacher/gaugeitem.css`、`App_Themes/Teacher/gauge.css`、`App_Themes/Teacher/missionadd.css`、`App_Themes/Teacher/helper.css`、`App_Themes/Teacher/aiconfig.css`
+- 团队协作：`CONTRIBUTING.md`、`.github/pull_request_template.md`、`README.md`
+
 ## 2026-04-07
 
 ### 新功能

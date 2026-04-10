@@ -1,0 +1,14 @@
+version: '1.0'
+name: Nightly_build
+displayName: Nightly_build
+
+trigger:
+  manual: true
+
+stages:
+  - name: build
+    jobs:
+      - job: build_job
+        steps:
+          - checkout: self
+          - script: echo "hello world"

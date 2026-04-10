@@ -6,8 +6,16 @@ using System.Web.UI.WebControls;
 
 public partial class index : System.Web.UI.Page
 {
+    protected string SiteTitle { get; private set; }
+
     protected void Page_Load(object sender, EventArgs e)
     {
+        SiteTitle = LearnSite.Common.XmlHelp.SiteTitle();
+        if (string.IsNullOrEmpty(SiteTitle))
+        {
+            SiteTitle = "信息科技学习网站";
+        }
+
         if (LearnSite.Common.CookieHelp.IsStudentLogin())
         {
             LearnSite.Model.Cook cook = new LearnSite.Model.Cook();

@@ -1,0 +1,103 @@
+version: '1.0'
+name: Nightly_build
+displayName: Nightly_build
+trigger:
+  schedule:
+    - cron: "0 18 * * *"  # 北京时间 凌晨2点
+  manual: true  # 可手动触发
+
+# 🔥 关键：指定只从 dev 分支构建
+resources:
+  repositories:
+    - repository: self
+      ref: dev
+
+variables:
+  PROJECT_DIR: "./"
+  NIGHTLY_TAG: "nightly"
+  BUILD_TOKEN: ${BUILD_TOKEN}
+
+stages:
+  - stage: build_stage
+    displayName: 构建打包
+    jobs:
+      - job: BuildNetFx48
+        displayName: 编译 .NET Framework
+        pool:
+          windows: yes
+        image: mcr.microsoft.com/dotframework/sdk:4.8
+        
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          # 构建网站项目（无sln）
+          - name: Build Website
+            script: |
+              "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe" ^
+              ./ /t:Build /p:Configuration=Release /p:OutputPath=../publish
+
+          # 打包
+          - name: Zip Package
+            script: |
+              Compress-Archive -Path .\publish\* -DestinationPath nightly-build.zip -Force
+
+          # 哈希校验
+          - name: Generate SHA256
+            script: |
+              $hash = (Get-FileHash -Path nightly-build.zip -Algorithm SHA256).Hash
+              $hash | Out-File nightly-hash.txt -Encoding utf8
+
+          # 自动Changelog
+          - name: Generate Changelog
+            script: |
+              $date = Get-Date -Format "yyyy-MM-dd"
+              $log = "## Nightly Build $date (dev分支)`n"
+              $commits = git log --since="1 days ago" --pretty="- %s"
+              $log += $commits
+              $log | Out-File CHANGELOG.md -Encoding utf8
+
+          # 上传产物
+          - artifacts:
+              - name: nightly-build
+                path: nightly-build.zip
+              - name: nightly-hash
+                path: nightly-hash.txt
+              - name: changelog
+                path: CHANGELOG.md
+
+  - stage: release_stage
+    displayName: 发布到 Gitee Release
+    dependsOn: Build
+    jobs:
+      - job: Publish
+        pool:
+          windows: yes
+        steps:
+          - download: Build
+            artifact: nightly-build
+            path: ./
+          - download: Build
+            artifact: nightly-hash
+            path: ./
+          - download: Build
+            artifact: changelog
+            path: ./
+
+          - name: Install Gitee CLI
+            script: |
+              choco install gitee-cli -y
+              gitee config token ${{ variables.BUILD_TOKEN }}
+
+          - name: Update Nightly Release
+            script: |
+              $changelog = Get-Content CHANGELOG.md -Raw
+              gitee release delete --tag ${{ variables.NIGHTLY_TAG }} --yes 2>&1 | Out-Null
+              gitee tag delete ${{ variables.NIGHTLY_TAG }} --yes 2>&1 | Out-Null
+              
+              gitee release create --tag ${{ variables.NIGHTLY_TAG }} `
+              --name "Nightly 每日构建 (dev分支)" `
+              --body "自动从 dev 分支构建`n`n更新内容：`n$changelog" `
+              --pre-release `
+              --assets "nightly-build.zip" `
+              --assets "nightly-hash.txt"

@@ -105,7 +105,7 @@ CodeFile="index.aspx.cs" Inherits="index" %>
               />
             </svg>
             <h1 class="text-xl sm:text-2xl font-bold text-gray-800 tracking-tight">
-              信息科技学习网站
+              <%= SiteTitle %>
             </h1>
           </div>
           <div class="hidden sm:block">
