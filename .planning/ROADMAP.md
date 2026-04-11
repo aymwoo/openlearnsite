@@ -47,9 +47,9 @@ control and linked lesson-content update.
 Requirements: TAP-01, TAP-02, TAP-03
 Plans: 3 plans
 
-- [ ] 05-01-PLAN.md — define publish contracts and stable mission/menu linkage
-- [ ] 05-02-PLAN.md — build the synchronized publish core and content builders
-- [ ] 05-03-PLAN.md — wire teacher publish controls and authenticated handler flow
+- [x] 05-01-PLAN.md — define publish contracts and stable mission/menu linkage
+- [x] 05-02-PLAN.md — build the synchronized publish core and content builders
+- [x] 05-03-PLAN.md — wire teacher publish controls and authenticated handler flow
 
 Success criteria:
 1. A teacher can confirm AI-generated activity output and create or update a
@@ -93,6 +93,6 @@ Success criteria:
 | 2. Structured plan draft generation | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 3. Guided review and section regeneration | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 4. Selective apply and draft continuity | v1.0 | 2/2 | Complete | 2026-04-10 |
-| 5. Teacher activity publish foundation | v1.1 | 0/3 | Planned | - |
+| 5. Teacher activity publish foundation | v1.1 | 3/3 | Complete | 2026-04-11 |
 | 6. Student activity entry and guided experience | v1.1 | 0/0 | Proposed | - |
 | 7. Submission and completion tracking | v1.1 | 0/0 | Proposed | - |
