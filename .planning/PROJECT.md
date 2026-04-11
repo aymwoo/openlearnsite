@@ -12,23 +12,15 @@ an executable classroom activity plan that is easier to use in real teaching.
 Teachers can turn a teaching topic into a concrete, teachable activity plan
 without having to manually break the lesson into steps.
 
-## Current State
+## Current Milestone: v1.2 AI 整课编排与活动组合
 
-**Shipped milestone:** v1.1 教学环节生成与课堂活动投放 (2026-04-11)
+**Goal:** 让老师基于现有教学内容先生成一个可预览的整课草案，由 AI
+自动组合合适的课堂活动，而不再只是产出纯文本活动说明。
 
-**Delivered:** Teachers can generate AI classroom activity segments in the
-existing editor, publish them into the brownfield student mission flow, and let
-students open, submit, and complete those activities with existing classroom
-tracking surfaces.
-
-## Next Milestone Goals
-
-- Define the next milestone with fresh scoped requirements in
-  `.planning/REQUIREMENTS.md`
-- Decide whether to deepen classroom activity reuse, richer student guidance,
-  or curriculum alignment as the next highest-value increment
-- Preserve the existing Web Forms publish/mission/upload flow as the brownfield
-  baseline unless new requirements justify broader changes
+**Target features:**
+- AI 能根据现有课堂内容与教学意图，生成完整课堂或学案草案，而不是单段活动文本
+- AI 优先复用现有活动类型来自动插入可执行环节，首批重点是测验、资源学习、网页课件
+- 当现有活动类型不适合时，系统支持一种更适合 AI 生成的引导式探究活动
 
 ## Requirements
 
@@ -65,6 +57,12 @@ tracking surfaces.
 
 - [ ] Teachers can generate reusable, classroom-ready teaching activity
   segments from AI inside the existing planning workflow
+- [ ] Teachers can preview an AI-composed full-lesson draft that combines
+  multiple classroom activity blocks before applying it
+- [ ] AI can choose and compose existing teacher activity types, starting with
+  quizzes, resource-study blocks, and web courseware
+- [ ] Teachers can use an AI-friendly guided inquiry activity block when
+  existing activity types are not a good fit
 
 ### Validated in v1.1 milestone
 
@@ -156,6 +154,19 @@ apply behavior with an authenticated teacher session and a live provider.
 | Keep student AI activities on the existing `showmission.aspx` and upload handlers instead of introducing AI-specific routes | The smallest safe change is to reuse the established student flow and tighten it with guards/tests | Validated in Phases 6-7 |
 | Record AI activity completion through existing `MenuWorks` state with duplicate-safe writes | Completion visibility must stay on the current classroom tracking model instead of fragmenting into an AI-only status store | Validated in Phase 7 |
 
+## Current State
+
+v1.1 milestone shipped on 2026-04-11. Teachers can already generate AI
+classroom activity segments in the existing editor, publish them into the
+brownfield student mission flow, and let students open, submit, and complete
+those activities with existing classroom tracking surfaces.
+
+The next milestone shifts from single activity generation to lesson
+orchestration. The new goal is to let AI build a previewable full-lesson draft
+that can combine multiple activity types, reuse existing teacher activity pages
+where possible, and introduce a guided inquiry block when current activity
+types are not enough.
+
 ## Milestone History
 
 <details>
@@ -192,4 +203,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 after v1.1 milestone archival*
+*Last updated: 2026-04-11 after v1.2 milestone start*

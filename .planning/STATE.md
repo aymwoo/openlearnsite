@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: **3 phases** | **8 requirements mapped** | All covered ✓
-status: complete
-stopped_at: Archived milestone v1.1
+milestone: v1.2
+milestone_name: AI 整课编排与活动组合
+status: requirements
+stopped_at: Defining milestone v1.2 requirements
 last_updated: "2026-04-11T10:50:07.609Z"
 last_activity: 2026-04-11
 progress:
@@ -22,17 +22,17 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable
 activity plan without having to manually break the lesson into steps.
-**Current focus:** Planning next milestone
+**Current focus:** Defining milestone v1.2
 
 ## Current Position
 
-Milestone: v1.1 (教学环节生成与课堂活动投放)
-Phase: 07 (submission-and-completion-tracking) — COMPLETE
-Plan: 2 of 2
-Status: Milestone v1.1 archived — ready for next milestone definition
+Milestone: v1.2 (AI 整课编排与活动组合)
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements
 Last activity: 2026-04-11
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -108,5 +108,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-11T10:50:07Z
-Stopped at: Archived milestone v1.1
-Resume file: None
+Stopped at: Defining milestone v1.2 requirements
+Resume file: .planning/PROJECT.md
