@@ -74,25 +74,25 @@ activity plan without having to manually break the lesson into steps.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ORCH-01 | Phase ? | Pending |
-| ORCH-02 | Phase ? | Pending |
-| ORCH-03 | Phase ? | Pending |
-| COMP-01 | Phase ? | Pending |
-| COMP-02 | Phase ? | Pending |
-| COMP-03 | Phase ? | Pending |
-| COMP-04 | Phase ? | Pending |
-| INQ-01 | Phase ? | Pending |
-| INQ-02 | Phase ? | Pending |
-| RUN-01 | Phase ? | Pending |
-| RUN-02 | Phase ? | Pending |
-| RUN-03 | Phase ? | Pending |
-| RUN-04 | Phase ? | Pending |
+| ORCH-01 | Phase 8 | Pending |
+| ORCH-02 | Phase 8 | Pending |
+| ORCH-03 | Phase 8 | Pending |
+| COMP-01 | Phase 9 | Pending |
+| COMP-02 | Phase 9 | Pending |
+| COMP-03 | Phase 9 | Pending |
+| COMP-04 | Phase 10 | Pending |
+| INQ-01 | Phase 10 | Pending |
+| INQ-02 | Phase 10 | Pending |
+| RUN-01 | Phase 11 | Pending |
+| RUN-02 | Phase 11 | Pending |
+| RUN-03 | Phase 11 | Pending |
+| RUN-04 | Phase 11 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️
+- Mapped to phases: 13
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-11*
-*Last updated: 2026-04-11 after initial v1.2 definition*
+*Last updated: 2026-04-11 after v1.2 roadmap creation*
