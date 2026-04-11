@@ -108,3 +108,9 @@ None.
 ## Deviations from Threat Model
 
 None.
+
+## Self-Check: PASSED
+
+- Verified `.planning/phases/07-submission-and-completion-tracking/07-submission-and-completion-tracking-01-SUMMARY.md` exists.
+- Verified `student/uploadwork.aspx.cs`, `student/uploadworkm.aspx.cs`, `student/showmission.aspx.cs`, and `Tests/TeacherRegressionTests/TeacherRegressionTests.cs` exist.
+- Verified commits `1e03d69`, `70030dc`, and `a2eba25` exist in git history.
