@@ -78,7 +78,17 @@ export async function waitForPostBack(page) {
  */
 export const TEST_ACCOUNTS = {
   admin: { username: 'admin', password: '12345' },
-  // 以下账户需要在测试数据库中预先创建
-  // teacher: { username: 'teacher1', password: '12345' },
-  // student: { snum: '20240001', password: '12345' },
+  teacher: process.env.PLAYWRIGHT_TEACHER_USERNAME && process.env.PLAYWRIGHT_TEACHER_PASSWORD
+    ? {
+        username: process.env.PLAYWRIGHT_TEACHER_USERNAME,
+        password: process.env.PLAYWRIGHT_TEACHER_PASSWORD,
+      }
+    : null,
+  student: process.env.PLAYWRIGHT_STUDENT_SNUM && process.env.PLAYWRIGHT_STUDENT_PASSWORD
+    ? {
+        snum: process.env.PLAYWRIGHT_STUDENT_SNUM,
+        password: process.env.PLAYWRIGHT_STUDENT_PASSWORD,
+      }
+    : null,
+  activityPlanCourseId: process.env.PLAYWRIGHT_ACTIVITY_PLAN_COURSE_ID || '',
 };
