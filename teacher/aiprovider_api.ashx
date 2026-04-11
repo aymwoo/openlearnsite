@@ -1153,7 +1153,6 @@ public class aiprovider_api : IHttpHandler {
         LearnSite.Common.FullLessonDraft fullLessonDraft = new LearnSite.Common.FullLessonDraft();
         fullLessonDraft.Topic = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(topic, LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength);
         fullLessonDraft.LessonSummary = BuildFullLessonSummary(planDraft);
-        fullLessonDraft.TotalMinutes = GetFullLessonTotalMinutes(duration, planDraft);
         fullLessonDraft.Blocks = new List<LearnSite.Common.FullLessonDraftBlock>();
 
         if (planDraft.TeachingGoals != null && planDraft.TeachingGoals.Count > 0)
@@ -1232,6 +1231,8 @@ public class aiprovider_api : IHttpHandler {
             fullLessonDraft.Blocks[index].Sort = index + 1;
         }
 
+        fullLessonDraft.TotalMinutes = GetFullLessonTotalMinutes(duration, fullLessonDraft.Blocks);
+
         return fullLessonDraft;
     }
 
@@ -1251,7 +1252,27 @@ public class aiprovider_api : IHttpHandler {
         merged.TotalMinutes = currentDraft.TotalMinutes;
         merged.Blocks = new List<LearnSite.Common.FullLessonDraftBlock>();
 
-        LearnSite.Common.FullLessonDraftBlock replacement = generatedDraft.Blocks.FirstOrDefault();
+        LearnSite.Common.FullLessonDraftBlock currentBlock = currentDraft.Blocks.FirstOrDefault(block =>
+            block != null && string.Equals(block.BlockKey, blockKey, StringComparison.OrdinalIgnoreCase));
+        if (currentBlock == null)
+        {
+            return null;
+        }
+
+        LearnSite.Common.FullLessonDraftBlock replacement = generatedDraft.Blocks.FirstOrDefault(block =>
+            block != null && string.Equals(block.BlockKey, blockKey, StringComparison.OrdinalIgnoreCase));
+        if (replacement == null)
+        {
+            replacement = generatedDraft.Blocks.FirstOrDefault(block =>
+                block != null
+                && string.Equals(block.BlockType, currentBlock.BlockType, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(block.LessonPosition, currentBlock.LessonPosition, StringComparison.OrdinalIgnoreCase));
+        }
+        if (replacement == null)
+        {
+            replacement = generatedDraft.Blocks.FirstOrDefault(block =>
+                block != null && string.Equals(block.BlockType, currentBlock.BlockType, StringComparison.OrdinalIgnoreCase));
+        }
         if (replacement == null)
         {
             return null;
@@ -1325,7 +1346,7 @@ public class aiprovider_api : IHttpHandler {
         return string.Join(string.Empty, parts.ToArray()).Replace("\n", string.Empty).Trim();
     }
 
-    private string GetFullLessonTotalMinutes(string duration, LearnSite.Common.ActivityPlanDraft draft)
+    private string GetFullLessonTotalMinutes(string duration, List<LearnSite.Common.FullLessonDraftBlock> blocks)
     {
         string normalized = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(duration, LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength);
         if (!string.IsNullOrEmpty(normalized))
@@ -1334,16 +1355,16 @@ public class aiprovider_api : IHttpHandler {
         }
 
         int total = 0;
-        if (draft.ActivitySteps != null)
+        if (blocks != null)
         {
-            foreach (LearnSite.Common.ActivityPlanDraftStep step in draft.ActivitySteps)
+            foreach (LearnSite.Common.FullLessonDraftBlock block in blocks)
             {
-                if (step == null || string.IsNullOrEmpty(step.Minutes))
+                if (block == null || string.IsNullOrEmpty(block.Minutes))
                 {
                     continue;
                 }
 
-                string digits = new string(step.Minutes.Where(char.IsDigit).ToArray());
+                string digits = new string(block.Minutes.Where(char.IsDigit).ToArray());
                 int minutes;
                 if (int.TryParse(digits, out minutes))
                 {

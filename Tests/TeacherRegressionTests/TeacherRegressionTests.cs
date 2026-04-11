@@ -872,6 +872,9 @@ public class TeacherRegressionTests
         Assert.Contains("AIActivityPlanDraftHelper.ParseFullLessonDraft", handler, StringComparison.Ordinal);
         Assert.Contains("AIActivityPlanSavedDraftHelper.BuildFullLessonRecord", handler, StringComparison.Ordinal);
         Assert.Contains("AIActivityPlanSavedDraftHelper.ParseFullLessonRecord", handler, StringComparison.Ordinal);
+        Assert.Contains("string.Equals(block.BlockKey, blockKey, StringComparison.OrdinalIgnoreCase)", handler, StringComparison.Ordinal);
+        Assert.Contains("string.Equals(block.BlockType, currentBlock.BlockType, StringComparison.OrdinalIgnoreCase)", handler, StringComparison.Ordinal);
+        Assert.Contains("GetFullLessonTotalMinutes(duration, fullLessonDraft.Blocks)", handler, StringComparison.Ordinal);
     }
 
     [Fact]
