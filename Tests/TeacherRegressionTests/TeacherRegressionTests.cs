@@ -831,6 +831,43 @@ public class TeacherRegressionTests
     }
 
     [Fact]
+    public void UploadWork_ActivityPlanSubmission_ShouldResolveMissionFromListMenuLid()
+    {
+        var uploadWork = File.ReadAllText(Path.Combine(RepoRoot, "student", "uploadwork.aspx.cs"));
+
+        Assert.Contains("Request.QueryString[\"lid\"]", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("WordProcess.IsNum(lidValue)", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("lmodel = lbll.GetModel(Int32.Parse(Wlid));", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("lmodel == null || !lmodel.Lxid.HasValue", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("string Wmid = lmodel.Lxid.Value.ToString();", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("mmodel = mbll.GetModel(lmodel.Lxid.Value);", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("ws.GetModelByStu(Int32.Parse(Wmid), Wnum)", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("ws.UpdateWorkUp(wmodelp.Wid, Wurl, NewFileName, Wlength, Wdate, checkcan, \"\")", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("ws.AddWorkUp(wmodel);", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("kmodel.Klid = Int32.Parse(Wlid);", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("kbll.Add(kmodel);", uploadWork, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void UploadWorkM_ActivityPlanSubmission_ShouldKeepAlternateLidToMissionContract()
+    {
+        var uploadWorkM = File.ReadAllText(Path.Combine(RepoRoot, "student", "uploadworkm.aspx.cs"));
+
+        Assert.Contains("Request.QueryString[\"lid\"]", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("WordProcess.IsNum(lidValue)", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("lmodel = lbll.GetModel(Int32.Parse(Wlid));", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("lmodel == null || !lmodel.Lxid.HasValue", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("string Wmid = lmodel.Lxid.Value.ToString();", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("mmodel = mbll.GetModel(lmodel.Lxid.Value);", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("ws.GetModelByStu(Int32.Parse(Wmid), Wnum)", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("ws.UpdateWorkUp(wmodelp.Wid, Wurl, NewFileName, Wlength, Wdate, checkcan, \"\")", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("ws.AddWorkUp(wmodel);", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("wmodel.Wlid = Int32.Parse(Wlid);", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("kmodel.Klid = Int32.Parse(Wlid);", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("kbll.Add(kmodel);", uploadWorkM, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ShowMission_ActivityPlanStudentShell_ShouldExposeGuidedSectionsAndUploadPanel()
     {
         var showMissionPage = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx"));

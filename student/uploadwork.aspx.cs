@@ -16,16 +16,39 @@ public partial class Student_uploadwork : System.Web.UI.Page
             try
             {
                 HttpPostedFile work_upload = Request.Files["Filedata"];
-                string Wlid = Request.QueryString["lid"].ToString();
+                string lidValue = Request.QueryString["lid"];
+                if (string.IsNullOrEmpty(lidValue) || !LearnSite.Common.WordProcess.IsNum(lidValue))
+                {
+                    Response.StatusCode = 200;
+                    Response.Write("活动参数错误!");
+                    Response.End();
+                    return;
+                }
+
+                string Wlid = lidValue;
                 LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
                 LearnSite.Model.ListMenu lmodel = new LearnSite.Model.ListMenu();
                 lmodel = lbll.GetModel(Int32.Parse(Wlid));
+                if (lmodel == null || !lmodel.Lxid.HasValue)
+                {
+                    Response.StatusCode = 200;
+                    Response.Write("此活动不存在!");
+                    Response.End();
+                    return;
+                }
 
                 string Wmid = lmodel.Lxid.Value.ToString();
                 //string Wnum = Request.QueryString["num"].ToString();
                 LearnSite.BLL.Mission mbll = new LearnSite.BLL.Mission();
                 LearnSite.Model.Mission mmodel = new LearnSite.Model.Mission();
                 mmodel = mbll.GetModel(lmodel.Lxid.Value);
+                if (mmodel == null)
+                {
+                    Response.StatusCode = 200;
+                    Response.Write("此活动不存在!");
+                    Response.End();
+                    return;
+                }
 
                 string Wcid = mmodel.Mcid.ToString();
                 string Wmsort = mmodel.Msort.ToString();

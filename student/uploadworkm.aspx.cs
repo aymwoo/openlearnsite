@@ -24,15 +24,32 @@ public partial class Student_uploadworkm : System.Web.UI.Page
 
         if (work_upload != null)
         {
-            string Wlid = Request.QueryString["lid"].ToString();
+            string lidValue = Request.QueryString["lid"];
+            if (string.IsNullOrEmpty(lidValue) || !LearnSite.Common.WordProcess.IsNum(lidValue))
+            {
+                showError("活动参数错误!");
+                return;
+            }
+
+            string Wlid = lidValue;
             LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
             LearnSite.Model.ListMenu lmodel = new LearnSite.Model.ListMenu();
             lmodel = lbll.GetModel(Int32.Parse(Wlid));
+            if (lmodel == null || !lmodel.Lxid.HasValue)
+            {
+                showError("此活动不存在!");
+                return;
+            }
 
             string Wmid = lmodel.Lxid.Value.ToString();
             LearnSite.BLL.Mission mbll = new LearnSite.BLL.Mission();
             LearnSite.Model.Mission mmodel = new LearnSite.Model.Mission();
             mmodel = mbll.GetModel(lmodel.Lxid.Value);
+            if (mmodel == null)
+            {
+                showError("此活动不存在!");
+                return;
+            }
 
             string Wcid = lmodel.Lcid.ToString();
             string Wmsort = lmodel.Lsort.ToString();
