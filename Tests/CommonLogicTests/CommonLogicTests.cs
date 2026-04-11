@@ -1308,6 +1308,31 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void ActivityPlanCompletion_MenuWorksSource_ShouldExposeDuplicateSafeCompletionHelper()
+    {
+        string menuWorksBll = ReadRepoFile("App_Code", "Bll", "MenuWorks.cs");
+        string menuWorksDal = ReadRepoFile("App_Code", "Dal", "MenuWorks.cs");
+        string worksBll = ReadRepoFile("App_Code", "Bll", "Works.cs");
+
+        Assert.Contains("EnsureCompletion", menuWorksBll, StringComparison.Ordinal);
+        Assert.Contains("GetModelme", menuWorksBll, StringComparison.Ordinal);
+        Assert.Contains("EnsureMenuWorksCompletion", worksBll, StringComparison.Ordinal);
+        Assert.Contains("Exists(model.Ksid.Value, model.Klid.Value)", menuWorksDal, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanCompletion_UploadHandlers_ShouldUseSharedMenuWorksCompletionRule()
+    {
+        string uploadWork = ReadRepoFile("student", "uploadwork.aspx.cs");
+        string uploadWorkM = ReadRepoFile("student", "uploadworkm.aspx.cs");
+
+        Assert.Contains("ws.EnsureMenuWorksCompletion", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("ws.EnsureMenuWorksCompletion", uploadWorkM, StringComparison.Ordinal);
+        Assert.DoesNotContain("AICompletion", uploadWork, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("AICompletion", uploadWorkM, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void BllDataTableMappers_MapTxtFormBackList_MapsBackFormFields()
     {
         DataTable dt = new DataTable();

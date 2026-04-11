@@ -24,6 +24,10 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="..\..\App_Code\Bll\BllDataTableMappers.cs" Link="BllDataTableMappers.cs" />
     <Compile Include="..\..\App_Code\Common\WordProcessCore.cs" Link="WordProcessCore.cs" />
