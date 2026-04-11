@@ -70,6 +70,27 @@ namespace LearnSite.BLL
 		}
 
 		/// <summary>
+		/// 上传成功后补齐活动完成记录，沿用现有 MenuWorks 模型
+		/// </summary>
+		public bool EnsureMenuWorksCompletion(int Wsid, int Wlid, DateTime loginTime, DateTime submitTime)
+		{
+			if (Wsid <= 0 || Wlid <= 0)
+			{
+				return false;
+			}
+
+			LearnSite.Model.MenuWorks kmodel = new LearnSite.Model.MenuWorks();
+			kmodel.Ksid = Wsid;
+			kmodel.Klid = Wlid;
+			kmodel.Ktime = LearnSite.Common.Computer.GoneMinute(loginTime, submitTime);
+			kmodel.Kseconds = Int32.Parse(LearnSite.Common.Computer.Datagone(loginTime, submitTime));
+			kmodel.Kcheck = false;
+
+			LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();
+			return kbll.EnsureCompletion(kmodel);
+		}
+
+		/// <summary>
 		/// 更新一条数据
 		/// </summary>
 		public void Update(LearnSite.Model.Works model)

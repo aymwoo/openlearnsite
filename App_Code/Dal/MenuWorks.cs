@@ -123,6 +123,16 @@ namespace LearnSite.DAL
 		/// </summary>
 		public bool Add(LearnSite.Model.MenuWorks model)
 		{
+			if (model == null || !model.Ksid.HasValue || !model.Klid.HasValue)
+			{
+				return false;
+			}
+
+			if (Exists(model.Ksid.Value, model.Klid.Value))
+			{
+				return true;
+			}
+
 			StringBuilder strSql=new StringBuilder();
 			strSql.Append("insert into MenuWorks(");
 			strSql.Append("Ksid,Klid,Ktime,Kseconds,Kcheck,Kstar)");

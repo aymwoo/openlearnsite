@@ -210,15 +210,8 @@ public partial class Student_uploadworkm : System.Web.UI.Page
 
                         try
                         {
-                            //添加课堂活动记录
-                            LearnSite.Model.MenuWorks kmodel = new LearnSite.Model.MenuWorks();
-                            kmodel.Klid = Int32.Parse(Wlid);
-                            kmodel.Ksid = Int32.Parse(Wsid);
-                            kmodel.Ktime = LearnSite.Common.Computer.GoneMinute(DateTime.Parse(LoginTime), Wdate);
-                            kmodel.Kseconds = Int32.Parse(LearnSite.Common.Computer.Datagone(DateTime.Parse(LoginTime), Wdate));
-                            kmodel.Kcheck = false;
-                            LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();
-                            kbll.Add(kmodel);
+                            //添加课堂活动记录，重复提交时仍保持一条完成记录
+                            ws.EnsureMenuWorksCompletion(Int32.Parse(Wsid), Int32.Parse(Wlid), DateTime.Parse(LoginTime), Wdate);
                         }
                         catch (Exception ex)
                         {

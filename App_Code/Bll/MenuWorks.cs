@@ -71,6 +71,25 @@ namespace LearnSite.BLL
 		}
 
 		/// <summary>
+		/// 确保每个学生每个活动只有一条完成记录
+		/// </summary>
+		public bool EnsureCompletion(LearnSite.Model.MenuWorks model)
+		{
+			if (model == null || !model.Ksid.HasValue || !model.Klid.HasValue)
+			{
+				return false;
+			}
+
+			LearnSite.Model.MenuWorks exists = GetModelme(model.Ksid.Value, model.Klid.Value);
+			if (exists != null)
+			{
+				return true;
+			}
+
+			return Add(model);
+		}
+
+		/// <summary>
 		/// 更新一条数据
 		/// </summary>
 		public bool Update(LearnSite.Model.MenuWorks model)

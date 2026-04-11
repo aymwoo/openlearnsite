@@ -184,15 +184,8 @@ public partial class Student_uploadwork : System.Web.UI.Page
                     {
                         ws.AddWorkUp(wmodel);//添加作品提交记录
 
-                        //添加课堂活动记录
-                        LearnSite.Model.MenuWorks kmodel = new LearnSite.Model.MenuWorks();
-                        kmodel.Klid = Int32.Parse(Wlid);
-                        kmodel.Ksid = Int32.Parse(Wsid);
-                        kmodel.Ktime = LearnSite.Common.Computer.GoneMinute(DateTime.Parse(LoginTime), Wdate);
-                        kmodel.Kseconds = Int32.Parse(LearnSite.Common.Computer.Datagone(DateTime.Parse(LoginTime), Wdate));
-                        kmodel.Kcheck = false;
-                        LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();
-                        kbll.Add(kmodel);
+                        //添加课堂活动记录，重复提交时仍保持一条完成记录
+                        ws.EnsureMenuWorksCompletion(Int32.Parse(Wsid), Int32.Parse(Wlid), DateTime.Parse(LoginTime), Wdate);
 
                         LearnSite.BLL.Signin sn = new LearnSite.BLL.Signin();
                         sn.UpdateQwork(Int32.Parse(Wsid), Int32.Parse(Wcid));//更新今天签到表中的作品数量
