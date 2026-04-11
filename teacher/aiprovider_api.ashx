@@ -88,6 +88,9 @@ public class aiprovider_api : IHttpHandler {
                 case "fullLessonDeleteDraft":
                     FullLessonDeleteDraft(context);
                     break;
+                case "fullLessonPublish":
+                    FullLessonPublish(context);
+                    break;
                 case "listSkills":
                     GetSkillList(context);
                     break;
@@ -1018,7 +1021,59 @@ public class aiprovider_api : IHttpHandler {
                         studentAction = block.StudentAction,
                         materials = block.Materials,
                         assessmentFocus = block.AssessmentFocus,
-                        status = block.Status
+                        status = block.Status,
+                        quiz = block.Quiz == null ? null : new
+                        {
+                            examName = block.Quiz.ExamName,
+                            paperTitle = block.Quiz.PaperTitle,
+                            questionSummary = block.Quiz.QuestionSummary,
+                            duration = block.Quiz.Duration,
+                            ltype = block.Quiz.Ltype
+                        },
+                        resourceStudy = block.ResourceStudy == null ? null : new
+                        {
+                            mtitle = block.ResourceStudy.Mtitle,
+                            mcontent = block.ResourceStudy.Mcontent,
+                            mupload = block.ResourceStudy.Mupload,
+                            ltype = block.ResourceStudy.Ltype
+                        },
+                        guidedInquiry = block.GuidedInquiry == null ? null : new
+                        {
+                            inquiryGoal = block.GuidedInquiry.InquiryGoal,
+                            inquiryPrompt = block.GuidedInquiry.InquiryPrompt,
+                            fallbackReason = block.GuidedInquiry.FallbackReason,
+                            submissionExpectation = block.GuidedInquiry.SubmissionExpectation,
+                            steps = block.GuidedInquiry.Steps.Select(step => new
+                            {
+                                sort = step.Sort,
+                                title = step.Title,
+                                prompt = step.Prompt
+                            }).ToList()
+                        },
+                        webCourseware = block.WebCourseware == null ? null : new
+                        {
+                            mtitle = block.WebCourseware.Mtitle,
+                            mcategory = block.WebCourseware.Mcategory,
+                            mfiletype = block.WebCourseware.Mfiletype,
+                            mback = block.WebCourseware.Mback,
+                            mupload = block.WebCourseware.Mupload,
+                            ltype = block.WebCourseware.Ltype,
+                            lessonSummary = block.WebCourseware.LessonSummary,
+                            teachingGoals = block.WebCourseware.TeachingGoals,
+                            explanationCards = block.WebCourseware.ExplanationCards.Select(card => new
+                            {
+                                title = card.Title,
+                                explanation = card.Explanation,
+                                example = card.Example
+                            }).ToList(),
+                            keywords = block.WebCourseware.Keywords,
+                            practiceItems = block.WebCourseware.PracticeItems.Select(item => new
+                            {
+                                prompt = item.Prompt,
+                                referenceAnswer = item.ReferenceAnswer
+                            }).ToList(),
+                            lessonWrapUp = block.WebCourseware.LessonWrapUp
+                        }
                     }).ToList()
                 }
             }
@@ -1052,6 +1107,81 @@ public class aiprovider_api : IHttpHandler {
         {
             success = deleted,
             msg = deleted ? "Saved full lesson draft deleted." : "Saved full lesson draft not found."
+        }));
+    }
+
+    private void FullLessonPublish(HttpContext context)
+    {
+        int cid;
+        LearnSite.Model.Courses course;
+        if (!TryGetAuthorizedCourse(context, out cid, out course))
+        {
+            return;
+        }
+
+        LearnSite.Common.FullLessonDraft draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(context.Request["currentDraft"]);
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidFullLessonDraft(draft))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Current full lesson draft is invalid." }));
+            return;
+        }
+
+        List<string> unsupportedBlockTypes = draft.Blocks
+            .Where(block => block != null && !LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedPublishedBlockType(block.BlockType))
+            .Select(block => block.BlockType)
+            .Where(blockType => !string.IsNullOrEmpty(blockType))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (unsupportedBlockTypes.Count > 0)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new
+            {
+                success = false,
+                msg = "整课草案包含当前暂不支持发布的环节类型：" + string.Join("、", unsupportedBlockTypes.ToArray())
+            }));
+            return;
+        }
+
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        bool publishToStudents = string.Equals(context.Request["publishToStudents"], "true", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(context.Request["publishToStudents"], "1", StringComparison.OrdinalIgnoreCase);
+
+        LearnSite.Model.AIActivityPlanPublishRequest request = new LearnSite.Model.AIActivityPlanPublishRequest
+        {
+            Cid = cid,
+            Hid = tcook.Hid,
+            Topic = context.Request["topic"],
+            PublishToStudents = publishToStudents,
+            FullLessonDraft = draft,
+            ExistingCourseContent = course == null ? string.Empty : course.Ccontent
+        };
+
+        LearnSite.Model.AIActivityPlanPublishResult result = new LearnSite.BLL.AIActivityPlanPublisher().PublishFullLesson(request);
+        if (result == null || result.PublishedBlocks == null || result.PublishedBlocks.Count == 0)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "整课草案发布失败，请检查环节发布配置后重试。" }));
+            return;
+        }
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                isFullLessonPublish = result.IsFullLessonPublish,
+                publishedToStudents = result.PublishedToStudents,
+                updatedCourseContent = result.UpdatedCourseContent,
+                publishedBlocks = result.PublishedBlocks.Select(block => new
+                {
+                    blockKey = block.BlockKey,
+                    blockType = block.BlockType,
+                    title = block.Title,
+                    missionId = block.MissionId,
+                    examId = block.ExamId,
+                    paperId = block.PaperId,
+                    listMenuId = block.ListMenuId
+                }).ToList()
+            }
         }));
     }
 
@@ -1138,7 +1268,59 @@ public class aiprovider_api : IHttpHandler {
                 studentAction = block.StudentAction,
                 materials = block.Materials,
                 assessmentFocus = block.AssessmentFocus,
-                status = block.Status
+                status = block.Status,
+                quiz = block.Quiz == null ? null : new
+                {
+                    examName = block.Quiz.ExamName,
+                    paperTitle = block.Quiz.PaperTitle,
+                    questionSummary = block.Quiz.QuestionSummary,
+                    duration = block.Quiz.Duration,
+                    ltype = block.Quiz.Ltype
+                },
+                resourceStudy = block.ResourceStudy == null ? null : new
+                {
+                    mtitle = block.ResourceStudy.Mtitle,
+                    mcontent = block.ResourceStudy.Mcontent,
+                    mupload = block.ResourceStudy.Mupload,
+                    ltype = block.ResourceStudy.Ltype
+                },
+                guidedInquiry = block.GuidedInquiry == null ? null : new
+                {
+                    inquiryGoal = block.GuidedInquiry.InquiryGoal,
+                    inquiryPrompt = block.GuidedInquiry.InquiryPrompt,
+                    fallbackReason = block.GuidedInquiry.FallbackReason,
+                    submissionExpectation = block.GuidedInquiry.SubmissionExpectation,
+                    steps = block.GuidedInquiry.Steps.Select(step => new
+                    {
+                        sort = step.Sort,
+                        title = step.Title,
+                        prompt = step.Prompt
+                    }).ToList()
+                },
+                webCourseware = block.WebCourseware == null ? null : new
+                {
+                    mtitle = block.WebCourseware.Mtitle,
+                    mcategory = block.WebCourseware.Mcategory,
+                    mfiletype = block.WebCourseware.Mfiletype,
+                    mback = block.WebCourseware.Mback,
+                    mupload = block.WebCourseware.Mupload,
+                    ltype = block.WebCourseware.Ltype,
+                    lessonSummary = block.WebCourseware.LessonSummary,
+                    teachingGoals = block.WebCourseware.TeachingGoals,
+                    explanationCards = block.WebCourseware.ExplanationCards.Select(card => new
+                    {
+                        title = card.Title,
+                        explanation = card.Explanation,
+                        example = card.Example
+                    }).ToList(),
+                    keywords = block.WebCourseware.Keywords,
+                    practiceItems = block.WebCourseware.PracticeItems.Select(item => new
+                    {
+                        prompt = item.Prompt,
+                        referenceAnswer = item.ReferenceAnswer
+                    }).ToList(),
+                    lessonWrapUp = block.WebCourseware.LessonWrapUp
+                }
             }).ToList()
         };
     }
@@ -1188,7 +1370,7 @@ public class aiprovider_api : IHttpHandler {
                 {
                     BlockKey = "activity-step-" + (i + 1).ToString(),
                     Sort = fullLessonDraft.Blocks.Count + 1,
-                    BlockType = i == planDraft.ActivitySteps.Count - 1 ? "quiz" : "mission",
+                    BlockType = ResolveFullLessonBlockType(step, i, planDraft.ActivitySteps.Count),
                     Title = string.IsNullOrEmpty(step.Title) ? "课堂活动" : step.Title,
                     Minutes = step.Minutes,
                     TeachingPurpose = GetTeachingPurposeForStep(step, i),
@@ -1197,29 +1379,49 @@ public class aiprovider_api : IHttpHandler {
                     StudentAction = step.StudentAction,
                     Materials = BuildBlockMaterials(step.ResourceSuggestion),
                     AssessmentFocus = step.AssessmentCheck,
-                    Status = "draft"
+                    Status = "draft",
+                    Quiz = ShouldUseQuizBlock(step, i, planDraft.ActivitySteps.Count) ? BuildQuizPayload(step) : null,
+                    GuidedInquiry = ShouldUseGuidedInquiryBlock(step, i, planDraft.ActivitySteps.Count) ? BuildGuidedInquiryPayload(step) : null
                 });
             }
         }
 
         if (planDraft.Resources != null && planDraft.Resources.Count > 0)
         {
-            fullLessonDraft.Blocks.Add(new LearnSite.Common.FullLessonDraftBlock
-            {
-                BlockKey = "resource-study-1",
-                Sort = fullLessonDraft.Blocks.Count + 1,
-                BlockType = "ware",
-                Title = "资源学习支持",
-                Minutes = "5分钟",
-                TeachingPurpose = "补充关键资源支持课堂推进",
-                LessonPosition = "拓展",
-                TeacherAction = "引导学生结合资源完成巩固或拓展。",
-                StudentAction = string.Join("；", planDraft.Resources.ToArray()),
-                Materials = new List<string>(planDraft.Resources),
-                AssessmentFocus = planDraft.Assessment != null && planDraft.Assessment.Count > 0 ? string.Join("；", planDraft.Assessment.ToArray()) : "关注学生对资源的理解与应用",
-                Status = "draft"
-            });
-        }
+                fullLessonDraft.Blocks.Add(new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "resource-study-1",
+                    Sort = fullLessonDraft.Blocks.Count + 1,
+                    BlockType = "resource-study",
+                    Title = "资源学习支持",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "补充关键资源支持课堂推进",
+                    LessonPosition = "拓展",
+                    TeacherAction = "引导学生结合资源完成巩固或拓展。",
+                    StudentAction = string.Join("；", planDraft.Resources.ToArray()),
+                    Materials = new List<string>(planDraft.Resources),
+                    AssessmentFocus = planDraft.Assessment != null && planDraft.Assessment.Count > 0 ? string.Join("；", planDraft.Assessment.ToArray()) : "关注学生对资源的理解与应用",
+                    Status = "draft",
+                    ResourceStudy = BuildResourceStudyPayload(planDraft)
+                });
+
+                fullLessonDraft.Blocks.Add(new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "web-courseware-1",
+                    Sort = fullLessonDraft.Blocks.Count + 1,
+                    BlockType = "webCourseware",
+                    Title = "网页课件支持",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "通过网页课件展示关键信息或交互资源",
+                    LessonPosition = "展开",
+                    TeacherAction = "打开网页课件并组织学生按提示观察或操作。",
+                    StudentAction = "根据网页内容完成观察、跟读或互动任务。",
+                    Materials = new List<string> { "网页课件链接", "投影设备" },
+                    AssessmentFocus = planDraft.Assessment != null && planDraft.Assessment.Count > 0 ? planDraft.Assessment[0] : "关注学生是否能从网页课件中提取关键信息",
+                    Status = "draft",
+                    WebCourseware = BuildWebCoursewarePayload(topic)
+                });
+            }
 
         if (fullLessonDraft.Blocks.Count == 0)
         {
@@ -1301,7 +1503,11 @@ public class aiprovider_api : IHttpHandler {
                     StudentAction = replacement.StudentAction,
                     Materials = replacement.Materials == null ? new List<string>() : new List<string>(replacement.Materials),
                     AssessmentFocus = replacement.AssessmentFocus,
-                    Status = "draft"
+                    Status = "draft",
+                    Quiz = CloneQuizPayload(replacement.Quiz),
+                    ResourceStudy = CloneResourceStudyPayload(replacement.ResourceStudy),
+                    GuidedInquiry = CloneGuidedInquiryPayload(replacement.GuidedInquiry),
+                    WebCourseware = CloneWebCoursewarePayload(replacement.WebCourseware)
                 };
                 merged.Blocks.Add(nextBlock);
                 replaced = true;
@@ -1321,7 +1527,11 @@ public class aiprovider_api : IHttpHandler {
                     StudentAction = block.StudentAction,
                     Materials = block.Materials == null ? new List<string>() : new List<string>(block.Materials),
                     AssessmentFocus = block.AssessmentFocus,
-                    Status = block.Status
+                    Status = block.Status,
+                    Quiz = CloneQuizPayload(block.Quiz),
+                    ResourceStudy = CloneResourceStudyPayload(block.ResourceStudy),
+                    GuidedInquiry = CloneGuidedInquiryPayload(block.GuidedInquiry),
+                    WebCourseware = CloneWebCoursewarePayload(block.WebCourseware)
                 });
             }
         }
@@ -1433,6 +1643,377 @@ public class aiprovider_api : IHttpHandler {
         }
 
         return items;
+    }
+
+    private string ResolveFullLessonBlockType(LearnSite.Common.ActivityPlanDraftStep step, int index, int totalCount)
+    {
+        if (ShouldUseQuizBlock(step, index, totalCount))
+        {
+            return "quiz";
+        }
+
+        if (ShouldUseGuidedInquiryBlock(step, index, totalCount))
+        {
+            return "guidedInquiry";
+        }
+
+        return "mission";
+    }
+
+    private bool ShouldUseQuizBlock(LearnSite.Common.ActivityPlanDraftStep step, int index, int totalCount)
+    {
+        if (step == null)
+        {
+            return false;
+        }
+
+        if (index != totalCount - 1)
+        {
+            return false;
+        }
+
+        string combinedText = string.Join(" ", new[]
+        {
+            step.Title ?? string.Empty,
+            step.TeacherAction ?? string.Empty,
+            step.StudentAction ?? string.Empty,
+            step.AssessmentCheck ?? string.Empty
+        }).ToLowerInvariant();
+
+        return combinedText.Contains("测")
+            || combinedText.Contains("练习")
+            || combinedText.Contains("检测")
+            || combinedText.Contains("答题")
+            || combinedText.Contains("判断");
+    }
+
+    private bool ShouldUseGuidedInquiryBlock(LearnSite.Common.ActivityPlanDraftStep step, int index, int totalCount)
+    {
+        if (step == null || ShouldUseQuizBlock(step, index, totalCount))
+        {
+            return false;
+        }
+
+        string combinedText = string.Join(" ", new[]
+        {
+            step.Title ?? string.Empty,
+            step.TeacherAction ?? string.Empty,
+            step.StudentAction ?? string.Empty,
+            step.InteractionMethod ?? string.Empty,
+            step.AssessmentCheck ?? string.Empty
+        }).ToLowerInvariant();
+
+        return combinedText.Contains("探究")
+            || combinedText.Contains("问题")
+            || combinedText.Contains("讨论")
+            || combinedText.Contains("观察")
+            || combinedText.Contains("交流")
+            || combinedText.Contains("小组");
+    }
+
+    private LearnSite.Common.QuizBlockPayload BuildQuizPayload(LearnSite.Common.ActivityPlanDraftStep step)
+    {
+        if (step == null)
+        {
+            return null;
+        }
+
+        return new LearnSite.Common.QuizBlockPayload
+        {
+            ExamName = string.IsNullOrEmpty(step.Title) ? "课堂检测" : step.Title,
+            PaperTitle = string.IsNullOrEmpty(step.Title) ? "AI 推荐课堂检测" : step.Title + "试题",
+            QuestionSummary = string.IsNullOrEmpty(step.AssessmentCheck) ? "围绕本环节教学目标设计检测题。" : step.AssessmentCheck,
+            Duration = GetDurationMinutes(step.Minutes, 10),
+            Ltype = 39
+        };
+    }
+
+    private LearnSite.Common.ResourceStudyBlockPayload BuildResourceStudyPayload(LearnSite.Common.ActivityPlanDraft planDraft)
+    {
+        if (planDraft == null || planDraft.Resources == null || planDraft.Resources.Count == 0)
+        {
+            return null;
+        }
+
+        return new LearnSite.Common.ResourceStudyBlockPayload
+        {
+            Mtitle = "资源学习支持",
+            Mcontent = BuildResourceStudyContent(planDraft.Resources),
+            Mupload = false,
+            Ltype = 6
+        };
+    }
+
+    private LearnSite.Common.WebCoursewareBlockPayload BuildWebCoursewarePayload(string topic)
+    {
+        string safeTopic = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(topic, LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength);
+        if (string.IsNullOrEmpty(safeTopic))
+        {
+            safeTopic = "lesson";
+        }
+
+        string summary = "围绕“" + safeTopic + "”建立课堂情境，帮助学生抓住核心知识点，并通过示例和练习完成当堂理解。";
+        List<string> teachingGoals = new List<string>
+        {
+            "说出“" + safeTopic + "”的核心概念或关键现象。",
+            "能根据示例解释知识点在题目或情境中的应用。",
+            "能完成 1 道课堂思考或互动练习并说出理由。"
+        };
+        List<LearnSite.Common.WebCoursewareExplanationCardPayload> cards = new List<LearnSite.Common.WebCoursewareExplanationCardPayload>
+        {
+            new LearnSite.Common.WebCoursewareExplanationCardPayload
+            {
+                Title = "知识点讲解",
+                Explanation = "先用生活化语言理解“" + safeTopic + "”是什么，再关注它的组成要素和判断依据。",
+                Example = "先观察教师给出的图片、操作材料或题目，找出最能代表该知识点的关键信息。"
+            },
+            new LearnSite.Common.WebCoursewareExplanationCardPayload
+            {
+                Title = "步骤与方法",
+                Explanation = "遇到相关任务时，建议按照“看信息 -> 找关键 -> 说理由 -> 做判断”的顺序完成。",
+                Example = "可以先圈出题目中的重点词，再和同桌交流自己为什么这样判断。"
+            }
+        };
+        List<string> keywords = new List<string> { safeTopic, "关键概念", "判断依据", "课堂应用" };
+        List<LearnSite.Common.WebCoursewarePracticeItemPayload> practiceItems = new List<LearnSite.Common.WebCoursewarePracticeItemPayload>
+        {
+            new LearnSite.Common.WebCoursewarePracticeItemPayload
+            {
+                Prompt = "请用自己的话说一说，今天学习的“" + safeTopic + "”最重要的一点是什么？",
+                ReferenceAnswer = "能结合课堂示例，说出核心概念，并说明自己判断的理由。"
+            },
+            new LearnSite.Common.WebCoursewarePracticeItemPayload
+            {
+                Prompt = "观察一个新的例子，判断它是否符合“" + safeTopic + "”的特点，并说出依据。",
+                ReferenceAnswer = "先抓住关键信息，再对照本课知识点判断是否符合，并完整表达依据。"
+            }
+        };
+        string lessonWrapUp = "回顾本课时，记住“概念是什么、依据在哪里、怎样实际应用”这三件事，再带着问题进入后续活动。";
+
+        return new LearnSite.Common.WebCoursewareBlockPayload
+        {
+            Mtitle = "网页课件支持",
+            Mcategory = 38,
+            Mfiletype = "ware",
+            Mback = BuildWebCoursewarePreviewUrl(safeTopic),
+            Mupload = true,
+            Ltype = 38,
+            LessonSummary = summary,
+            TeachingGoals = teachingGoals,
+            ExplanationCards = cards,
+            Keywords = keywords,
+            PracticeItems = practiceItems,
+            LessonWrapUp = lessonWrapUp
+        };
+    }
+
+    private string BuildWebCoursewarePreviewUrl(string topic)
+    {
+        return "/ai/courseware/preview.html?topic=" + HttpUtility.UrlEncode(topic) + "&source=published";
+    }
+
+    private LearnSite.Common.GuidedInquiryBlockPayload BuildGuidedInquiryPayload(LearnSite.Common.ActivityPlanDraftStep step)
+    {
+        if (step == null)
+        {
+            return null;
+        }
+
+        return new LearnSite.Common.GuidedInquiryBlockPayload
+        {
+            InquiryGoal = string.IsNullOrEmpty(step.AssessmentCheck) ? step.Title : step.AssessmentCheck,
+            InquiryPrompt = string.IsNullOrEmpty(step.StudentAction) ? step.TeacherAction : step.StudentAction,
+            FallbackReason = "当前环节更适合通过问题观察、合作讨论或证据收集推进，不强行套用现有测验/资源/网页课件类型。",
+            SubmissionExpectation = BuildGuidedInquirySubmissionExpectation(step),
+            Steps = BuildGuidedInquirySteps(step)
+        };
+    }
+
+    private List<LearnSite.Common.GuidedInquiryStepPayload> BuildGuidedInquirySteps(LearnSite.Common.ActivityPlanDraftStep step)
+    {
+        List<LearnSite.Common.GuidedInquiryStepPayload> steps = new List<LearnSite.Common.GuidedInquiryStepPayload>();
+        if (step == null)
+        {
+            return steps;
+        }
+
+        steps.Add(new LearnSite.Common.GuidedInquiryStepPayload
+        {
+            Sort = 1,
+            Title = "提出问题",
+            Prompt = string.IsNullOrEmpty(step.TeacherAction) ? "围绕当前主题提出核心问题。" : step.TeacherAction
+        });
+        steps.Add(new LearnSite.Common.GuidedInquiryStepPayload
+        {
+            Sort = 2,
+            Title = "学生探究",
+            Prompt = string.IsNullOrEmpty(step.StudentAction) ? "根据教师引导开展观察、讨论或记录。" : step.StudentAction
+        });
+        steps.Add(new LearnSite.Common.GuidedInquiryStepPayload
+        {
+            Sort = 3,
+            Title = "整理结论",
+            Prompt = string.IsNullOrEmpty(step.AssessmentCheck) ? "整理探究结果并准备课堂交流。" : step.AssessmentCheck
+        });
+        return steps;
+    }
+
+    private string BuildGuidedInquirySubmissionExpectation(LearnSite.Common.ActivityPlanDraftStep step)
+    {
+        if (step == null)
+        {
+            return "形成一份简短探究记录或口头汇报结论。";
+        }
+
+        if (!string.IsNullOrEmpty(step.AssessmentCheck))
+        {
+            return "完成探究后，围绕“" + step.AssessmentCheck + "”整理一份观察记录或交流结论。";
+        }
+
+        return "形成一份简短探究记录或口头汇报结论。";
+    }
+
+    private string BuildResourceStudyContent(List<string> resources)
+    {
+        if (resources == null || resources.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        List<string> lines = new List<string>();
+        lines.Add("<h3>资源学习任务</h3>");
+        lines.Add("<p>请围绕以下资源完成阅读或材料学习：</p>");
+        lines.Add("<ul>");
+        foreach (string item in resources)
+        {
+            string value = item == null ? string.Empty : item.Trim();
+            if (!string.IsNullOrEmpty(value))
+            {
+                lines.Add("<li>" + HttpUtility.HtmlEncode(value) + "</li>");
+            }
+        }
+        lines.Add("</ul>");
+        return string.Join(string.Empty, lines.ToArray());
+    }
+
+    private int GetDurationMinutes(string minutesText, int defaultMinutes)
+    {
+        if (!string.IsNullOrEmpty(minutesText))
+        {
+            string digits = new string(minutesText.Where(char.IsDigit).ToArray());
+            int minutes;
+            if (int.TryParse(digits, out minutes) && minutes > 0)
+            {
+                return minutes;
+            }
+        }
+
+        return defaultMinutes;
+    }
+
+    private LearnSite.Common.QuizBlockPayload CloneQuizPayload(LearnSite.Common.QuizBlockPayload payload)
+    {
+        if (payload == null)
+        {
+            return null;
+        }
+
+        return new LearnSite.Common.QuizBlockPayload
+        {
+            ExamName = payload.ExamName,
+            PaperTitle = payload.PaperTitle,
+            QuestionSummary = payload.QuestionSummary,
+            Duration = payload.Duration,
+            Ltype = payload.Ltype
+        };
+    }
+
+    private LearnSite.Common.ResourceStudyBlockPayload CloneResourceStudyPayload(LearnSite.Common.ResourceStudyBlockPayload payload)
+    {
+        if (payload == null)
+        {
+            return null;
+        }
+
+        return new LearnSite.Common.ResourceStudyBlockPayload
+        {
+            Mtitle = payload.Mtitle,
+            Mcontent = payload.Mcontent,
+            Mupload = payload.Mupload,
+            Ltype = payload.Ltype
+        };
+    }
+
+    private LearnSite.Common.WebCoursewareBlockPayload CloneWebCoursewarePayload(LearnSite.Common.WebCoursewareBlockPayload payload)
+    {
+        if (payload == null)
+        {
+            return null;
+        }
+
+        return new LearnSite.Common.WebCoursewareBlockPayload
+        {
+            Mtitle = payload.Mtitle,
+            Mcategory = payload.Mcategory,
+            Mfiletype = payload.Mfiletype,
+            Mback = payload.Mback,
+            Mupload = payload.Mupload,
+            Ltype = payload.Ltype,
+            LessonSummary = payload.LessonSummary,
+            TeachingGoals = payload.TeachingGoals == null ? new List<string>() : new List<string>(payload.TeachingGoals),
+            ExplanationCards = payload.ExplanationCards == null ? new List<LearnSite.Common.WebCoursewareExplanationCardPayload>() : payload.ExplanationCards
+                .Where(card => card != null)
+                .Select(card => new LearnSite.Common.WebCoursewareExplanationCardPayload
+                {
+                    Title = card.Title,
+                    Explanation = card.Explanation,
+                    Example = card.Example
+                }).ToList(),
+            Keywords = payload.Keywords == null ? new List<string>() : new List<string>(payload.Keywords),
+            PracticeItems = payload.PracticeItems == null ? new List<LearnSite.Common.WebCoursewarePracticeItemPayload>() : payload.PracticeItems
+                .Where(item => item != null)
+                .Select(item => new LearnSite.Common.WebCoursewarePracticeItemPayload
+                {
+                    Prompt = item.Prompt,
+                    ReferenceAnswer = item.ReferenceAnswer
+                }).ToList(),
+            LessonWrapUp = payload.LessonWrapUp
+        };
+    }
+
+    private LearnSite.Common.GuidedInquiryBlockPayload CloneGuidedInquiryPayload(LearnSite.Common.GuidedInquiryBlockPayload payload)
+    {
+        if (payload == null)
+        {
+            return null;
+        }
+
+        LearnSite.Common.GuidedInquiryBlockPayload clone = new LearnSite.Common.GuidedInquiryBlockPayload();
+        clone.InquiryGoal = payload.InquiryGoal;
+        clone.InquiryPrompt = payload.InquiryPrompt;
+        clone.FallbackReason = payload.FallbackReason;
+        clone.SubmissionExpectation = payload.SubmissionExpectation;
+        clone.Steps = new List<LearnSite.Common.GuidedInquiryStepPayload>();
+
+        if (payload.Steps != null)
+        {
+            foreach (LearnSite.Common.GuidedInquiryStepPayload step in payload.Steps)
+            {
+                if (step == null)
+                {
+                    continue;
+                }
+
+                clone.Steps.Add(new LearnSite.Common.GuidedInquiryStepPayload
+                {
+                    Sort = step.Sort,
+                    Title = step.Title,
+                    Prompt = step.Prompt
+                });
+            }
+        }
+
+        return clone;
     }
 
     private void WriteAiChatResponse(HttpContext context, string prompt, double temperature, int maxTokens, string errorPrefix)

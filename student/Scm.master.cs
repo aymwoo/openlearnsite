@@ -8,6 +8,7 @@ public partial class Student_Scm : System.Web.UI.MasterPage
 {
     protected string Cbanner = "";
     protected string SiteTitle = "";
+    protected string ComposedLessonSummaryHtml = "";
     // 学习状态上报所需的学生信息
     protected string LsSnum = "";
     protected string LsSname = "";
@@ -85,6 +86,7 @@ public partial class Student_Scm : System.Web.UI.MasterPage
         }
         if (LearnSite.Common.WordProcess.IsNum(myCid))
         {
+            int courseId = Int32.Parse(myCid);
             // 设置当前课程ID，供学习状态上报使用
             LsCid = myCid;
 
@@ -105,11 +107,13 @@ public partial class Student_Scm : System.Web.UI.MasterPage
 
             string CurWay = "";
             LearnSite.BLL.Courses cbll = new LearnSite.BLL.Courses();
-            Cbanner = cbll.GetBanner(Int32.Parse(myCid)).Replace("~", "../..");
+            LearnSite.Model.Courses cmodel = cbll.GetModel(courseId);
+            Cbanner = cbll.GetBanner(courseId).Replace("~", "../..");
+            List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> composedSummaries = LoadComposedRuntimeSummaries(cmodel, courseId);
             string Ctitle = " 首页 "; 
             AddLessonFirst(CurWay, myCid.ToString(), Ctitle);
             LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
-            DataTable dt = lbll.GetShowedMenu(Int32.Parse(myCid)).Tables[0];
+            DataTable dt = lbll.GetShowedMenu(courseId).Tables[0];
             int dcount = dt.Rows.Count;
 
             if (dcount > 0)
@@ -145,7 +149,7 @@ public partial class Student_Scm : System.Web.UI.MasterPage
                     string Ltitlestr = dt.Rows[i]["Ltitle"].ToString();
 
                     MenuItem ma = new MenuItem();
-                    ma.Text = Ltitlestr;
+                    ma.Text = BuildMenuTitle(Lid, Ltitlestr, composedSummaries);
                     ma.SeparatorImageUrl = sepUrl;
                     ma.ImageUrl = urlarrow;
 
@@ -322,6 +326,9 @@ public partial class Student_Scm : System.Web.UI.MasterPage
                                 ma.NavigateUrl = "#";
                         }
                     }
+
+                    ApplyComposedProgressVisual(ma, Lid, urlfinish, composedSummaries);
+
                     if (Lidstr == Lid)
                     {
                         CurWay = Ltitlestr;
@@ -343,6 +350,115 @@ public partial class Student_Scm : System.Web.UI.MasterPage
             
             int timepass = LearnSite.Common.Computer.TimePassed();
             this.Page.Title = HttpUtility.UrlDecode(cook.Sname) + " " + cook.Snum + " (" + timepass + "分钟)";
+        }
+    }
+
+    private List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> LoadComposedRuntimeSummaries(LearnSite.Model.Courses courseModel, int courseId)
+    {
+        if (courseModel == null || !courseModel.Chid.HasValue)
+        {
+            return null;
+        }
+
+        LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
+        LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();
+        LearnSite.BLL.Works wbll = new LearnSite.BLL.Works();
+        List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> summaries = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.LoadPublishedCourseSummaries(
+            courseId,
+            courseModel.Chid.Value,
+            lid => lbll.GetModel(lid),
+            lid => kbll.GetModelme(cook.Sid, lid),
+            missionId => wbll.WorkPass(cook.Sid, missionId));
+
+        ComposedLessonSummaryHtml = BuildComposedLessonSummaryHtml(summaries);
+        return summaries;
+    }
+
+    private string BuildMenuTitle(string lid, string title, IList<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> summaries)
+    {
+        if (!LearnSite.Common.WordProcess.IsNum(lid))
+        {
+            return title;
+        }
+
+        LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.FindSummaryByListMenuId(summaries, Int32.Parse(lid));
+        if (summary == null)
+        {
+            return title;
+        }
+
+        return "第" + summary.Sort.ToString() + "环 " + title;
+    }
+
+    private void ApplyComposedProgressVisual(MenuItem menuItem, string lid, string urlfinish, IList<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> summaries)
+    {
+        if (menuItem == null || !LearnSite.Common.WordProcess.IsNum(lid))
+        {
+            return;
+        }
+
+        LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.FindSummaryByListMenuId(summaries, Int32.Parse(lid));
+        if (summary == null)
+        {
+            return;
+        }
+
+        if (summary.CompletionState == "completed")
+        {
+            menuItem.ImageUrl = urlfinish;
+        }
+
+        string progressText = GetComposedProgressText(summary);
+        if (!string.IsNullOrEmpty(progressText))
+        {
+            menuItem.ToolTip = progressText;
+        }
+    }
+
+    private string BuildComposedLessonSummaryHtml(IList<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> summaries)
+    {
+        if (summaries == null || summaries.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        List<string> items = new List<string>();
+        for (int i = 0; i < summaries.Count; i++)
+        {
+            LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary = summaries[i];
+            if (summary == null)
+            {
+                continue;
+            }
+
+            string title = HttpUtility.HtmlEncode(summary.Title ?? string.Empty);
+            string progressText = HttpUtility.HtmlEncode(GetComposedProgressText(summary));
+            items.Add("<span style='display:inline-block;margin:0 8px 8px 0;padding:6px 10px;border-radius:999px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-size:12px;font-weight:600;'>第" + summary.Sort.ToString() + "环 " + title + " · " + progressText + "</span>");
+        }
+
+        if (items.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        return "<div style='padding:10px 0 2px 0;white-space:normal;'><div style='font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;'>整课活动进度</div>" + string.Join(string.Empty, items.ToArray()) + "</div>";
+    }
+
+    private string GetComposedProgressText(LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary)
+    {
+        if (summary == null)
+        {
+            return string.Empty;
+        }
+
+        switch (summary.CompletionState)
+        {
+            case "completed":
+                return "已完成";
+            case "incomplete":
+                return "待完成";
+            default:
+                return summary.IsRuntimeReady ? "待进入" : "待发布";
         }
     }
     

@@ -29,6 +29,12 @@
                 <asp:Label ID="LabelLid" runat="server" Visible="False"></asp:Label>
                 <asp:HiddenField ID="HiddenMissionRaw" runat="server" />
             </div>
+            <asp:Panel ID="PanelComposedRuntime" runat="server" Visible="False">
+                <div class="prog-subpanel" style="margin-bottom:16px;background:#f8fafc;border:1px solid #dbeafe;">
+                    <div class="prog-subpanel-title">整课进度</div>
+                    <div class="prog-guide-copy"><asp:Literal ID="LiteralComposedRuntime" runat="server"></asp:Literal></div>
+                </div>
+            </asp:Panel>
             <asp:Panel ID="PanelActivityGuide" runat="server" Visible="False">
                 <div class="prog-subpanel" style="margin-bottom:16px;background:#eff6ff;border:1px solid #bfdbfe;">
                     <div class="prog-subpanel-title">学习建议</div>

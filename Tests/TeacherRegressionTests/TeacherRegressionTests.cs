@@ -708,6 +708,10 @@ public class TeacherRegressionTests
         Assert.Contains("整课模式会按顺序展示课堂环节卡片", courseEdit, StringComparison.Ordinal);
         Assert.Contains("activity-plan-block-card", courseEdit, StringComparison.Ordinal);
         Assert.Contains("activity-plan-block-meta-list", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-block-type-badge", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-type-preview", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-type-preview-title", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-inquiry-summary", courseEdit, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -736,6 +740,9 @@ public class TeacherRegressionTests
         Assert.Contains("teachingPurpose", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("lessonPosition", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("minutes", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("buildActivityPlanPreviewItems", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("appendActivityPlanTypePreview", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("getBlockTypeDisplayName", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("removeFullLessonBlock", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("regenerate-step", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("resultArea.innerHTML = text", courseEditScript, StringComparison.Ordinal);
@@ -785,7 +792,7 @@ public class TeacherRegressionTests
         Assert.Contains("checkSavedActivityPlanDraftStatus(function (status)", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("window.confirm", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("整课草案当前保持预览优先，本阶段不会自动写入学案正文", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("整课草案发布仍在后续阶段处理，本阶段不会直接发布或写入学案正文", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("确认发布当前整课草案", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("action=saveCourse", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("Btnedit.click()", courseEditScript, StringComparison.Ordinal);
     }
@@ -821,6 +828,18 @@ public class TeacherRegressionTests
         Assert.Contains("block.teachingPurpose", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("block.lessonPosition", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("block.minutes", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("buildQuizPreviewItems", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("buildResourceStudyPreviewItems", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("buildWebCoursewarePreviewItems", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("buildGuidedInquiryPreviewItems", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("已有活动摘要", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("引导探究", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("appendGuidedInquirySummary", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("为何使用引导探究回退", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("guidedInquiry", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("试卷名称", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("阅读内容摘要", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("首页地址", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("innerHTML = block", courseEditScript, StringComparison.Ordinal);
     }
 
@@ -839,8 +858,15 @@ public class TeacherRegressionTests
         Assert.Contains("draftType === 'fullLesson' ? 'fullLessonSaveDraft' : 'activityPlanSaveDraft'", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("fullLessonLoadDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("fullLessonDraftStatus", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("appendTypedPreviewCopyLines", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("summarizeHtmlText", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("课件摘要", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("讲解卡片数", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("整课草案当前保持预览优先，本阶段不会自动写入学案正文", courseEditScript, StringComparison.Ordinal);
-        Assert.DoesNotContain("action=fullLessonPublish", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("确认发布当前整课草案", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=fullLessonPublish", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("publishFullLessonDraft()", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("window.confirm(confirmText)", courseEditScript, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -875,6 +901,28 @@ public class TeacherRegressionTests
         Assert.Contains("string.Equals(block.BlockKey, blockKey, StringComparison.OrdinalIgnoreCase)", handler, StringComparison.Ordinal);
         Assert.Contains("string.Equals(block.BlockType, currentBlock.BlockType, StringComparison.OrdinalIgnoreCase)", handler, StringComparison.Ordinal);
         Assert.Contains("GetFullLessonTotalMinutes(duration, fullLessonDraft.Blocks)", handler, StringComparison.Ordinal);
+        Assert.Contains("BlockType = \"resource-study\"", handler, StringComparison.Ordinal);
+        Assert.Contains("BlockType = \"webCourseware\"", handler, StringComparison.Ordinal);
+        Assert.Contains("BuildQuizPayload", handler, StringComparison.Ordinal);
+        Assert.Contains("BuildResourceStudyPayload", handler, StringComparison.Ordinal);
+        Assert.Contains("BuildWebCoursewarePayload", handler, StringComparison.Ordinal);
+        Assert.Contains("/ai/courseware/preview.html?topic=", handler, StringComparison.Ordinal);
+        Assert.Contains("&source=published", handler, StringComparison.Ordinal);
+        Assert.Contains("BuildWebCoursewarePreviewUrl", handler, StringComparison.Ordinal);
+        Assert.Contains("lessonSummary = block.WebCourseware.LessonSummary", handler, StringComparison.Ordinal);
+        Assert.Contains("explanationCards = block.WebCourseware.ExplanationCards.Select", handler, StringComparison.Ordinal);
+        Assert.Contains("practiceItems = block.WebCourseware.PracticeItems.Select", handler, StringComparison.Ordinal);
+        Assert.Contains("BuildGuidedInquiryPayload", handler, StringComparison.Ordinal);
+        Assert.Contains("ResolveFullLessonBlockType", handler, StringComparison.Ordinal);
+        Assert.Contains("guidedInquiry = block.GuidedInquiry == null ? null", handler, StringComparison.Ordinal);
+        Assert.Contains("return \"guidedInquiry\";", handler, StringComparison.Ordinal);
+        Assert.Contains("ltype = block.Quiz.Ltype", handler, StringComparison.Ordinal);
+        Assert.Contains("mcontent = block.ResourceStudy.Mcontent", handler, StringComparison.Ordinal);
+        Assert.Contains("mfiletype = block.WebCourseware.Mfiletype", handler, StringComparison.Ordinal);
+        Assert.DoesNotContain("new LearnSite.BLL.Mission()", handler, StringComparison.Ordinal);
+        Assert.DoesNotContain("new LearnSite.BLL.Exam()", handler, StringComparison.Ordinal);
+        Assert.DoesNotContain("new LearnSite.BLL.ListMenu()", handler, StringComparison.Ordinal);
+        Assert.True(File.Exists(Path.Combine(RepoRoot, "ai", "courseware", "preview.html")));
     }
 
     [Fact]
@@ -885,7 +933,29 @@ public class TeacherRegressionTests
         Assert.Contains("case \"activityPlanPublish\":", handler, StringComparison.Ordinal);
         Assert.Contains("AIActivityPlanPublisher", handler, StringComparison.Ordinal);
         Assert.Contains("updatedCourseContent", handler, StringComparison.Ordinal);
-        Assert.DoesNotContain("fullLessonPublish", handler, StringComparison.Ordinal);
+        Assert.Contains("case \"fullLessonPublish\":", handler, StringComparison.Ordinal);
+        Assert.Contains("AIActivityPlanDraftHelper.ParseFullLessonDraft", handler, StringComparison.Ordinal);
+        Assert.Contains("private void FullLessonPublish(HttpContext context)", handler, StringComparison.Ordinal);
+        Assert.Contains("IsSupportedPublishedBlockType", handler, StringComparison.Ordinal);
+        Assert.Contains("整课草案包含当前暂不支持发布的环节类型", handler, StringComparison.Ordinal);
+        Assert.Contains("整课草案发布失败，请检查环节发布配置后重试。", handler, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void FullLessonDraftHelper_Source_ShouldFailClosedForGuidedInquiryPayloads()
+    {
+        var helper = File.ReadAllText(Path.Combine(CommonRoot, "AIActivityPlanDraftHelper.cs"));
+
+        Assert.Contains("public GuidedInquiryBlockPayload GuidedInquiry", helper, StringComparison.Ordinal);
+        Assert.Contains("NormalizeGuidedInquiryPayload", helper, StringComparison.Ordinal);
+        Assert.Contains("IsValidGuidedInquiryPayload", helper, StringComparison.Ordinal);
+        Assert.Contains("IsGuidedInquiryBlockType", helper, StringComparison.Ordinal);
+        Assert.Contains("payload.Steps == null", helper, StringComparison.Ordinal);
+        Assert.Contains("step.Sort != i + 1", helper, StringComparison.Ordinal);
+        Assert.Contains("public List<WebCoursewareExplanationCardPayload> ExplanationCards", helper, StringComparison.Ordinal);
+        Assert.Contains("public List<WebCoursewarePracticeItemPayload> PracticeItems", helper, StringComparison.Ordinal);
+        Assert.Contains("NormalizeWebCoursewareExplanationCards", helper, StringComparison.Ordinal);
+        Assert.Contains("NormalizeWebCoursewarePracticeItems", helper, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -909,6 +979,35 @@ public class TeacherRegressionTests
         Assert.Contains("command.Parameters.AddWithValue(\"@Ltype\", 1);", publisher, StringComparison.Ordinal);
         Assert.Contains("command.Parameters.AddWithValue(\"@Mupload\", true);", publisher, StringComparison.Ordinal);
         Assert.Contains("command.Parameters.AddWithValue(\"@Lshow\", request.PublishToStudents);", publisher, StringComparison.Ordinal);
+        Assert.Contains("BuildFullLessonLessonContent", publisher, StringComparison.Ordinal);
+        Assert.Contains("PublishFullLesson", publisher, StringComparison.Ordinal);
+        Assert.Contains("block.BlockKey", publisher, StringComparison.Ordinal);
+        Assert.Contains("publishLinks[block.BlockKey]", publisher, StringComparison.Ordinal);
+        Assert.Contains("@Ltype", publisher, StringComparison.Ordinal);
+        Assert.Contains("case \"mission\":", publisher, StringComparison.Ordinal);
+        Assert.Contains("PublishMissionBlock", publisher, StringComparison.Ordinal);
+        Assert.Contains("BuildMissionBlockContent", publisher, StringComparison.Ordinal);
+        Assert.Contains("BuildPublishedWebCoursewareBackUrl", publisher, StringComparison.Ordinal);
+        Assert.Contains("UpdateMissionBackUrl", publisher, StringComparison.Ordinal);
+        Assert.Contains("\"lid=\" + listMenuId.ToString()", publisher, StringComparison.Ordinal);
+        Assert.Contains("\"mid=\" + missionId.ToString()", publisher, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void WebCoursewareStudentRuntime_ShouldExposePayloadLookupAndFallbackAwarePreview()
+    {
+        var handler = File.ReadAllText(Path.Combine(RepoRoot, "student", "webcoursewarepayload.ashx"));
+        var wareCodeBehind = File.ReadAllText(Path.Combine(RepoRoot, "student", "ware.aspx.cs"));
+        var preview = File.ReadAllText(Path.Combine(RepoRoot, "ai", "courseware", "preview.html"));
+
+        Assert.Contains("webcoursewarepayload : IHttpHandler", handler, StringComparison.Ordinal);
+        Assert.Contains("context.Request[\"lid\"]", handler, StringComparison.Ordinal);
+        Assert.Contains("context.Request[\"mid\"]", handler, StringComparison.Ordinal);
+        Assert.Contains("WebCoursewareRuntimePayloadResolver.Resolve", handler, StringComparison.Ordinal);
+        Assert.Contains("AppendRuntimeLocator", wareCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("loadPublishedPayload", preview, StringComparison.Ordinal);
+        Assert.Contains("/student/webcoursewarepayload.ashx?", preview, StringComparison.Ordinal);
+        Assert.Contains("renderView(createDefaultView(topic));", preview, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1023,24 +1122,95 @@ public class TeacherRegressionTests
     public void ActivityPlanCompletion_StudentMenu_ShouldKeepFinishStateBackedByMenuWorksAndWorkPass()
     {
         var studentMenu = File.ReadAllText(Path.Combine(RepoRoot, "student", "Scm.master.cs"));
+        var studentMaster = File.ReadAllText(Path.Combine(RepoRoot, "student", "Scm.master"));
 
         Assert.Contains("LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();", studentMenu, StringComparison.Ordinal);
         Assert.Contains("lcount = kbll.GetMyLidCount(cook.Sid, lidall);", studentMenu, StringComparison.Ordinal);
         Assert.Contains("bool codepass = wbll.WorkPass(cook.Sid, Int32.Parse(Lxidstr));", studentMenu, StringComparison.Ordinal);
         Assert.Contains("ma.ImageUrl = urlfinish;", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("LoadPublishedCourseSummaries", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("BuildMenuTitle", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("ApplyComposedProgressVisual", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("ComposedLessonSummaryHtml", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("scmComposedSummary", studentMaster, StringComparison.Ordinal);
+        Assert.Contains("整课活动进度", studentMenu, StringComparison.Ordinal);
         Assert.DoesNotContain("AICompletion", studentMenu, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
     public void ActivityPlanCompletion_StudentSummary_ShouldKeepCompletedCourseAggregationOnLegacyModels()
     {
+        var myInfoPage = File.ReadAllText(Path.Combine(RepoRoot, "student", "myinfo.aspx"));
         var myInfo = File.ReadAllText(Path.Combine(RepoRoot, "student", "myinfo.aspx.cs"));
 
         Assert.Contains("string wcids = wbll.ShowStuDoneWorkCids(mysnum, Cterm, Cgrade);", myInfo, StringComparison.Ordinal);
         Assert.Contains("LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();", myInfo, StringComparison.Ordinal);
         Assert.Contains("string rcids = kbll.readCids(Int32.Parse(mySid));", myInfo, StringComparison.Ordinal);
         Assert.Contains("LabelCids.Text = LearnSite.Common.WordProcess.SimpleWordsNew(allcids);", myInfo, StringComparison.Ordinal);
+        Assert.Contains("AppendComposedProgress", myInfo, StringComparison.Ordinal);
+        Assert.Contains("BindComposedCourseSummary", myInfo, StringComparison.Ordinal);
+        Assert.Contains("LoadPublishedCourseSummaries", myInfo, StringComparison.Ordinal);
+        Assert.Contains("PanelComposedCourseSummary", myInfoPage, StringComparison.Ordinal);
+        Assert.Contains("LiteralComposedCourseSummary", myInfoPage, StringComparison.Ordinal);
         Assert.DoesNotContain("AICompletion", myInfo, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ComposedRuntime_StudentBoundary_ShouldStayOnExistingMenuDrivenRuntimePages()
+    {
+        var studentMenu = File.ReadAllText(Path.Combine(RepoRoot, "student", "Scm.master.cs"));
+        var showMissionPage = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx"));
+        var showMissionCodeBehind = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx.cs"));
+        var helper = File.ReadAllText(Path.Combine(CommonRoot, "AIActivityPlanComposedRuntimeHelper.cs"));
+
+        Assert.Contains("~/student/showmission.aspx?lid=", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("~/student/description.aspx?lid=", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("~/student/ware.aspx?lid=", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("~/webform/preview.aspx?lid=", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("PanelComposedRuntime", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("LiteralComposedRuntime", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("BindComposedRuntimeContext", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("LoadPublishedCourseSummaries", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("BuildComposedRuntimeSummaries", helper, StringComparison.Ordinal);
+        Assert.Contains("LoadPublishedCourseSummaries", helper, StringComparison.Ordinal);
+        Assert.Contains("FindSummaryByListMenuId", helper, StringComparison.Ordinal);
+        Assert.Contains("RuntimeRouteType", helper, StringComparison.Ordinal);
+        Assert.DoesNotContain("activityplanruntime.aspx", studentMenu, StringComparison.OrdinalIgnoreCase);
+        Assert.False(File.Exists(Path.Combine(RepoRoot, "student", "activityplanruntime.aspx")));
+    }
+
+    [Fact]
+    public void ComposedRuntime_TeacherAndStudentSummaryBoundary_ShouldStayOnCurrentSurfaces()
+    {
+        var myInfo = File.ReadAllText(Path.Combine(RepoRoot, "student", "myinfo.aspx.cs"));
+        var courseShowPage = File.ReadAllText(Path.Combine(RepoRoot, "teacher", "courseshow.aspx"));
+        var courseShow = File.ReadAllText(Path.Combine(RepoRoot, "teacher", "courseshow.aspx.cs"));
+
+        Assert.Contains("LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();", myInfo, StringComparison.Ordinal);
+        Assert.Contains("missionshow.aspx?mcid=", courseShow, StringComparison.Ordinal);
+        Assert.Contains("wareshow.aspx?mcid=", courseShow, StringComparison.Ordinal);
+        Assert.Contains("~/webform/exam.aspx?cid=", courseShow, StringComparison.Ordinal);
+        Assert.Contains("PanelComposedTeacherSummary", courseShowPage, StringComparison.Ordinal);
+        Assert.Contains("LiteralComposedTeacherSummary", courseShowPage, StringComparison.Ordinal);
+        Assert.Contains("BindComposedTeacherSummary", courseShow, StringComparison.Ordinal);
+        Assert.Contains("LoadPublishedCourseSummaries", courseShow, StringComparison.Ordinal);
+        Assert.Contains("GetTeacherProgressText", courseShow, StringComparison.Ordinal);
+        Assert.DoesNotContain("activityplanruntime.aspx", courseShow, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("AIRuntime", myInfo, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void CourseShow_ComposedProgress_ShouldStayOnExistingCourseSurface()
+    {
+        var courseShowPage = File.ReadAllText(Path.Combine(RepoRoot, "teacher", "courseshow.aspx"));
+        var courseShow = File.ReadAllText(Path.Combine(RepoRoot, "teacher", "courseshow.aspx.cs"));
+
+        Assert.Contains("PanelComposedTeacherSummary", courseShowPage, StringComparison.Ordinal);
+        Assert.Contains("LiteralComposedTeacherSummary", courseShowPage, StringComparison.Ordinal);
+        Assert.Contains("BindComposedTeacherSummary", courseShow, StringComparison.Ordinal);
+        Assert.Contains("LoadPublishedCourseSummaries", courseShow, StringComparison.Ordinal);
+        Assert.Contains("ResolveAnyStudentMenuWork", courseShow, StringComparison.Ordinal);
+        Assert.DoesNotContain("activityplanruntime.aspx", courseShow, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]

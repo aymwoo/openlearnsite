@@ -13,5 +13,15 @@ namespace LearnSite.BLL
 
             return dal.Publish(request);
         }
+
+        public LearnSite.Model.AIActivityPlanPublishResult PublishFullLesson(LearnSite.Model.AIActivityPlanPublishRequest request)
+        {
+            if (request == null || request.Cid <= 0 || request.Hid <= 0)
+            {
+                return null;
+            }
+
+            return dal.PublishFullLesson(request);
+        }
     }
 }

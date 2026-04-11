@@ -17,35 +17,35 @@ activity plan without having to manually break the lesson into steps.
 
 ### Existing activity composition
 
-- [ ] **COMP-01**: Teacher can have AI choose and compose an existing quiz
+- [x] **COMP-01**: Teacher can have AI choose and compose an existing quiz
   activity block when the lesson design calls for a check-for-understanding or
   practice step.
-- [ ] **COMP-02**: Teacher can have AI choose and compose an existing
+- [x] **COMP-02**: Teacher can have AI choose and compose an existing
   resource-study activity block when the lesson design calls for guided content
   reading or material study.
-- [ ] **COMP-03**: Teacher can have AI choose and compose an existing web
+- [x] **COMP-03**: Teacher can have AI choose and compose an existing web
   courseware activity block when the lesson design calls for webpage-based
   presentation or interaction.
-- [ ] **COMP-04**: Teacher can confirm one composed full-lesson draft and have
+- [x] **COMP-04**: Teacher can confirm one composed full-lesson draft and have
   the system create or update the matching set of classroom activity entries as
   one combined publish action.
 
 ### Guided inquiry activity
 
-- [ ] **INQ-01**: Teacher can have AI generate a guided inquiry activity block
+- [x] **INQ-01**: Teacher can have AI generate a guided inquiry activity block
   when existing activity types are not a good fit for the lesson goal.
-- [ ] **INQ-02**: Teacher can preview the guided inquiry block as part of the
+- [x] **INQ-02**: Teacher can preview the guided inquiry block as part of the
   same full-lesson draft and publish it through the normal teacher workflow.
 
 ### Student runtime and completion
 
-- [ ] **RUN-01**: Student can enter each published block in the composed lesson
+- [x] **RUN-01**: Student can enter each published block in the composed lesson
   through the existing classroom navigation flow.
-- [ ] **RUN-02**: Student can view the generated content for each published block
+- [x] **RUN-02**: Student can view the generated content for each published block
   in a runtime that matches the selected activity type.
-- [ ] **RUN-03**: Student can complete or submit work for each published block
+- [x] **RUN-03**: Student can complete or submit work for each published block
   using the expected activity flow for that type.
-- [ ] **RUN-04**: Teacher and student completion views can distinguish progress
+- [x] **RUN-04**: Teacher and student completion views can distinguish progress
   across the composed lesson blocks after publication.
 
 ## Future requirements
@@ -77,16 +77,16 @@ activity plan without having to manually break the lesson into steps.
 | ORCH-01 | Phase 8 | Complete |
 | ORCH-02 | Phase 8 | Complete |
 | ORCH-03 | Phase 8 | Complete |
-| COMP-01 | Phase 9 | Pending |
-| COMP-02 | Phase 9 | Pending |
-| COMP-03 | Phase 9 | Pending |
-| COMP-04 | Phase 10 | Pending |
-| INQ-01 | Phase 10 | Pending |
-| INQ-02 | Phase 10 | Pending |
-| RUN-01 | Phase 11 | Pending |
-| RUN-02 | Phase 11 | Pending |
-| RUN-03 | Phase 11 | Pending |
-| RUN-04 | Phase 11 | Pending |
+| COMP-01 | Phase 9 | Complete |
+| COMP-02 | Phase 9 | Complete |
+| COMP-03 | Phase 9 | Complete |
+| COMP-04 | Phase 10 | Complete |
+| INQ-01 | Phase 10 | Complete |
+| INQ-02 | Phase 10 | Complete |
+| RUN-01 | Phase 11 | Complete |
+| RUN-02 | Phase 11 | Complete |
+| RUN-03 | Phase 11 | Complete |
+| RUN-04 | Phase 11 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 13 total
@@ -95,4 +95,4 @@ activity plan without having to manually break the lesson into steps.
 
 ---
 *Requirements defined: 2026-04-11*
-*Last updated: 2026-04-11 after Phase 8 completion*
+*Last updated: 2026-04-11 after Phase 11 Plan 02 completion*

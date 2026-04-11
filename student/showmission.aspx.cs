@@ -9,6 +9,7 @@ using System.Data;
 public partial class Student_showmission : System.Web.UI.Page
 {
     LearnSite.Model.Cook cook = new LearnSite.Model.Cook();
+    private List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> _composedSummaries;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -39,7 +40,7 @@ public partial class Student_showmission : System.Web.UI.Page
             LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
             LearnSite.Model.ListMenu lmodel = new LearnSite.Model.ListMenu();
             lmodel = lbll.GetModel(Int32.Parse(Lid));
-            if (lmodel == null || !lmodel.Lxid.HasValue)
+            if (lmodel == null || !lmodel.Lcid.HasValue || !lmodel.Lxid.HasValue)
             {
                 ShowMissionNotFound();
                 return;
@@ -51,6 +52,8 @@ public partial class Student_showmission : System.Web.UI.Page
             model = mn.GetModel(lmodel.Lxid.Value);
             if (model != null)
             {
+                _composedSummaries = LoadComposedSummaries(lmodel.Lcid.Value);
+                BindComposedRuntimeContext(Int32.Parse(Lid));
                 int sSyear = cook.Syear;
                 int sSclass = cook.Sclass;
                 string sSnum = cook.Snum;
@@ -183,6 +186,86 @@ public partial class Student_showmission : System.Web.UI.Page
             ShowMissionNotFound();
         }
 
+    }
+
+    private List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> LoadComposedSummaries(int cid)
+    {
+        LearnSite.BLL.Courses cbll = new LearnSite.BLL.Courses();
+        LearnSite.Model.Courses courseModel = cbll.GetModel(cid);
+        if (courseModel == null || !courseModel.Chid.HasValue)
+        {
+            return null;
+        }
+
+        LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
+        LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();
+        LearnSite.BLL.Works wbll = new LearnSite.BLL.Works();
+        return LearnSite.Common.AIActivityPlanComposedRuntimeHelper.LoadPublishedCourseSummaries(
+            cid,
+            courseModel.Chid.Value,
+            lid => lbll.GetModel(lid),
+            lid => kbll.GetModelme(cook.Sid, lid),
+            missionId => wbll.WorkPass(cook.Sid, missionId));
+    }
+
+    private void BindComposedRuntimeContext(int lid)
+    {
+        LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary current = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.FindSummaryByListMenuId(_composedSummaries, lid);
+        if (current == null)
+        {
+            PanelComposedRuntime.Visible = false;
+            LiteralComposedRuntime.Text = string.Empty;
+            return;
+        }
+
+        PanelComposedRuntime.Visible = true;
+        LiteralComposedRuntime.Text = BuildComposedRuntimeHtml(current);
+    }
+
+    private string BuildComposedRuntimeHtml(LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary current)
+    {
+        string currentTitle = HttpUtility.HtmlEncode(current.Title ?? string.Empty);
+        string currentState = HttpUtility.HtmlEncode(GetCompletionText(current));
+        List<string> items = new List<string>();
+        if (_composedSummaries != null)
+        {
+            for (int i = 0; i < _composedSummaries.Count; i++)
+            {
+                LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary = _composedSummaries[i];
+                if (summary == null)
+                {
+                    continue;
+                }
+
+                string style = "display:inline-block;margin:0 8px 8px 0;padding:4px 10px;border-radius:999px;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;font-size:12px;font-weight:600;";
+                if (summary.ListMenuId == current.ListMenuId)
+                {
+                    style = "display:inline-block;margin:0 8px 8px 0;padding:4px 10px;border-radius:999px;border:1px solid #93c5fd;background:#dbeafe;color:#1e3a8a;font-size:12px;font-weight:700;";
+                }
+
+                items.Add("<span style='" + style + "'>第" + summary.Sort.ToString() + "环 " + HttpUtility.HtmlEncode(summary.Title ?? string.Empty) + " · " + HttpUtility.HtmlEncode(GetCompletionText(summary)) + "</span>");
+            }
+        }
+
+        return "<p>当前处于整课第 <strong>" + current.Sort.ToString() + "</strong> 环：<strong>" + currentTitle + "</strong>，状态：<strong>" + currentState + "</strong>。</p>" + string.Join(string.Empty, items.ToArray());
+    }
+
+    private string GetCompletionText(LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary)
+    {
+        if (summary == null)
+        {
+            return string.Empty;
+        }
+
+        switch (summary.CompletionState)
+        {
+            case "completed":
+                return "已完成";
+            case "incomplete":
+                return "待完成";
+            default:
+                return summary.IsRuntimeReady ? "待进入" : "待发布";
+        }
     }
 
     private void ShowMissionNotFound()

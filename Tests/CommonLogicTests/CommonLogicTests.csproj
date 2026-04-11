@@ -41,6 +41,7 @@
     <Compile Include="..\..\App_Code\Common\AIActivityPlanPromptBuilder.cs" Link="AIActivityPlanPromptBuilder.cs" />
     <Compile Include="..\..\App_Code\Common\AIActivityPlanDraftHelper.cs" Link="AIActivityPlanDraftHelper.cs" />
     <Compile Include="..\..\App_Code\Common\AIActivityPlanSavedDraftHelper.cs" Link="AIActivityPlanSavedDraftHelper.cs" />
+    <Compile Include="..\..\App_Code\Common\AIActivityPlanComposedRuntimeHelper.cs" Link="AIActivityPlanComposedRuntimeHelper.cs" />
     <Compile Include="..\..\App_Code\Common\AIActivityPlanPublishContentBuilder.cs" Link="AIActivityPlanPublishContentBuilder.cs" />
     <Compile Include="..\..\App_Code\Common\AIActivityPlanMissionViewHelper.cs" Link="AIActivityPlanMissionViewHelper.cs" />
     <Compile Include="..\..\App_Code\Bll\AIActivityPlanSkillBootstrap.cs" Link="AIActivityPlanSkillBootstrap.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="..\..\App_Code\Model\AISkill.cs" Link="Model.AISkill.cs" />
     <Compile Include="..\..\App_Code\Model\AICustomSkill.cs" Link="Model.AICustomSkill.cs" />
     <Compile Include="..\..\App_Code\Model\CourseActivityPlanDraft.cs" Link="Model.CourseActivityPlanDraft.cs" />
+    <Compile Include="..\..\App_Code\Model\AIActivityPlanPublishResult.cs" Link="Model.AIActivityPlanPublishResult.cs" />
     <Compile Include="..\..\App_Code\Model\TurtleMatch.cs" Link="Model.TurtleMatch.cs" />
     <Compile Include="..\..\App_Code\Model\Courses.cs" Link="Model.Courses.cs" />
     <Compile Include="..\..\App_Code\Model\Quiz.cs" Link="Model.Quiz.cs" />

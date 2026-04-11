@@ -89,10 +89,103 @@
             color: #312e81;
         }
 
+        .activity-plan-block-type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.28rem 0.65rem;
+            border-radius: 999px;
+            background: rgba(79, 70, 229, 0.1);
+            color: #4338ca;
+            font-size: 0.76rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .activity-plan-block-card.is-quiz {
+            border-color: rgba(249, 115, 22, 0.22);
+            background: linear-gradient(180deg, #ffffff 0%, #fff7ed 100%);
+        }
+
+        .activity-plan-block-card.is-resource-study {
+            border-color: rgba(14, 165, 233, 0.22);
+            background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+        }
+
+        .activity-plan-block-card.is-web-courseware {
+            border-color: rgba(16, 185, 129, 0.22);
+            background: linear-gradient(180deg, #ffffff 0%, #ecfdf5 100%);
+        }
+
+        .activity-plan-block-card.is-guided-inquiry {
+            border-color: rgba(168, 85, 247, 0.24);
+            background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%);
+        }
+
+        .activity-plan-inquiry-summary {
+            margin-top: 0.85rem;
+            padding: 0.8rem 0.85rem;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(168, 85, 247, 0.16);
+            background: rgba(250, 245, 255, 0.85);
+            color: #581c87;
+        }
+
+        .activity-plan-inquiry-summary-title {
+            margin: 0 0 0.45rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #6b21a8;
+        }
+
+        .activity-plan-inquiry-summary-text {
+            margin: 0;
+            font-size: 0.8rem;
+            line-height: 1.65;
+        }
+
         .activity-plan-block-summary {
             margin-bottom: 0.8rem;
             color: #334155;
             line-height: 1.7;
+        }
+
+        .activity-plan-type-preview {
+            margin-top: 0.85rem;
+            padding: 0.8rem 0.85rem;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            background: rgba(255, 255, 255, 0.75);
+        }
+
+        .activity-plan-type-preview-title {
+            margin: 0 0 0.65rem;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .activity-plan-type-preview-list {
+            display: grid;
+            gap: 0.55rem;
+        }
+
+        .activity-plan-type-preview-item {
+            display: grid;
+            gap: 0.12rem;
+        }
+
+        .activity-plan-type-preview-label {
+            color: #6366f1;
+            font-size: 0.76rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .activity-plan-type-preview-value {
+            color: #334155;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            word-break: break-word;
         }
 
         .activity-plan-block-grid {

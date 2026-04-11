@@ -976,7 +976,7 @@ public class CommonLogicTests : IDisposable
     [Fact]
     public void FullLessonDraftHelper_ParseFullLessonDraft_RequiresStableBlockMetadataAndOrderedSort()
     {
-        string response = "```json\n{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": 40,\n  \"blocks\": [\n    {\n      \"blockKey\": \"opening-1\",\n      \"sort\": 1,\n      \"blockType\": \"mission\",\n      \"title\": \"情境导入\",\n      \"minutes\": 5,\n      \"teachingPurpose\": \"激活旧知\",\n      \"lessonPosition\": \"导入\",\n      \"teacherAction\": \"展示生活图片\",\n      \"studentAction\": \"观察并表达\",\n      \"materials\": [\"图片\", \"分数卡\"],\n      \"assessmentFocus\": \"能否联系生活\"\n    },\n    {\n      \"blockKey\": \"practice-1\",\n      \"sort\": 2,\n      \"blockType\": \"quiz\",\n      \"title\": \"课堂练习\",\n      \"minutes\": \"10分钟\",\n      \"teachingPurpose\": \"检测理解\",\n      \"lessonPosition\": \"巩固\",\n      \"teacherAction\": \"组织抢答\",\n      \"studentAction\": \"独立作答\",\n      \"materials\": [\"练习单\"],\n      \"assessmentFocus\": \"判断是否掌握分数表示\"\n    }\n  ]\n}\n```";
+        string response = "```json\n{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": 40,\n  \"blocks\": [\n    {\n      \"blockKey\": \"opening-1\",\n      \"sort\": 1,\n      \"blockType\": \"mission\",\n      \"title\": \"情境导入\",\n      \"minutes\": 5,\n      \"teachingPurpose\": \"激活旧知\",\n      \"lessonPosition\": \"导入\",\n      \"teacherAction\": \"展示生活图片\",\n      \"studentAction\": \"观察并表达\",\n      \"materials\": [\"图片\", \"分数卡\"],\n      \"assessmentFocus\": \"能否联系生活\"\n    },\n    {\n      \"blockKey\": \"practice-1\",\n      \"sort\": 2,\n      \"blockType\": \"quiz\",\n      \"title\": \"课堂练习\",\n      \"minutes\": \"10分钟\",\n      \"teachingPurpose\": \"检测理解\",\n      \"lessonPosition\": \"巩固\",\n      \"teacherAction\": \"组织抢答\",\n      \"studentAction\": \"独立作答\",\n      \"materials\": [\"练习单\"],\n      \"assessmentFocus\": \"判断是否掌握分数表示\",\n      \"quiz\": {\n        \"examName\": \"课堂练习\",\n        \"paperTitle\": \"分数基础练习\",\n        \"questionSummary\": \"选择与判断题各 3 道\",\n        \"duration\": 10,\n        \"ltype\": 39\n      }\n    }\n  ]\n}\n```";
 
         var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
 
@@ -990,6 +990,103 @@ public class CommonLogicTests : IDisposable
         Assert.Equal("激活旧知", draft.Blocks[0].TeachingPurpose);
         Assert.Equal("导入", draft.Blocks[0].LessonPosition);
         Assert.Equal("5分钟", draft.Blocks[0].Minutes);
+        Assert.NotNull(draft.Blocks[1].Quiz);
+        Assert.Equal(39, draft.Blocks[1].Quiz.Ltype);
+    }
+
+    [Fact]
+    public void FullLessonDraftHelper_ParseFullLessonDraft_RejectsQuizBlockWithoutLegacyPayload()
+    {
+        string response = "{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": \"40分钟\",\n  \"blocks\": [\n    {\n      \"blockKey\": \"practice-1\",\n      \"sort\": 1,\n      \"blockType\": \"quiz\",\n      \"title\": \"课堂练习\",\n      \"minutes\": \"10分钟\",\n      \"teachingPurpose\": \"检测理解\",\n      \"lessonPosition\": \"巩固\",\n      \"teacherAction\": \"组织抢答\",\n      \"studentAction\": \"独立作答\",\n      \"materials\": [\"练习单\"],\n      \"assessmentFocus\": \"判断是否掌握分数表示\",\n      \"quiz\": {\n        \"examName\": \"课堂练习\",\n        \"duration\": 10,\n        \"ltype\": 39\n      }\n    }\n  ]\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
+
+        Assert.Null(draft);
+    }
+
+    [Fact]
+    public void FullLessonDraftHelper_ParseFullLessonDraft_PreservesResourceStudyPayloadInsideStableEnvelope()
+    {
+        string response = "{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": \"40分钟\",\n  \"blocks\": [\n    {\n      \"blockKey\": \"resource-study-1\",\n      \"sort\": 1,\n      \"blockType\": \"resource-study\",\n      \"title\": \"资源学习支持\",\n      \"minutes\": \"5分钟\",\n      \"teachingPurpose\": \"补充关键资源支持课堂推进\",\n      \"lessonPosition\": \"拓展\",\n      \"teacherAction\": \"引导学生结合资源完成巩固或拓展。\",\n      \"studentAction\": \"阅读资料并圈画重点\",\n      \"materials\": [\"学习单\"],\n      \"assessmentFocus\": \"关注学生对资源的理解与应用\",\n      \"resourceStudy\": {\n        \"mtitle\": \"资源学习支持\",\n        \"mcontent\": \"<h3>资源学习任务</h3><p>阅读教材并完成记录。</p>\",\n        \"mupload\": false,\n        \"ltype\": 6\n      }\n    }\n  ]\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
+
+        Assert.NotNull(draft);
+        Assert.Single(draft.Blocks);
+        Assert.Equal("resource-study-1", draft.Blocks[0].BlockKey);
+        Assert.Equal("resource-study", draft.Blocks[0].BlockType);
+        Assert.NotNull(draft.Blocks[0].ResourceStudy);
+        Assert.Equal(6, draft.Blocks[0].ResourceStudy.Ltype);
+        Assert.False(draft.Blocks[0].ResourceStudy.Mupload);
+    }
+
+    [Fact]
+    public void FullLessonDraftHelper_ParseFullLessonDraft_AcceptsGuidedInquiryFallbackBlock()
+    {
+        string response = "{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": \"40分钟\",\n  \"blocks\": [\n    {\n      \"blockKey\": \"guided-inquiry-1\",\n      \"sort\": 1,\n      \"blockType\": \"guidedInquiry\",\n      \"title\": \"观察与讨论\",\n      \"minutes\": \"12分钟\",\n      \"teachingPurpose\": \"通过问题观察帮助学生形成分数概念\",\n      \"lessonPosition\": \"展开\",\n      \"teacherAction\": \"提出观察任务并组织小组交流\",\n      \"studentAction\": \"观察实物图并记录讨论结果\",\n      \"materials\": [\"分数图卡\", \"记录单\"],\n      \"assessmentFocus\": \"关注学生能否根据证据说明分数含义\",\n      \"guidedInquiry\": {\n        \"inquiryGoal\": \"根据平均分结果理解分数含义\",\n        \"inquiryPrompt\": \"为什么同样一块蛋糕平均分后可以用分数表示？\",\n        \"fallbackReason\": \"当前环节更适合通过问题观察与小组讨论推进。\",\n        \"submissionExpectation\": \"整理一份小组观察记录。\",\n        \"steps\": [\n          { \"sort\": 1, \"title\": \"提出问题\", \"prompt\": \"观察图片并提出发现。\" },\n          { \"sort\": 2, \"title\": \"小组讨论\", \"prompt\": \"结合记录单说明理由。\" }\n        ]\n      }\n    }\n  ]\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
+
+        Assert.NotNull(draft);
+        Assert.Single(draft.Blocks);
+        Assert.Equal("guidedInquiry", draft.Blocks[0].BlockType);
+        Assert.NotNull(draft.Blocks[0].GuidedInquiry);
+        Assert.Equal("根据平均分结果理解分数含义", draft.Blocks[0].GuidedInquiry.InquiryGoal);
+        Assert.Equal(2, draft.Blocks[0].GuidedInquiry.Steps.Count);
+        Assert.Equal("小组讨论", draft.Blocks[0].GuidedInquiry.Steps[1].Title);
+    }
+
+    [Fact]
+    public void FullLessonDraftHelper_ParseFullLessonDraft_AcceptsRichWebCoursewarePayload()
+    {
+        string response = "{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": \"40分钟\",\n  \"blocks\": [\n    {\n      \"blockKey\": \"web-courseware-1\",\n      \"sort\": 1,\n      \"blockType\": \"webCourseware\",\n      \"title\": \"网页课件支持\",\n      \"minutes\": \"5分钟\",\n      \"teachingPurpose\": \"通过网页课件展示关键信息或交互资源\",\n      \"lessonPosition\": \"展开\",\n      \"teacherAction\": \"打开网页课件并组织学生按提示观察或操作。\",\n      \"studentAction\": \"根据网页内容完成观察、跟读或互动任务。\",\n      \"materials\": [\"网页课件链接\", \"投影设备\"],\n      \"assessmentFocus\": \"关注学生是否能从网页课件中提取关键信息\",\n      \"webCourseware\": {\n        \"mtitle\": \"网页课件支持\",\n        \"mcategory\": 38,\n        \"mfiletype\": \"ware\",\n        \"mback\": \"/ai/courseware/preview.html?topic=%E8%AE%A4%E8%AF%86%E5%88%86%E6%95%B0\",\n        \"mupload\": true,\n        \"ltype\": 38,\n        \"lessonSummary\": \"帮助学生理解分数的基本含义。\",\n        \"teachingGoals\": [\"说出分数含义\", \"结合示例说明依据\"],\n        \"explanationCards\": [\n          { \"title\": \"知识点讲解\", \"explanation\": \"理解平均分后的结果。\", \"example\": \"一个蛋糕平均分成两份。\" }\n        ],\n        \"keywords\": [\"分数\", \"平均分\"],\n        \"practiceItems\": [\n          { \"prompt\": \"哪一部分可以用二分之一表示？\", \"referenceAnswer\": \"平均分成两份后的其中一份。\" }\n        ],\n        \"lessonWrapUp\": \"用分数表示平均分后的结果。\"\n      }\n    }\n  ]\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
+
+        Assert.NotNull(draft);
+        Assert.Single(draft.Blocks);
+        Assert.NotNull(draft.Blocks[0].WebCourseware);
+        Assert.Equal("帮助学生理解分数的基本含义。", draft.Blocks[0].WebCourseware.LessonSummary);
+        Assert.Equal(2, draft.Blocks[0].WebCourseware.TeachingGoals.Count);
+        Assert.Single(draft.Blocks[0].WebCourseware.ExplanationCards);
+        Assert.Single(draft.Blocks[0].WebCourseware.PracticeItems);
+        Assert.Equal("用分数表示平均分后的结果。", draft.Blocks[0].WebCourseware.LessonWrapUp);
+    }
+
+    [Fact]
+    public void FullLessonDraftHelper_ParseFullLessonDraft_RejectsGuidedInquiryBlockWithoutRequiredStepData()
+    {
+        string response = "{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": \"40分钟\",\n  \"blocks\": [\n    {\n      \"blockKey\": \"guided-inquiry-1\",\n      \"sort\": 1,\n      \"blockType\": \"guidedInquiry\",\n      \"title\": \"观察与讨论\",\n      \"minutes\": \"12分钟\",\n      \"teachingPurpose\": \"通过问题观察帮助学生形成分数概念\",\n      \"lessonPosition\": \"展开\",\n      \"teacherAction\": \"提出观察任务并组织小组交流\",\n      \"studentAction\": \"观察实物图并记录讨论结果\",\n      \"materials\": [\"分数图卡\"],\n      \"assessmentFocus\": \"关注学生能否根据证据说明分数含义\",\n      \"guidedInquiry\": {\n        \"inquiryPrompt\": \"为什么同样一块蛋糕平均分后可以用分数表示？\",\n        \"steps\": [\n          { \"sort\": 1, \"title\": \"提出问题\" }\n        ]\n      }\n    }\n  ]\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
+
+        Assert.Null(draft);
+    }
+
+    [Fact]
+    public void FullLessonSavedDraftHelper_BuildRecord_RoundTripsTypedWebCoursewarePayload()
+    {
+        var draft = BuildValidFullLessonDraft();
+
+        var record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildFullLessonRecord(12, 5, "认识分数", "五年级", "40分钟", "理解分数含义", "旧内容", draft);
+
+        Assert.NotNull(record);
+        Assert.Contains("\"webCourseware\"", record.DraftJson, StringComparison.Ordinal);
+        Assert.Contains("\"Mfiletype\":\"ware\"", record.DraftJson, StringComparison.Ordinal);
+        Assert.Contains("\"LessonSummary\"", record.DraftJson, StringComparison.Ordinal);
+        Assert.Contains("\"ExplanationCards\"", record.DraftJson, StringComparison.Ordinal);
+
+        var loaded = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseFullLessonRecord(record, 12, 5);
+
+        Assert.NotNull(loaded);
+        Assert.NotNull(loaded.FullLessonDraft);
+        Assert.Equal(5, loaded.FullLessonDraft.Blocks.Count);
+        Assert.NotNull(loaded.FullLessonDraft.Blocks[4].WebCourseware);
+        Assert.Equal(38, loaded.FullLessonDraft.Blocks[4].WebCourseware.Ltype);
+        Assert.Equal("ware", loaded.FullLessonDraft.Blocks[4].WebCourseware.Mfiletype);
+        Assert.NotEmpty(loaded.FullLessonDraft.Blocks[4].WebCourseware.TeachingGoals);
+        Assert.NotEmpty(loaded.FullLessonDraft.Blocks[4].WebCourseware.ExplanationCards);
+        Assert.NotEmpty(loaded.FullLessonDraft.Blocks[4].WebCourseware.PracticeItems);
     }
 
     [Fact]
@@ -1010,9 +1107,11 @@ public class CommonLogicTests : IDisposable
         Assert.Equal("fullLesson", loaded.DraftType);
         Assert.NotNull(loaded.FullLessonDraft);
         Assert.Null(loaded.Draft);
-        Assert.Equal(2, loaded.FullLessonDraft.Blocks.Count);
+        Assert.Equal(5, loaded.FullLessonDraft.Blocks.Count);
         Assert.Equal("opening-1", loaded.FullLessonDraft.Blocks[0].BlockKey);
         Assert.Equal("导入", loaded.FullLessonDraft.Blocks[0].LessonPosition);
+        Assert.Equal("guidedInquiry", loaded.FullLessonDraft.Blocks[3].BlockType);
+        Assert.NotNull(loaded.FullLessonDraft.Blocks[3].GuidedInquiry);
     }
 
     [Fact]
@@ -1047,6 +1146,8 @@ public class CommonLogicTests : IDisposable
         Assert.Contains("public bool PublishToStudents", source, StringComparison.Ordinal);
         Assert.Contains("public List<string> SelectedSectionKeys", source, StringComparison.Ordinal);
         Assert.Contains("public LearnSite.Common.ActivityPlanDraft Draft", source, StringComparison.Ordinal);
+        Assert.Contains("public LearnSite.Common.FullLessonDraft FullLessonDraft", source, StringComparison.Ordinal);
+        Assert.Contains("public string ExistingCourseContent", source, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1059,6 +1160,198 @@ public class CommonLogicTests : IDisposable
         Assert.Contains("public string MissionTitle", source, StringComparison.Ordinal);
         Assert.Contains("public bool PublishedToStudents", source, StringComparison.Ordinal);
         Assert.Contains("public string UpdatedCourseContent", source, StringComparison.Ordinal);
+        Assert.Contains("public bool IsFullLessonPublish", source, StringComparison.Ordinal);
+        Assert.Contains("public int? ListMenuType", source, StringComparison.Ordinal);
+        Assert.Contains("public string RuntimeRouteType", source, StringComparison.Ordinal);
+        Assert.Contains("public List<AIActivityPlanPublishedBlockResult> PublishedBlocks", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ComposedRuntimeHelper_BuildComposedRuntimeSummaries_ResolvesOrderedPublishedFullLessonBlocks()
+    {
+        var draft = BuildValidPublishedFullLessonDraft();
+        var publishLinks = BuildPublishedFullLessonLinks();
+        var payload = BuildPublishedFullLessonPayload(draft, publishLinks);
+        var listMenus = BuildPublishedFullLessonMenus();
+
+        var summaries = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.BuildComposedRuntimeSummaries(
+            payload,
+            lid => listMenus.ContainsKey(lid) ? listMenus[lid] : null,
+            lid => null,
+            missionId => false);
+
+        Assert.NotNull(summaries);
+        Assert.Equal(5, summaries.Count);
+        Assert.Equal("opening-1", summaries[0].BlockKey);
+        Assert.Equal("mission", summaries[0].BlockType);
+        Assert.Equal("情境导入", summaries[0].Title);
+        Assert.Equal(200, summaries[0].ListMenuId);
+        Assert.Equal("showmission", summaries[0].RuntimeRouteType);
+        Assert.Equal("guided-inquiry-1", summaries[1].BlockKey);
+        Assert.Equal("guidedInquiry", summaries[1].BlockType);
+        Assert.Equal("观察与讨论", summaries[1].Title);
+        Assert.Equal(201, summaries[1].ListMenuId);
+        Assert.Equal("showmission", summaries[1].RuntimeRouteType);
+        Assert.Equal("resource-study-1", summaries[2].BlockKey);
+        Assert.Equal("description", summaries[2].RuntimeRouteType);
+        Assert.Equal("web-courseware-1", summaries[3].BlockKey);
+        Assert.Equal("ware", summaries[3].RuntimeRouteType);
+        Assert.Equal("practice-1", summaries[4].BlockKey);
+        Assert.Equal("preview", summaries[4].RuntimeRouteType);
+        Assert.True(summaries[4].IsRuntimeReady);
+    }
+
+    [Fact]
+    public void ComposedRuntimeHelper_BuildComposedRuntimeSummaries_UsesLegacyEvidenceAndFailsClosedForMissingPublishIds()
+    {
+        var draft = BuildValidPublishedFullLessonDraft();
+        var publishLinks = BuildPublishedFullLessonLinks();
+        publishLinks["resource-study-1"] = new ActivityPlanPublishLinkPayload
+        {
+            BlockKey = "resource-study-1",
+            BlockType = "resource-study",
+            MissionId = null,
+            ListMenuId = 202
+        };
+
+        var payload = BuildPublishedFullLessonPayload(draft, publishLinks);
+        var listMenus = BuildPublishedFullLessonMenus();
+
+        var summaries = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.BuildComposedRuntimeSummaries(
+            payload,
+            lid => listMenus.ContainsKey(lid) ? listMenus[lid] : null,
+            lid => null,
+            missionId => missionId == 101);
+
+        Assert.NotNull(summaries);
+        Assert.Equal("incomplete", summaries[0].CompletionState);
+        Assert.Equal("none", summaries[0].CompletionEvidence);
+        Assert.True(summaries[0].IsRuntimeReady);
+        Assert.Equal("completed", summaries[1].CompletionState);
+        Assert.Equal("workPass", summaries[1].CompletionEvidence);
+        Assert.True(summaries[1].IsRuntimeReady);
+        Assert.Equal("unknown", summaries[2].CompletionState);
+        Assert.Equal("missingLinkedIds", summaries[2].CompletionEvidence);
+        Assert.False(summaries[2].IsRuntimeReady);
+        Assert.Equal(string.Empty, summaries[2].RuntimeUrl);
+    }
+
+    [Fact]
+    public void DraftHelper_IsSupportedPublishedBlockType_AcceptsMissionForMixedFullLessonPublish()
+    {
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedPublishedBlockType("mission"));
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedPublishedBlockType("guidedInquiry"));
+        Assert.False(LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedPublishedBlockType("discussion"));
+    }
+
+    [Fact]
+    public void ComposedRuntimeHelper_BuildComposedRuntimeSummaries_RejectsDriftedFullLessonPublishLinks()
+    {
+        var draft = BuildValidPublishedFullLessonDraft();
+        var publishLinks = BuildPublishedFullLessonLinks();
+        publishLinks["guided-inquiry-1"].BlockType = "quiz";
+
+        var payload = BuildPublishedFullLessonPayload(draft, publishLinks);
+
+        var summaries = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.BuildComposedRuntimeSummaries(
+            payload,
+            lid => null,
+            lid => null,
+            missionId => false);
+
+        Assert.Null(summaries);
+    }
+
+    [Fact]
+    public void FullLessonSavedDraftHelper_BuildRecord_PersistsBlockKeyPublishLinks()
+    {
+        var draft = BuildValidFullLessonDraft();
+        var publishLinks = new Dictionary<string, ActivityPlanPublishLinkPayload>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["guided-inquiry-1"] = new ActivityPlanPublishLinkPayload
+            {
+                BlockKey = "guided-inquiry-1",
+                BlockType = "guidedInquiry",
+                MissionId = 11,
+                ListMenuId = 21
+            },
+            ["practice-1"] = new ActivityPlanPublishLinkPayload
+            {
+                BlockKey = "practice-1",
+                BlockType = "quiz",
+                ExamId = 31,
+                PaperId = 41,
+                ListMenuId = 51
+            }
+        };
+
+        var record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildFullLessonRecord(12, 5, "认识分数", "五年级", "40分钟", "理解分数含义", "旧内容", draft, null, null, publishLinks);
+
+        Assert.NotNull(record);
+        Assert.Contains("publishLinks", record.DraftJson, StringComparison.Ordinal);
+        Assert.Contains("guided-inquiry-1", record.DraftJson, StringComparison.Ordinal);
+        Assert.Contains("practice-1", record.DraftJson, StringComparison.Ordinal);
+
+        var loaded = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseFullLessonRecord(record, 12, 5);
+
+        Assert.NotNull(loaded);
+        Assert.NotNull(loaded.PublishLinks);
+        Assert.Equal(2, loaded.PublishLinks.Count);
+        Assert.Equal(11, loaded.PublishLinks["guided-inquiry-1"].MissionId);
+        Assert.Equal(31, loaded.PublishLinks["practice-1"].ExamId);
+        Assert.Equal(41, loaded.PublishLinks["practice-1"].PaperId);
+        Assert.Equal(51, loaded.PublishLinks["practice-1"].ListMenuId);
+    }
+
+    [Fact]
+    public void WebCoursewareRuntimePayloadResolver_ResolvesPublishedPayloadByListMenuIdOrMissionId()
+    {
+        var draft = BuildValidPublishedFullLessonDraft();
+        var publishLinks = BuildPublishedFullLessonLinks();
+        var payload = BuildPublishedFullLessonPayload(draft, publishLinks);
+
+        var byLid = LearnSite.Common.WebCoursewareRuntimePayloadResolver.Resolve(payload, 203, 0);
+        var byMid = LearnSite.Common.WebCoursewareRuntimePayloadResolver.Resolve(payload, 0, 103);
+
+        Assert.NotNull(byLid);
+        Assert.Equal("认识分数", byLid.Topic);
+        Assert.Equal("web-courseware-1", byLid.BlockKey);
+        Assert.Equal(203, byLid.ListMenuId);
+        Assert.Equal(103, byLid.MissionId);
+        Assert.NotNull(byLid.WebCourseware);
+        Assert.Equal("网页课件支持", byLid.WebCourseware.Mtitle);
+        Assert.Equal("帮助学生理解分数的基本含义，并能结合示例进行判断。", byLid.WebCourseware.LessonSummary);
+        Assert.NotNull(byMid);
+        Assert.Equal(byLid.WebCourseware.LessonWrapUp, byMid.WebCourseware.LessonWrapUp);
+        Assert.Null(LearnSite.Common.WebCoursewareRuntimePayloadResolver.Resolve(payload, 999, 0));
+    }
+
+    [Fact]
+    public void FullLessonPublishContentBuilder_BuildsReplaceableOrderedLessonSummary()
+    {
+        var builder = new LearnSite.Common.AIActivityPlanPublishContentBuilder();
+        string content = builder.BuildFullLessonLessonContent("认识分数", BuildValidFullLessonDraft());
+
+        Assert.Contains(LearnSite.Common.AIActivityPlanPublishContentBuilder.FullLessonPublishBeginMarker, content, StringComparison.Ordinal);
+        Assert.Contains(LearnSite.Common.AIActivityPlanPublishContentBuilder.FullLessonPublishEndMarker, content, StringComparison.Ordinal);
+        Assert.Contains("【AI整课主题】", content, StringComparison.Ordinal);
+        Assert.Contains("课堂练习", content, StringComparison.Ordinal);
+        Assert.Contains("资源学习", content, StringComparison.Ordinal);
+        Assert.Contains("引导探究", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void FullLessonPublishContentBuilder_BuildGuidedInquiryMissionContent_PreservesOrderedSteps()
+    {
+        var builder = new LearnSite.Common.AIActivityPlanPublishContentBuilder();
+        string missionContent = builder.BuildGuidedInquiryMissionContent("认识分数", BuildValidFullLessonDraft().Blocks[3]);
+
+        Assert.Contains("data-ai-activity-guide=\"guidedInquiry\"", missionContent, StringComparison.Ordinal);
+        Assert.Contains("学习目标", missionContent, StringComparison.Ordinal);
+        Assert.Contains("活动说明", missionContent, StringComparison.Ordinal);
+        Assert.Contains("任务步骤", missionContent, StringComparison.Ordinal);
+        Assert.Contains("提出问题", missionContent, StringComparison.Ordinal);
+        Assert.Contains("小组讨论", missionContent, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1212,10 +1505,352 @@ public class CommonLogicTests : IDisposable
                     StudentAction = "独立作答",
                     Materials = new List<string> { "练习单" },
                     AssessmentFocus = "判断是否掌握分数表示",
-                    Status = "draft"
+                    Status = "draft",
+                    Quiz = new LearnSite.Common.QuizBlockPayload
+                    {
+                        ExamName = "课堂练习",
+                        PaperTitle = "分数基础练习",
+                        QuestionSummary = "选择与判断题各 3 道",
+                        Duration = 10,
+                        Ltype = 39
+                    }
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "resource-study-1",
+                    Sort = 3,
+                    BlockType = "resource-study",
+                    Title = "资源学习支持",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "补充关键资源支持课堂推进",
+                    LessonPosition = "拓展",
+                    TeacherAction = "引导学生结合资源完成巩固或拓展。",
+                    StudentAction = "阅读资料并圈画重点",
+                    Materials = new List<string> { "学习单" },
+                    AssessmentFocus = "关注学生对资源的理解与应用",
+                    Status = "draft",
+                    ResourceStudy = new LearnSite.Common.ResourceStudyBlockPayload
+                    {
+                        Mtitle = "资源学习支持",
+                        Mcontent = "<h3>资源学习任务</h3><p>阅读教材并完成记录。</p>",
+                        Mupload = false,
+                        Ltype = 6
+                    }
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "guided-inquiry-1",
+                    Sort = 4,
+                    BlockType = "guidedInquiry",
+                    Title = "观察与讨论",
+                    Minutes = "10分钟",
+                    TeachingPurpose = "通过问题观察帮助学生形成分数概念",
+                    LessonPosition = "展开",
+                    TeacherAction = "提出观察任务并组织小组交流",
+                    StudentAction = "观察实物图并记录讨论结果",
+                    Materials = new List<string> { "分数图卡", "记录单" },
+                    AssessmentFocus = "关注学生能否根据证据说明分数含义",
+                    Status = "draft",
+                    GuidedInquiry = new LearnSite.Common.GuidedInquiryBlockPayload
+                    {
+                        InquiryGoal = "根据平均分结果理解分数含义",
+                        InquiryPrompt = "为什么同样一块蛋糕平均分后可以用分数表示？",
+                        FallbackReason = "当前环节更适合通过问题观察与小组讨论推进。",
+                        SubmissionExpectation = "整理一份小组观察记录。",
+                        Steps = new List<LearnSite.Common.GuidedInquiryStepPayload>
+                        {
+                            new LearnSite.Common.GuidedInquiryStepPayload
+                            {
+                                Sort = 1,
+                                Title = "提出问题",
+                                Prompt = "观察图片并提出发现。"
+                            },
+                            new LearnSite.Common.GuidedInquiryStepPayload
+                            {
+                                Sort = 2,
+                                Title = "小组讨论",
+                                Prompt = "结合记录单说明理由。"
+                            }
+                        }
+                    }
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "web-courseware-1",
+                    Sort = 5,
+                    BlockType = "webCourseware",
+                    Title = "网页课件支持",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "通过网页课件展示关键信息或交互资源",
+                    LessonPosition = "展开",
+                    TeacherAction = "打开网页课件并组织学生按提示观察或操作。",
+                    StudentAction = "根据网页内容完成观察、跟读或互动任务。",
+                    Materials = new List<string> { "网页课件链接", "投影设备" },
+                    AssessmentFocus = "关注学生是否能从网页课件中提取关键信息",
+                    Status = "draft",
+                    WebCourseware = new LearnSite.Common.WebCoursewareBlockPayload
+                    {
+                        Mtitle = "网页课件支持",
+                        Mcategory = 38,
+                        Mfiletype = "ware",
+                        Mback = "/ai/courseware/preview.html?topic=%E8%AE%A4%E8%AF%86%E5%88%86%E6%95%B0",
+                        Mupload = true,
+                        Ltype = 38,
+                        LessonSummary = "帮助学生理解分数的基本含义，并能结合示例进行判断。",
+                        TeachingGoals = new List<string> { "理解分数含义", "结合示例说明依据" },
+                        ExplanationCards = new List<LearnSite.Common.WebCoursewareExplanationCardPayload>
+                        {
+                            new LearnSite.Common.WebCoursewareExplanationCardPayload
+                            {
+                                Title = "知识点讲解",
+                                Explanation = "先理解平均分后的结果，再认识分数表示方式。",
+                                Example = "把一个蛋糕平均分成两份，其中一份可以表示为二分之一。"
+                            }
+                        },
+                        Keywords = new List<string> { "分数", "平均分" },
+                        PracticeItems = new List<LearnSite.Common.WebCoursewarePracticeItemPayload>
+                        {
+                            new LearnSite.Common.WebCoursewarePracticeItemPayload
+                            {
+                                Prompt = "哪一部分可以用二分之一表示？",
+                                ReferenceAnswer = "平均分成两份后的其中一份。"
+                            }
+                        },
+                        LessonWrapUp = "分数可以表示平均分后的结果。"
+                    }
                 }
             }
         };
+    }
+
+    private static LearnSite.Common.FullLessonDraft BuildValidPublishedFullLessonDraft()
+    {
+        return new LearnSite.Common.FullLessonDraft
+        {
+            SchemaVersion = "v1.2-full-lesson",
+            Topic = "认识分数",
+            LessonSummary = "围绕分数概念展开整课活动",
+            TotalMinutes = "35分钟",
+            Blocks = new List<LearnSite.Common.FullLessonDraftBlock>
+            {
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "opening-1",
+                    Sort = 1,
+                    BlockType = "mission",
+                    Title = "情境导入",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "激活旧知",
+                    LessonPosition = "导入",
+                    TeacherAction = "展示生活图片",
+                    StudentAction = "观察并表达",
+                    Materials = new List<string> { "图片", "分数卡" },
+                    AssessmentFocus = "能否联系生活",
+                    Status = "published"
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "guided-inquiry-1",
+                    Sort = 2,
+                    BlockType = "guidedInquiry",
+                    Title = "观察与讨论",
+                    Minutes = "10分钟",
+                    TeachingPurpose = "通过问题观察帮助学生形成分数概念",
+                    LessonPosition = "展开",
+                    TeacherAction = "提出观察任务并组织小组交流",
+                    StudentAction = "观察实物图并记录讨论结果",
+                    Materials = new List<string> { "分数图卡", "记录单" },
+                    AssessmentFocus = "关注学生能否根据证据说明分数含义",
+                    Status = "published",
+                    GuidedInquiry = new LearnSite.Common.GuidedInquiryBlockPayload
+                    {
+                        InquiryGoal = "根据平均分结果理解分数含义",
+                        InquiryPrompt = "为什么同样一块蛋糕平均分后可以用分数表示？",
+                        FallbackReason = "当前环节更适合通过问题观察与小组讨论推进。",
+                        SubmissionExpectation = "整理一份小组观察记录。",
+                        Steps = new List<LearnSite.Common.GuidedInquiryStepPayload>
+                        {
+                            new LearnSite.Common.GuidedInquiryStepPayload
+                            {
+                                Sort = 1,
+                                Title = "提出问题",
+                                Prompt = "观察图片并提出发现。"
+                            }
+                        }
+                    }
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "resource-study-1",
+                    Sort = 3,
+                    BlockType = "resource-study",
+                    Title = "资源学习支持",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "补充关键资源支持课堂推进",
+                    LessonPosition = "拓展",
+                    TeacherAction = "引导学生结合资源完成巩固或拓展。",
+                    StudentAction = "阅读资料并圈画重点",
+                    Materials = new List<string> { "学习单" },
+                    AssessmentFocus = "关注学生对资源的理解与应用",
+                    Status = "published",
+                    ResourceStudy = new LearnSite.Common.ResourceStudyBlockPayload
+                    {
+                        Mtitle = "资源学习支持",
+                        Mcontent = "<h3>资源学习任务</h3><p>阅读教材并完成记录。</p>",
+                        Mupload = false,
+                        Ltype = 6
+                    }
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "web-courseware-1",
+                    Sort = 4,
+                    BlockType = "webCourseware",
+                    Title = "网页课件支持",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "通过网页课件展示关键信息或交互资源",
+                    LessonPosition = "展开",
+                    TeacherAction = "打开网页课件并组织学生按提示观察或操作。",
+                    StudentAction = "根据网页内容完成观察、跟读或互动任务。",
+                    Materials = new List<string> { "网页课件链接", "投影设备" },
+                    AssessmentFocus = "关注学生是否能从网页课件中提取关键信息",
+                    Status = "published",
+                    WebCourseware = new LearnSite.Common.WebCoursewareBlockPayload
+                    {
+                        Mtitle = "网页课件支持",
+                        Mcategory = 38,
+                        Mfiletype = "ware",
+                        Mback = "/ai/courseware/preview.html?topic=%E8%AE%A4%E8%AF%86%E5%88%86%E6%95%B0",
+                        Mupload = true,
+                        Ltype = 38,
+                        LessonSummary = "帮助学生理解分数的基本含义，并能结合示例进行判断。",
+                        TeachingGoals = new List<string> { "理解分数含义", "结合示例说明依据" },
+                        ExplanationCards = new List<LearnSite.Common.WebCoursewareExplanationCardPayload>
+                        {
+                            new LearnSite.Common.WebCoursewareExplanationCardPayload
+                            {
+                                Title = "知识点讲解",
+                                Explanation = "先理解平均分后的结果，再认识分数表示方式。",
+                                Example = "把一个蛋糕平均分成两份，其中一份可以表示为二分之一。"
+                            }
+                        },
+                        Keywords = new List<string> { "分数", "平均分" },
+                        PracticeItems = new List<LearnSite.Common.WebCoursewarePracticeItemPayload>
+                        {
+                            new LearnSite.Common.WebCoursewarePracticeItemPayload
+                            {
+                                Prompt = "哪一部分可以用二分之一表示？",
+                                ReferenceAnswer = "平均分成两份后的其中一份。"
+                            }
+                        },
+                        LessonWrapUp = "分数可以表示平均分后的结果。"
+                    }
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "practice-1",
+                    Sort = 5,
+                    BlockType = "quiz",
+                    Title = "课堂练习",
+                    Minutes = "10分钟",
+                    TeachingPurpose = "检测理解",
+                    LessonPosition = "巩固",
+                    TeacherAction = "组织抢答",
+                    StudentAction = "独立作答",
+                    Materials = new List<string> { "练习单" },
+                    AssessmentFocus = "判断是否掌握分数表示",
+                    Status = "published",
+                    Quiz = new LearnSite.Common.QuizBlockPayload
+                    {
+                        ExamName = "课堂练习",
+                        PaperTitle = "分数基础练习",
+                        QuestionSummary = "选择与判断题各 3 道",
+                        Duration = 10,
+                        Ltype = 39
+                    }
+                }
+            }
+        };
+    }
+
+    private static Dictionary<string, ActivityPlanPublishLinkPayload> BuildPublishedFullLessonLinks()
+    {
+        return new Dictionary<string, ActivityPlanPublishLinkPayload>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["opening-1"] = new ActivityPlanPublishLinkPayload
+            {
+                BlockKey = "opening-1",
+                BlockType = "mission",
+                MissionId = 100,
+                ListMenuId = 200
+            },
+            ["guided-inquiry-1"] = new ActivityPlanPublishLinkPayload
+            {
+                BlockKey = "guided-inquiry-1",
+                BlockType = "guidedInquiry",
+                MissionId = 101,
+                ListMenuId = 201
+            },
+            ["resource-study-1"] = new ActivityPlanPublishLinkPayload
+            {
+                BlockKey = "resource-study-1",
+                BlockType = "resource-study",
+                MissionId = 102,
+                ListMenuId = 202
+            },
+            ["web-courseware-1"] = new ActivityPlanPublishLinkPayload
+            {
+                BlockKey = "web-courseware-1",
+                BlockType = "webCourseware",
+                MissionId = 103,
+                ListMenuId = 203
+            },
+            ["practice-1"] = new ActivityPlanPublishLinkPayload
+            {
+                BlockKey = "practice-1",
+                BlockType = "quiz",
+                ExamId = 301,
+                PaperId = 401,
+                ListMenuId = 204
+            }
+        };
+    }
+
+    private static Dictionary<int, LearnSite.Model.ListMenu> BuildPublishedFullLessonMenus()
+    {
+        return new Dictionary<int, LearnSite.Model.ListMenu>
+        {
+            [200] = new LearnSite.Model.ListMenu { Lid = 200, Ltype = 1, Lxid = 100 },
+            [201] = new LearnSite.Model.ListMenu { Lid = 201, Ltype = 1, Lxid = 101 },
+            [202] = new LearnSite.Model.ListMenu { Lid = 202, Ltype = 6, Lxid = 102 },
+            [203] = new LearnSite.Model.ListMenu { Lid = 203, Ltype = 38, Lxid = 103 },
+            [204] = new LearnSite.Model.ListMenu { Lid = 204, Ltype = 39, Lxid = 301 }
+        };
+    }
+
+    private static LearnSite.Common.ActivityPlanSavedDraftPayload BuildPublishedFullLessonPayload(
+        LearnSite.Common.FullLessonDraft draft,
+        Dictionary<string, ActivityPlanPublishLinkPayload> publishLinks)
+    {
+        var record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildFullLessonRecord(
+            12,
+            5,
+            "认识分数",
+            "五年级",
+            "30分钟",
+            "理解分数含义",
+            "旧内容",
+            draft,
+            null,
+            null,
+            publishLinks);
+
+        Assert.NotNull(record);
+
+        var payload = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseFullLessonRecord(record, 12, 5);
+
+        Assert.NotNull(payload);
+        return payload;
     }
 
     private static string ReadRepoFile(params string[] relativeSegments)

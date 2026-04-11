@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: AI 整课编排与活动组合
-status: phase-complete
-stopped_at: Completed phase 08 execution and verification
-last_updated: "2026-04-11T12:41:49.659Z"
+status: completed
+stopped_at: Completed Phase 11 Plan 02 execution
+last_updated: "2026-04-11T20:15:00+00:00"
 last_activity: 2026-04-11
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 4
   total_plans: 2
-  completed_plans: 2
+  completed_plans: 6
   percent: 100
 ---
 
@@ -21,23 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable activity plan without having to manually break the lesson into steps.
-**Current focus:** Phase 09 planning for existing activity block composition
+**Current focus:** Milestone v1.2 completed
 
 ## Current Position
 
 Milestone: v1.2 (AI 整课编排与活动组合)
-Phase: 09 (existing-activity-block-composition)
-Plan: Not started
-Status: Phase 08 complete — ready to plan next phase
+Phase: 11 (composed-runtime-and-progress-visibility)
+Plan: 11-02-PLAN.md completed
+Status: Phase 11 Plan 02 completed — composed runtime and progress visibility wired into student and teacher surfaces
 Last activity: 2026-04-11
 
-Progress: [███████░░░] 73%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: -
 - Total execution time: -
 
@@ -70,11 +70,10 @@ Progress: [███████░░░] 73%
 
 ### Blockers/Concerns
 
-- Need code-level validation of the final resource-study route contract during Phase 9.
-- Need code-level validation of guided inquiry submission and completion semantics before Phase 10 publish rules are frozen.
+- Mixed publish and composed runtime wiring still need authenticated browser/database UAT against a real teacher session.
 
 ## Session Continuity
 
 Last session: 2026-04-11
-Stopped at: Completed phase 08 execution and verification
-Resume file: .planning/phases/08-full-lesson-draft-orchestration/08-VERIFICATION.md
+Stopped at: Completed Phase 11 Plan 02 implementation and verification
+Resume file: .planning/phases/11-composed-runtime-and-progress-visibility/11-composed-runtime-and-progress-visibility-02-SUMMARY.md

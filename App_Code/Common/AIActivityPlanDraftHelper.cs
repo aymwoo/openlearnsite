@@ -82,6 +82,126 @@ namespace LearnSite.Common
         public List<string> Materials { get; set; }
         public string AssessmentFocus { get; set; }
         public string Status { get; set; }
+        public QuizBlockPayload Quiz { get; set; }
+        public ResourceStudyBlockPayload ResourceStudy { get; set; }
+        public WebCoursewareBlockPayload WebCourseware { get; set; }
+        public GuidedInquiryBlockPayload GuidedInquiry { get; set; }
+    }
+
+    public class QuizBlockPayload
+    {
+        public QuizBlockPayload()
+        {
+            ExamName = string.Empty;
+            PaperTitle = string.Empty;
+            QuestionSummary = string.Empty;
+        }
+
+        public string ExamName { get; set; }
+        public string PaperTitle { get; set; }
+        public string QuestionSummary { get; set; }
+        public int Duration { get; set; }
+        public int Ltype { get; set; }
+    }
+
+    public class ResourceStudyBlockPayload
+    {
+        public ResourceStudyBlockPayload()
+        {
+            Mtitle = string.Empty;
+            Mcontent = string.Empty;
+        }
+
+        public string Mtitle { get; set; }
+        public string Mcontent { get; set; }
+        public bool Mupload { get; set; }
+        public int Ltype { get; set; }
+    }
+
+    public class WebCoursewareBlockPayload
+    {
+        public WebCoursewareBlockPayload()
+        {
+            Mtitle = string.Empty;
+            Mfiletype = string.Empty;
+            Mback = string.Empty;
+            LessonSummary = string.Empty;
+            TeachingGoals = new List<string>();
+            ExplanationCards = new List<WebCoursewareExplanationCardPayload>();
+            Keywords = new List<string>();
+            PracticeItems = new List<WebCoursewarePracticeItemPayload>();
+            LessonWrapUp = string.Empty;
+        }
+
+        public string Mtitle { get; set; }
+        public int Mcategory { get; set; }
+        public string Mfiletype { get; set; }
+        public string Mback { get; set; }
+        public bool Mupload { get; set; }
+        public int Ltype { get; set; }
+        public string LessonSummary { get; set; }
+        public List<string> TeachingGoals { get; set; }
+        public List<WebCoursewareExplanationCardPayload> ExplanationCards { get; set; }
+        public List<string> Keywords { get; set; }
+        public List<WebCoursewarePracticeItemPayload> PracticeItems { get; set; }
+        public string LessonWrapUp { get; set; }
+    }
+
+    public class WebCoursewareExplanationCardPayload
+    {
+        public WebCoursewareExplanationCardPayload()
+        {
+            Title = string.Empty;
+            Explanation = string.Empty;
+            Example = string.Empty;
+        }
+
+        public string Title { get; set; }
+        public string Explanation { get; set; }
+        public string Example { get; set; }
+    }
+
+    public class WebCoursewarePracticeItemPayload
+    {
+        public WebCoursewarePracticeItemPayload()
+        {
+            Prompt = string.Empty;
+            ReferenceAnswer = string.Empty;
+        }
+
+        public string Prompt { get; set; }
+        public string ReferenceAnswer { get; set; }
+    }
+
+    public class GuidedInquiryBlockPayload
+    {
+        public GuidedInquiryBlockPayload()
+        {
+            InquiryGoal = string.Empty;
+            InquiryPrompt = string.Empty;
+            FallbackReason = string.Empty;
+            SubmissionExpectation = string.Empty;
+            Steps = new List<GuidedInquiryStepPayload>();
+        }
+
+        public string InquiryGoal { get; set; }
+        public string InquiryPrompt { get; set; }
+        public string FallbackReason { get; set; }
+        public string SubmissionExpectation { get; set; }
+        public List<GuidedInquiryStepPayload> Steps { get; set; }
+    }
+
+    public class GuidedInquiryStepPayload
+    {
+        public GuidedInquiryStepPayload()
+        {
+            Title = string.Empty;
+            Prompt = string.Empty;
+        }
+
+        public int Sort { get; set; }
+        public string Title { get; set; }
+        public string Prompt { get; set; }
     }
 
     public static class AIActivityPlanDraftHelper
@@ -199,6 +319,21 @@ namespace LearnSite.Common
             }
 
             return true;
+        }
+
+        public static string NormalizeFullLessonBlockType(string blockType)
+        {
+            return SafeTrim(blockType).ToLowerInvariant();
+        }
+
+        public static bool IsSupportedPublishedBlockType(string blockType)
+        {
+            string normalizedBlockType = NormalizeFullLessonBlockType(blockType);
+            return normalizedBlockType == "mission"
+                || normalizedBlockType == "guidedinquiry"
+                || normalizedBlockType == "resource-study"
+                || normalizedBlockType == "webcourseware"
+                || normalizedBlockType == "quiz";
         }
 
         public static string[] GetAllowedSectionTargets()
@@ -352,7 +487,123 @@ namespace LearnSite.Common
                 && !string.IsNullOrEmpty(SafeTrim(block.StudentAction))
                 && block.Materials != null
                 && block.Materials.Count > 0
-                && !string.IsNullOrEmpty(SafeTrim(block.AssessmentFocus));
+                && !string.IsNullOrEmpty(SafeTrim(block.AssessmentFocus))
+                && HasValidTypedPayloadForBlockType(block);
+        }
+
+        private static bool HasValidTypedPayloadForBlockType(FullLessonDraftBlock block)
+        {
+            if (block == null)
+            {
+                return false;
+            }
+
+            if (IsQuizBlockType(block.BlockType))
+            {
+                return IsValidQuizPayload(block.Quiz);
+            }
+
+            if (IsResourceStudyBlockType(block.BlockType))
+            {
+                return IsValidResourceStudyPayload(block.ResourceStudy);
+            }
+
+            if (IsWebCoursewareBlockType(block.BlockType))
+            {
+                return IsValidWebCoursewarePayload(block.WebCourseware);
+            }
+
+            if (IsGuidedInquiryBlockType(block.BlockType))
+            {
+                return IsValidGuidedInquiryPayload(block.GuidedInquiry);
+            }
+
+            return true;
+        }
+
+        public static bool IsValidQuizPayload(QuizBlockPayload payload)
+        {
+            return payload != null
+                && !string.IsNullOrEmpty(SafeTrim(payload.ExamName))
+                && !string.IsNullOrEmpty(SafeTrim(payload.PaperTitle))
+                && !string.IsNullOrEmpty(SafeTrim(payload.QuestionSummary))
+                && payload.Duration > 0
+                && payload.Ltype == 39;
+        }
+
+        public static bool IsValidResourceStudyPayload(ResourceStudyBlockPayload payload)
+        {
+            return payload != null
+                && !string.IsNullOrEmpty(SafeTrim(payload.Mtitle))
+                && !string.IsNullOrEmpty(SafeTrim(payload.Mcontent))
+                && !payload.Mupload
+                && payload.Ltype == 6;
+        }
+
+        public static bool IsValidWebCoursewarePayload(WebCoursewareBlockPayload payload)
+        {
+            return payload != null
+                && !string.IsNullOrEmpty(SafeTrim(payload.Mtitle))
+                && payload.Mcategory == 38
+                && string.Equals(SafeTrim(payload.Mfiletype), "ware", StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrEmpty(SafeTrim(payload.Mback))
+                && payload.Mupload
+                && payload.Ltype == 38
+                && !string.IsNullOrEmpty(SafeTrim(payload.LessonSummary))
+                && payload.TeachingGoals != null
+                && payload.TeachingGoals.Count > 0
+                && payload.ExplanationCards != null
+                && payload.ExplanationCards.Count > 0
+                && payload.ExplanationCards.All(IsValidWebCoursewareExplanationCard)
+                && payload.PracticeItems != null
+                && payload.PracticeItems.Count > 0
+                && payload.PracticeItems.All(IsValidWebCoursewarePracticeItem)
+                && !string.IsNullOrEmpty(SafeTrim(payload.LessonWrapUp));
+        }
+
+        private static bool IsValidWebCoursewareExplanationCard(WebCoursewareExplanationCardPayload card)
+        {
+            return card != null
+                && !string.IsNullOrEmpty(SafeTrim(card.Title))
+                && !string.IsNullOrEmpty(SafeTrim(card.Explanation))
+                && !string.IsNullOrEmpty(SafeTrim(card.Example));
+        }
+
+        private static bool IsValidWebCoursewarePracticeItem(WebCoursewarePracticeItemPayload item)
+        {
+            return item != null
+                && !string.IsNullOrEmpty(SafeTrim(item.Prompt))
+                && !string.IsNullOrEmpty(SafeTrim(item.ReferenceAnswer));
+        }
+
+        public static bool IsValidGuidedInquiryPayload(GuidedInquiryBlockPayload payload)
+        {
+            if (payload == null
+                || (string.IsNullOrEmpty(SafeTrim(payload.InquiryGoal)) && string.IsNullOrEmpty(SafeTrim(payload.InquiryPrompt)))
+                || payload.Steps == null
+                || payload.Steps.Count == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < payload.Steps.Count; i++)
+            {
+                GuidedInquiryStepPayload step = payload.Steps[i];
+                if (!IsValidGuidedInquiryStep(step) || step.Sort != i + 1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool IsValidGuidedInquiryStep(GuidedInquiryStepPayload step)
+        {
+            return step != null
+                && step.Sort > 0
+                && !string.IsNullOrEmpty(SafeTrim(step.Title))
+                && !string.IsNullOrEmpty(SafeTrim(step.Prompt));
         }
 
         private static JToken ParseRootToken(string responseText)
@@ -556,12 +807,249 @@ namespace LearnSite.Common
             block.Materials = NormalizeStringList(GetFirstToken(blockObject, "materials", "resources", "materialList", "材料", "资源"));
             block.AssessmentFocus = NormalizeString(GetFirstToken(blockObject, "assessmentFocus", "assessment", "check", "评价重点", "评价关注点"));
             block.Status = NormalizeString(GetFirstToken(blockObject, "status", "blockStatus", "状态"));
+            block.Quiz = NormalizeQuizPayload(GetFirstToken(blockObject, "quiz", "quizPayload", "exam", "examPayload") as JObject);
+            block.ResourceStudy = NormalizeResourceStudyPayload(GetFirstToken(blockObject, "resourceStudy", "resource-study", "resourceStudyPayload", "mission", "missionPayload") as JObject);
+            block.WebCourseware = NormalizeWebCoursewarePayload(GetFirstToken(blockObject, "webCourseware", "ware", "webCoursewarePayload", "warePayload") as JObject);
+            block.GuidedInquiry = NormalizeGuidedInquiryPayload(GetFirstToken(blockObject, "guidedInquiry", "guided-inquiry", "guidedInquiryPayload", "inquiry", "inquiryPayload") as JObject);
             if (string.IsNullOrEmpty(block.Status))
             {
                 block.Status = "draft";
             }
 
             return IsValidFullLessonBlock(block) ? block : null;
+        }
+
+        private static QuizBlockPayload NormalizeQuizPayload(JObject payloadObject)
+        {
+            if (payloadObject == null)
+            {
+                return null;
+            }
+
+            QuizBlockPayload payload = new QuizBlockPayload();
+            payload.ExamName = NormalizeString(GetFirstToken(payloadObject, "examName", "title", "name"));
+            payload.PaperTitle = NormalizeString(GetFirstToken(payloadObject, "paperTitle", "paperName", "paper"));
+            payload.QuestionSummary = NormalizeString(GetFirstToken(payloadObject, "questionSummary", "summary", "questions", "questionPreview"));
+            payload.Duration = NormalizePositiveInt(GetFirstToken(payloadObject, "duration", "durationMinutes", "examMinutes"));
+            payload.Ltype = NormalizePositiveInt(GetFirstToken(payloadObject, "ltype", "listMenuType", "menuType"));
+            return IsValidQuizPayload(payload) ? payload : null;
+        }
+
+        private static ResourceStudyBlockPayload NormalizeResourceStudyPayload(JObject payloadObject)
+        {
+            if (payloadObject == null)
+            {
+                return null;
+            }
+
+            ResourceStudyBlockPayload payload = new ResourceStudyBlockPayload();
+            payload.Mtitle = NormalizeString(GetFirstToken(payloadObject, "mtitle", "title", "missionTitle"));
+            payload.Mcontent = NormalizeString(GetFirstToken(payloadObject, "mcontent", "content", "body", "html"));
+            payload.Mupload = NormalizeBoolean(GetFirstToken(payloadObject, "mupload", "upload"), false);
+            payload.Ltype = NormalizePositiveInt(GetFirstToken(payloadObject, "ltype", "listMenuType", "menuType"));
+            return IsValidResourceStudyPayload(payload) ? payload : null;
+        }
+
+        private static WebCoursewareBlockPayload NormalizeWebCoursewarePayload(JObject payloadObject)
+        {
+            if (payloadObject == null)
+            {
+                return null;
+            }
+
+            WebCoursewareBlockPayload payload = new WebCoursewareBlockPayload();
+            payload.Mtitle = NormalizeString(GetFirstToken(payloadObject, "mtitle", "title", "missionTitle"));
+            payload.Mcategory = NormalizePositiveInt(GetFirstToken(payloadObject, "mcategory", "category"));
+            payload.Mfiletype = NormalizeString(GetFirstToken(payloadObject, "mfiletype", "fileType"));
+            payload.Mback = NormalizeString(GetFirstToken(payloadObject, "mback", "homepage", "homePage", "url"));
+            payload.Mupload = NormalizeBoolean(GetFirstToken(payloadObject, "mupload", "upload"), false);
+            payload.Ltype = NormalizePositiveInt(GetFirstToken(payloadObject, "ltype", "listMenuType", "menuType"));
+            payload.LessonSummary = NormalizeString(GetFirstToken(payloadObject, "lessonSummary", "summary", "overview"));
+            payload.TeachingGoals = NormalizeStringList(GetFirstToken(payloadObject, "teachingGoals", "goals", "learningObjectives"));
+            payload.ExplanationCards = NormalizeWebCoursewareExplanationCards(GetFirstToken(payloadObject, "explanationCards", "cards", "knowledgeCards"));
+            payload.Keywords = NormalizeStringList(GetFirstToken(payloadObject, "keywords", "keyTerms", "terms"));
+            payload.PracticeItems = NormalizeWebCoursewarePracticeItems(GetFirstToken(payloadObject, "practiceItems", "exercises", "thinkingQuestions", "questions"));
+            payload.LessonWrapUp = NormalizeString(GetFirstToken(payloadObject, "lessonWrapUp", "wrapUp", "summaryConclusion", "closingSummary"));
+            return IsValidWebCoursewarePayload(payload) ? payload : null;
+        }
+
+        private static List<WebCoursewareExplanationCardPayload> NormalizeWebCoursewareExplanationCards(JToken token)
+        {
+            List<WebCoursewareExplanationCardPayload> cards = new List<WebCoursewareExplanationCardPayload>();
+            if (token == null)
+            {
+                return cards;
+            }
+
+            JArray array = token as JArray;
+            if (array == null)
+            {
+                JObject obj = token as JObject;
+                if (obj != null)
+                {
+                    JToken nested = GetFirstToken(obj, "items", "cards", "list");
+                    array = nested as JArray;
+                }
+            }
+
+            if (array == null)
+            {
+                return cards;
+            }
+
+            foreach (JToken item in array)
+            {
+                WebCoursewareExplanationCardPayload card = NormalizeWebCoursewareExplanationCard(item as JObject);
+                if (card == null)
+                {
+                    return null;
+                }
+
+                cards.Add(card);
+            }
+
+            return cards;
+        }
+
+        private static WebCoursewareExplanationCardPayload NormalizeWebCoursewareExplanationCard(JObject cardObject)
+        {
+            if (cardObject == null)
+            {
+                return null;
+            }
+
+            WebCoursewareExplanationCardPayload card = new WebCoursewareExplanationCardPayload();
+            card.Title = NormalizeString(GetFirstToken(cardObject, "title", "name", "label"));
+            card.Explanation = NormalizeString(GetFirstToken(cardObject, "explanation", "content", "description"));
+            card.Example = NormalizeString(GetFirstToken(cardObject, "example", "sample", "case"));
+            return IsValidWebCoursewareExplanationCard(card) ? card : null;
+        }
+
+        private static List<WebCoursewarePracticeItemPayload> NormalizeWebCoursewarePracticeItems(JToken token)
+        {
+            List<WebCoursewarePracticeItemPayload> items = new List<WebCoursewarePracticeItemPayload>();
+            if (token == null)
+            {
+                return items;
+            }
+
+            JArray array = token as JArray;
+            if (array == null)
+            {
+                JObject obj = token as JObject;
+                if (obj != null)
+                {
+                    JToken nested = GetFirstToken(obj, "items", "questions", "list");
+                    array = nested as JArray;
+                }
+            }
+
+            if (array == null)
+            {
+                return items;
+            }
+
+            foreach (JToken item in array)
+            {
+                WebCoursewarePracticeItemPayload practiceItem = NormalizeWebCoursewarePracticeItem(item as JObject);
+                if (practiceItem == null)
+                {
+                    return null;
+                }
+
+                items.Add(practiceItem);
+            }
+
+            return items;
+        }
+
+        private static WebCoursewarePracticeItemPayload NormalizeWebCoursewarePracticeItem(JObject itemObject)
+        {
+            if (itemObject == null)
+            {
+                return null;
+            }
+
+            WebCoursewarePracticeItemPayload item = new WebCoursewarePracticeItemPayload();
+            item.Prompt = NormalizeString(GetFirstToken(itemObject, "prompt", "question", "task"));
+            item.ReferenceAnswer = NormalizeString(GetFirstToken(itemObject, "referenceAnswer", "answer", "hint"));
+            return IsValidWebCoursewarePracticeItem(item) ? item : null;
+        }
+
+        private static GuidedInquiryBlockPayload NormalizeGuidedInquiryPayload(JObject payloadObject)
+        {
+            if (payloadObject == null)
+            {
+                return null;
+            }
+
+            GuidedInquiryBlockPayload payload = new GuidedInquiryBlockPayload();
+            payload.InquiryGoal = NormalizeString(GetFirstToken(payloadObject, "inquiryGoal", "goal", "goalText"));
+            payload.InquiryPrompt = NormalizeString(GetFirstToken(payloadObject, "inquiryPrompt", "prompt", "instructions", "question"));
+            payload.FallbackReason = NormalizeString(GetFirstToken(payloadObject, "fallbackReason", "reason", "fallback"));
+            payload.SubmissionExpectation = NormalizeString(GetFirstToken(payloadObject, "submissionExpectation", "submission", "expectedSubmission", "deliverable"));
+            payload.Steps = NormalizeGuidedInquirySteps(GetFirstToken(payloadObject, "steps", "inquirySteps", "stepList", "items"));
+            return IsValidGuidedInquiryPayload(payload) ? payload : null;
+        }
+
+        private static List<GuidedInquiryStepPayload> NormalizeGuidedInquirySteps(JToken token)
+        {
+            List<GuidedInquiryStepPayload> steps = new List<GuidedInquiryStepPayload>();
+            if (token == null)
+            {
+                return steps;
+            }
+
+            JArray array = token as JArray;
+            if (array == null)
+            {
+                JObject obj = token as JObject;
+                if (obj != null)
+                {
+                    JToken nested = GetFirstToken(obj, "items", "steps", "inquirySteps", "list");
+                    array = nested as JArray;
+                }
+            }
+
+            if (array == null)
+            {
+                return steps;
+            }
+
+            int index = 1;
+            foreach (JToken item in array)
+            {
+                GuidedInquiryStepPayload step = NormalizeGuidedInquiryStep(item as JObject, index);
+                if (step == null)
+                {
+                    return null;
+                }
+
+                steps.Add(step);
+                index++;
+            }
+
+            return steps;
+        }
+
+        private static GuidedInquiryStepPayload NormalizeGuidedInquiryStep(JObject stepObject, int fallbackSort)
+        {
+            if (stepObject == null)
+            {
+                return null;
+            }
+
+            int sort = NormalizePositiveInt(GetFirstToken(stepObject, "sort", "order", "index", "step"));
+            if (sort <= 0)
+            {
+                sort = fallbackSort;
+            }
+
+            GuidedInquiryStepPayload step = new GuidedInquiryStepPayload();
+            step.Sort = sort;
+            step.Title = NormalizeString(GetFirstToken(stepObject, "title", "name", "label"));
+            step.Prompt = NormalizeString(GetFirstToken(stepObject, "prompt", "question", "guidance", "instruction", "content"));
+            return IsValidGuidedInquiryStep(step) ? step : null;
         }
 
         private static ActivityPlanDraftStep NormalizeStep(JObject stepObject, int sort)
@@ -723,6 +1211,61 @@ namespace LearnSite.Common
             }
 
             return value;
+        }
+
+        private static int NormalizePositiveInt(JToken token)
+        {
+            string value = NormalizeString(token);
+            if (string.IsNullOrEmpty(value))
+            {
+                return 0;
+            }
+
+            int number;
+            if (int.TryParse(value, out number) && number > 0)
+            {
+                return number;
+            }
+
+            string digits = new string(value.Where(char.IsDigit).ToArray());
+            if (int.TryParse(digits, out number) && number > 0)
+            {
+                return number;
+            }
+
+            return 0;
+        }
+
+        private static bool NormalizeBoolean(JToken token, bool defaultValue)
+        {
+            if (token == null)
+            {
+                return defaultValue;
+            }
+
+            JValue value = token as JValue;
+            if (value != null)
+            {
+                if (value.Type == JTokenType.Boolean)
+                {
+                    return Convert.ToBoolean(value.Value);
+                }
+
+                string text = SafeTrim(value.ToString());
+                if (string.Equals(text, "1", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(text, "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (string.Equals(text, "0", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(text, "false", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return defaultValue;
         }
 
         private static string NormalizeString(JToken token)
@@ -959,6 +1502,26 @@ namespace LearnSite.Common
         private static string SafeTrim(string value)
         {
             return value == null ? string.Empty : value.Trim();
+        }
+
+        private static bool IsQuizBlockType(string blockType)
+        {
+            return string.Equals(SafeTrim(blockType), "quiz", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsResourceStudyBlockType(string blockType)
+        {
+            return string.Equals(SafeTrim(blockType), "resource-study", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsWebCoursewareBlockType(string blockType)
+        {
+            return string.Equals(SafeTrim(blockType), "webCourseware", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsGuidedInquiryBlockType(string blockType)
+        {
+            return string.Equals(SafeTrim(blockType), "guidedInquiry", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

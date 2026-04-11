@@ -933,6 +933,12 @@ namespace LearnSite.BLL
         {
             return dal.WorkPass(Wsid, Wmid);
         }
+
+        public int GetRecordCount(string strWhere)
+        {
+            return dal.GetRecordCount(strWhere);
+        }
+
         /// <summary>
         /// 根据学号和活动编号返回作品链接
         /// </summary>

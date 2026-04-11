@@ -7,6 +7,8 @@ using System.Web.UI.WebControls;
 
 public partial class Teacher_courseshow : System.Web.UI.Page
 {
+    private List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> _composedSummaries;
+
     protected void Page_Load(object sender, EventArgs e)
     {
         LearnSite.Common.CookieHelp.JudgeTeacherCookies();
@@ -72,8 +74,11 @@ public partial class Teacher_courseshow : System.Web.UI.Page
         {
             string Cid = Request.QueryString["cid"].ToString();
             HiddenCourseId.Value = Cid;
+            int courseId = Int32.Parse(Cid);
+            _composedSummaries = LoadComposedSummaries(courseId);
+            BindComposedTeacherSummary();
             LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
-            RptListMenu.DataSource = lbll.GetMenu(Int32.Parse(Cid));
+            RptListMenu.DataSource = lbll.GetMenu(courseId);
             RptListMenu.DataBind();
         }
     }
@@ -194,6 +199,12 @@ public partial class Teacher_courseshow : System.Web.UI.Page
         LinkButton showButton = (LinkButton)e.Item.FindControl("LinkBtnShow");
         Image img = (Image)e.Item.FindControl("Image4");
         Label lbl = (Label)e.Item.FindControl("Label4");
+        LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary composedSummary = null;
+        int listMenuId;
+        if (Int32.TryParse(lid, out listMenuId))
+        {
+            composedSummary = LearnSite.Common.AIActivityPlanComposedRuntimeHelper.FindSummaryByListMenuId(_composedSummaries, listMenuId);
+        }
             switch (ltype)
             {
                 case "1":
@@ -366,6 +377,13 @@ public partial class Teacher_courseshow : System.Web.UI.Page
                     break;
             }
 
+        if (composedSummary != null)
+        {
+            hl.Text = "第" + composedSummary.Sort.ToString() + "环 " + hl.Text;
+            hl.ToolTip = GetTeacherProgressText(composedSummary);
+            lbl.Text = lbl.Text + " · " + GetTeacherStateShortText(composedSummary);
+        }
+
         bool isPublished = false;
         Boolean.TryParse(showButton.Text, out isPublished);
         showButton.Text = isPublished ? "已发布" : "未发布";
@@ -381,6 +399,101 @@ public partial class Teacher_courseshow : System.Web.UI.Page
 
         string strjs = "if(confirm('您确定要删除吗?'))return true;else return false; ";
         ((LinkButton)e.Item.FindControl("LinkBtnDel")).OnClientClick = strjs;
+    }
+
+    private List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> LoadComposedSummaries(int cid)
+    {
+        LearnSite.BLL.Courses cbll = new LearnSite.BLL.Courses();
+        LearnSite.Model.Courses courseModel = cbll.GetModel(cid);
+        if (courseModel == null || !courseModel.Chid.HasValue)
+        {
+            return null;
+        }
+
+        LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
+        LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();
+        LearnSite.BLL.Works wbll = new LearnSite.BLL.Works();
+        return LearnSite.Common.AIActivityPlanComposedRuntimeHelper.LoadPublishedCourseSummaries(
+            cid,
+            courseModel.Chid.Value,
+            lid => lbll.GetModel(lid),
+            lid => ResolveAnyStudentMenuWork(kbll, lid),
+            missionId => wbll.GetRecordCount("Wmid=" + missionId.ToString()) > 0);
+    }
+
+    private LearnSite.Model.MenuWorks ResolveAnyStudentMenuWork(LearnSite.BLL.MenuWorks kbll, int lid)
+    {
+        if (kbll == null || lid <= 0)
+        {
+            return null;
+        }
+
+        System.Data.DataSet ds = kbll.GetList("Klid=" + lid.ToString());
+        if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+        {
+            return null;
+        }
+
+        return kbll.DataTableToList(ds.Tables[0])[0];
+    }
+
+    private void BindComposedTeacherSummary()
+    {
+        if (_composedSummaries == null || _composedSummaries.Count == 0)
+        {
+            PanelComposedTeacherSummary.Visible = false;
+            LiteralComposedTeacherSummary.Text = string.Empty;
+            return;
+        }
+
+        int completed = 0;
+        List<string> items = new List<string>();
+        for (int i = 0; i < _composedSummaries.Count; i++)
+        {
+            LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary = _composedSummaries[i];
+            if (summary == null)
+            {
+                continue;
+            }
+
+            if (summary.CompletionState == "completed")
+            {
+                completed++;
+            }
+
+            items.Add("<span style='display:inline-block;margin:0 8px 8px 0;padding:6px 10px;border-radius:999px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-size:12px;font-weight:600;'>第" + summary.Sort.ToString() + "环 " + HttpUtility.HtmlEncode(summary.Title ?? string.Empty) + " · " + HttpUtility.HtmlEncode(GetTeacherProgressText(summary)) + "</span>");
+        }
+
+        PanelComposedTeacherSummary.Visible = true;
+        LiteralComposedTeacherSummary.Text = "<div style='margin-bottom:8px;color:#475569;'>当前已完成 <strong>" + completed.ToString() + "</strong> / <strong>" + _composedSummaries.Count.ToString() + "</strong> 个整课环节。</div>" + string.Join(string.Empty, items.ToArray());
+    }
+
+    private string GetTeacherProgressText(LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary)
+    {
+        if (summary == null)
+        {
+            return string.Empty;
+        }
+
+        switch (summary.CompletionState)
+        {
+            case "completed":
+                return "已有学生完成";
+            case "incomplete":
+                return "已发布待完成";
+            default:
+                return summary.IsRuntimeReady ? "可进入待完成" : "发布信息未齐";
+        }
+    }
+
+    private string GetTeacherStateShortText(LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary)
+    {
+        if (summary == null)
+        {
+            return string.Empty;
+        }
+
+        return summary.CompletionState == "completed" ? "已完成" : (summary.CompletionState == "incomplete" ? "待完成" : "待核对");
     }
     protected void ImageButton1_Click(object sender, EventArgs e)
     {

@@ -51,7 +51,7 @@ public partial class Student_ware : System.Web.UI.Page
                 LabelMtitle.Text = model.Mtitle;
                 if (!String.IsNullOrEmpty(model.Mback))
                 {
-                    WareUrl = model.Mback;
+                    WareUrl = AppendRuntimeLocator(model.Mback, Lid, Mid);
                 }
             }
             LearnSite.BLL.Works bll = new LearnSite.BLL.Works();
@@ -72,6 +72,27 @@ public partial class Student_ware : System.Web.UI.Page
             }
 
         }
+    }
+
+    private static string AppendRuntimeLocator(string url, string lid, string mid)
+    {
+        if (string.IsNullOrEmpty(url))
+        {
+            return string.Empty;
+        }
+
+        string result = url;
+        if (result.IndexOf("lid=", StringComparison.OrdinalIgnoreCase) < 0 && !string.IsNullOrEmpty(lid))
+        {
+            result += (result.Contains("?") ? "&" : "?") + "lid=" + HttpUtility.UrlEncode(lid);
+        }
+
+        if (result.IndexOf("mid=", StringComparison.OrdinalIgnoreCase) < 0 && !string.IsNullOrEmpty(mid))
+        {
+            result += (result.Contains("?") ? "&" : "?") + "mid=" + HttpUtility.UrlEncode(mid);
+        }
+
+        return result;
     }
 
 }

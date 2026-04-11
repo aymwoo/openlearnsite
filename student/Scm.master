@@ -419,6 +419,7 @@
                     </div>
 
                 </div>
+                <div id="scmComposedSummary" style="padding:0 1rem 10px 1rem;" runat="server"><%= ComposedLessonSummaryHtml %></div>
             </nav>
 
             <!-- ══════════════════════════════════════════

@@ -210,6 +210,13 @@
                     </div>
                 </div>
 
+                <asp:Panel ID="PanelComposedTeacherSummary" runat="server" Visible="False">
+                    <div style="margin-bottom:16px;padding:14px 16px;border-radius:16px;border:1px solid #dbeafe;background:#f8fbff;">
+                        <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:8px;">整课活动发布进度</div>
+                        <asp:Literal ID="LiteralComposedTeacherSummary" runat="server"></asp:Literal>
+                    </div>
+                </asp:Panel>
+
                 <asp:HiddenField ID="HiddenSortOrder" runat="server" />
                 <asp:HiddenField ID="HiddenCourseId" runat="server" />
                 <asp:HiddenField ID="HiddenBannerUrl" runat="server" />

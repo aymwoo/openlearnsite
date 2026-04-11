@@ -68,6 +68,10 @@
                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
                     <span class="w-1.5 h-5 bg-green-500 rounded-full inline-block"></span> 已学学案
                 </h3>
+<asp:Panel ID="PanelComposedCourseSummary" runat="server" Visible="False" CssClass="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-slate-700">
+    <div class="font-bold text-slate-800 mb-2">整课活动进度</div>
+    <asp:Literal ID="LiteralComposedCourseSummary" runat="server"></asp:Literal>
+</asp:Panel>
 <div class="overflow-x-auto w-full rounded-xl border border-slate-200 shadow-sm">
        <asp:GridView ID="GridViewdonekc" runat="server" AllowPaging="True" 
            AutoGenerateColumns="False" 

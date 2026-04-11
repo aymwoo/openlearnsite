@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 网页课件预览</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: #f8fafc;
+      color: #10203a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 32%),
+        linear-gradient(180deg, #eef4ff 0%, #f8fafc 48%, #ffffff 100%);
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
+    }
+
+    .hero {
+      padding: 28px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, #0f172a, #1d4ed8 58%, #38bdf8 100%);
+      color: #eff6ff;
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.16);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.15;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.75;
+    }
+
+    .hero-grid,
+    .panel-grid,
+    .practice-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.9fr);
+      margin-top: 22px;
+    }
+
+    .section {
+      margin-top: 18px;
+      padding: 22px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+    }
+
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      color: #0f172a;
+    }
+
+    .summary {
+      font-size: 16px;
+      color: rgba(239, 246, 255, 0.92);
+    }
+
+    .goal-list,
+    .keyword-list,
+    .steps,
+    .thinking-list {
+      margin: 0;
+      padding-left: 20px;
+      color: #334155;
+    }
+
+    .goal-list li,
+    .steps li,
+    .thinking-list li {
+      margin-top: 8px;
+    }
+
+    .keyword-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .keyword-list li {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .panel-grid {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card,
+    .practice-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+    }
+
+    .card h3,
+    .practice-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #0f172a;
+    }
+
+    .example {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 14px;
+    }
+
+    .practice-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .answer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #bfdbfe;
+      color: #1e3a8a;
+      font-size: 14px;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: #475569;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 16px 12px 28px;
+      }
+
+      .hero,
+      .section {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">AI WEB COURSEWARE</div>
+      <h1 id="topic-title">lesson</h1>
+      <p id="lesson-summary" class="summary">围绕主题建立课堂情境，帮助学生抓住重点知识并完成当堂练习。</p>
+
+      <div class="hero-grid">
+        <section aria-labelledby="goal-title">
+          <h2 id="goal-title">学习目标</h2>
+          <ol id="teaching-goals" class="goal-list"></ol>
+        </section>
+        <section aria-labelledby="keyword-title">
+          <h2 id="keyword-title">关键词</h2>
+          <ul id="keyword-list" class="keyword-list"></ul>
+        </section>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="explanation-title">
+      <h2 id="explanation-title">知识点讲解</h2>
+      <div id="explanation-cards" class="panel-grid"></div>
+    </section>
+
+    <section class="section" aria-labelledby="steps-title">
+      <h2 id="steps-title">步骤与示例</h2>
+      <ol id="step-list" class="steps"></ol>
+    </section>
+
+    <section class="section" aria-labelledby="practice-title">
+      <h2 id="practice-title">互动练习与思考</h2>
+      <div id="practice-items" class="practice-grid"></div>
+      <p class="footer-note">先独立思考，再和同桌交流你的判断依据。</p>
+    </section>
+
+    <section class="section" aria-labelledby="wrap-title">
+      <h2 id="wrap-title">课堂小结</h2>
+      <p id="lesson-wrap-up"></p>
+      <ol id="thinking-list" class="thinking-list"></ol>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search || '');
+
+      function readValue(name, fallback) {
+        var value = (params.get(name) || '').trim();
+        return value || fallback;
+      }
+
+      function setList(elementId, items) {
+        var container = document.getElementById(elementId);
+        container.innerHTML = '';
+        items.forEach(function (item) {
+          if (!item) {
+            return;
+          }
+          var li = document.createElement('li');
+          li.textContent = item;
+          container.appendChild(li);
+        });
+      }
+
+      function createExplanationCard(card) {
+        var article = document.createElement('article');
+        article.className = 'card';
+
+        var title = document.createElement('h3');
+        title.textContent = card.title;
+        article.appendChild(title);
+
+        var explanation = document.createElement('p');
+        explanation.textContent = card.explanation;
+        article.appendChild(explanation);
+
+        var example = document.createElement('div');
+        example.className = 'example';
+        example.textContent = '示例：' + card.example;
+        article.appendChild(example);
+
+        return article;
+      }
+
+      function createPracticeCard(index, item) {
+        var article = document.createElement('article');
+        article.className = 'practice-card';
+
+        var title = document.createElement('h3');
+        title.textContent = '练习 ' + index;
+        article.appendChild(title);
+
+        var prompt = document.createElement('p');
+        prompt.textContent = item.prompt;
+        article.appendChild(prompt);
+
+        var answer = document.createElement('div');
+        answer.className = 'answer';
+        answer.textContent = '参考提示：' + item.answer;
+        article.appendChild(answer);
+
+        return article;
+      }
+
+      function createDefaultView(topic) {
+        var practice1 = {
+          prompt: readValue('q1', '请说一说今天这节课最重要的一个知识点。'),
+          answer: readValue('a1', '能准确说出核心概念，并说明自己的判断理由。')
+        };
+        var practice2 = {
+          prompt: readValue('q2', '遇到一个新例子时，你会怎样判断它是否符合本课所学？'),
+          answer: readValue('a2', '先抓关键信息，再对照知识点判断，并完整表达依据。')
+        };
+
+        return {
+          topic: topic,
+          lessonSummary: readValue('summary', '围绕主题建立课堂情境，帮助学生抓住重点知识并完成当堂练习。'),
+          teachingGoals: [
+            '围绕“' + topic + '”进入课堂情境。',
+            '能够结合示例解释核心知识点。',
+            '完成至少 1 道互动练习并说出理由。'
+          ],
+          keywords: [topic, '关键概念', '判断依据', '课堂应用'],
+          explanationCards: [
+            {
+              title: readValue('card1', '知识点讲解'),
+              explanation: readValue('point1', '先理解本课主题的核心概念，再关注判断依据。'),
+              example: readValue('example1', '结合教师示例找出最关键的信息。')
+            },
+            {
+              title: readValue('card2', '步骤与方法'),
+              explanation: readValue('point2', '按照看信息、找关键、说理由、做判断的顺序完成学习任务。'),
+              example: readValue('example2', '先圈关键词，再与同桌交流你的理由。')
+            }
+          ],
+          steps: [
+            '先观察课件中的主题与示例，找出最关键的信息。',
+            '再结合知识点讲解，整理自己的理解。',
+            '最后完成互动练习，并准备在课堂上表达理由。'
+          ],
+          practiceItems: [practice1, practice2],
+          lessonWrapUp: '记住“概念是什么、依据在哪里、怎样实际应用”，带着这个框架完成后续课堂任务。',
+          thinking: [practice1.prompt, practice2.prompt]
+        };
+      }
+
+      function buildViewFromPayload(payload, topicFallback) {
+        if (!payload) {
+          return createDefaultView(topicFallback);
+        }
+
+        var explanationCards = Array.isArray(payload.explanationCards) ? payload.explanationCards.filter(Boolean) : [];
+        var practiceItems = Array.isArray(payload.practiceItems) ? payload.practiceItems.filter(Boolean) : [];
+        var topic = (payload.topic || topicFallback || 'lesson').trim();
+        var goals = Array.isArray(payload.teachingGoals) ? payload.teachingGoals.filter(Boolean) : [];
+        var keywords = Array.isArray(payload.keywords) ? payload.keywords.filter(Boolean) : [];
+        var steps = explanationCards.map(function (card, index) {
+          return (index + 1) + '. ' + card.title + '：' + card.explanation;
+        });
+        var thinking = practiceItems.map(function (item) {
+          return item.prompt;
+        }).filter(Boolean);
+
+        if (!goals.length) {
+          goals = createDefaultView(topic).teachingGoals;
+        }
+        if (!keywords.length) {
+          keywords = createDefaultView(topic).keywords;
+        }
+        if (!explanationCards.length) {
+          explanationCards = createDefaultView(topic).explanationCards;
+        }
+        if (!practiceItems.length) {
+          practiceItems = createDefaultView(topic).practiceItems;
+        }
+        if (!steps.length) {
+          steps = createDefaultView(topic).steps;
+        }
+        if (!thinking.length) {
+          thinking = practiceItems.map(function (item) { return item.prompt; }).filter(Boolean);
+        }
+
+        return {
+          topic: topic,
+          lessonSummary: (payload.lessonSummary || '').trim() || createDefaultView(topic).lessonSummary,
+          teachingGoals: goals,
+          keywords: keywords,
+          explanationCards: explanationCards,
+          steps: steps,
+          practiceItems: practiceItems.map(function (item) {
+            return {
+              prompt: item.prompt,
+              answer: item.referenceAnswer || item.answer || ''
+            };
+          }),
+          lessonWrapUp: (payload.lessonWrapUp || '').trim() || createDefaultView(topic).lessonWrapUp,
+          thinking: thinking
+        };
+      }
+
+      function renderView(view) {
+        document.title = view.topic + ' - AI 网页课件预览';
+        document.getElementById('topic-title').textContent = view.topic;
+        document.getElementById('lesson-summary').textContent = view.lessonSummary;
+        document.getElementById('lesson-wrap-up').textContent = view.lessonWrapUp;
+
+        setList('teaching-goals', view.teachingGoals);
+        setList('keyword-list', view.keywords);
+        setList('step-list', view.steps);
+        setList('thinking-list', view.thinking);
+
+        var cardContainer = document.getElementById('explanation-cards');
+        cardContainer.innerHTML = '';
+        view.explanationCards.forEach(function (card) {
+          cardContainer.appendChild(createExplanationCard(card));
+        });
+
+        var practiceContainer = document.getElementById('practice-items');
+        practiceContainer.innerHTML = '';
+        view.practiceItems.forEach(function (item, index) {
+          practiceContainer.appendChild(createPracticeCard(index + 1, item));
+        });
+      }
+
+      function resolvePayloadUrl() {
+        var lid = (params.get('lid') || '').trim();
+        var mid = (params.get('mid') || '').trim();
+        if (!lid && !mid) {
+          return '';
+        }
+
+        var query = [];
+        if (lid) {
+          query.push('lid=' + encodeURIComponent(lid));
+        }
+        if (mid) {
+          query.push('mid=' + encodeURIComponent(mid));
+        }
+        return '/student/webcoursewarepayload.ashx?' + query.join('&');
+      }
+
+      function loadPublishedPayload(topic) {
+        var url = resolvePayloadUrl();
+        if (!url || typeof window.fetch !== 'function') {
+          renderView(createDefaultView(topic));
+          return;
+        }
+
+        window.fetch(url, {
+          method: 'GET',
+          credentials: 'same-origin'
+        }).then(function (response) {
+          if (!response.ok) {
+            throw new Error('http ' + response.status);
+          }
+
+          return response.json();
+        }).then(function (result) {
+          if (!result || !result.success || !result.data || !result.data.webCourseware) {
+            throw new Error('missing payload');
+          }
+
+          var payload = result.data.webCourseware;
+          payload.topic = result.data.topic || topic;
+          renderView(buildViewFromPayload(payload, topic));
+        }).catch(function () {
+          renderView(createDefaultView(topic));
+        });
+      }
+
+      var topic = readValue('topic', 'lesson');
+      loadPublishedPayload(topic);
+    })();
+  </script>
+</body>
+</html>

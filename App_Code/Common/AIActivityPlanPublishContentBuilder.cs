@@ -6,6 +6,10 @@ namespace LearnSite.Common
 {
     public class AIActivityPlanPublishContentBuilder
     {
+        public const string FullLessonPublishBeginMarker = "<!--AI-FULL-LESSON-PUBLISH:BEGIN-->";
+
+        public const string FullLessonPublishEndMarker = "<!--AI-FULL-LESSON-PUBLISH:END-->";
+
         private static readonly string[] SupportedSectionKeys = new string[]
         {
             "teachingGoals",
@@ -68,6 +72,110 @@ namespace LearnSite.Common
             builder.Append(BuildSectionBlock("assessment", draft));
             builder.Append(BuildSectionBlock("teacherReminder", draft));
             return builder.ToString();
+        }
+
+        public string BuildGuidedInquiryMissionContent(string topic, FullLessonDraftBlock block)
+        {
+            if (block == null || block.GuidedInquiry == null || !AIActivityPlanDraftHelper.IsValidGuidedInquiryPayload(block.GuidedInquiry))
+            {
+                return string.Empty;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            string boundedTopic = AIActivityPlanPromptBuilder.BoundText(topic, AIActivityPlanPromptBuilder.MaxTopicLength);
+            builder.Append("<div data-ai-activity-guide=\"guidedInquiry\">");
+            builder.AppendFormat("<h2>{0}</h2>", Encode(string.IsNullOrEmpty(boundedTopic) ? block.Title : boundedTopic));
+            builder.AppendFormat("<p><strong>学习目标：</strong>{0}</p>", Encode(block.GuidedInquiry.InquiryGoal));
+            builder.AppendFormat("<p><strong>活动说明：</strong>{0}</p>", Encode(block.GuidedInquiry.InquiryPrompt));
+            if (!string.IsNullOrEmpty(block.GuidedInquiry.SubmissionExpectation))
+            {
+                builder.AppendFormat("<p><strong>学习建议：</strong>完成后提交：{0}</p>", Encode(block.GuidedInquiry.SubmissionExpectation));
+            }
+
+            builder.Append("<p><strong>任务步骤：</strong></p><ol>");
+            for (int i = 0; i < block.GuidedInquiry.Steps.Count; i++)
+            {
+                GuidedInquiryStepPayload step = block.GuidedInquiry.Steps[i];
+                builder.AppendFormat("<li><strong>{0}</strong><br />{1}</li>", Encode(step.Title), Encode(step.Prompt));
+            }
+            builder.Append("</ol></div>");
+            return builder.ToString();
+        }
+
+        public string BuildMissionBlockContent(string topic, FullLessonDraftBlock block)
+        {
+            if (block == null)
+            {
+                return string.Empty;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            string boundedTopic = AIActivityPlanPromptBuilder.BoundText(topic, AIActivityPlanPromptBuilder.MaxTopicLength);
+            builder.AppendFormat("<h2>{0}</h2>", Encode(string.IsNullOrEmpty(boundedTopic) ? block.Title : boundedTopic));
+            builder.AppendFormat("<p><strong>环节名称：</strong>{0}</p>", Encode(block.Title));
+            builder.AppendFormat("<p><strong>教学目的：</strong>{0}</p>", Encode(block.TeachingPurpose));
+            builder.AppendFormat("<p><strong>课堂位置：</strong>{0}</p>", Encode(block.LessonPosition));
+            builder.AppendFormat("<p><strong>预计时长：</strong>{0}</p>", Encode(block.Minutes));
+            builder.AppendFormat("<p><strong>教师活动：</strong>{0}</p>", Encode(block.TeacherAction));
+            builder.AppendFormat("<p><strong>学生活动：</strong>{0}</p>", Encode(block.StudentAction));
+            if (block.Materials != null && block.Materials.Count > 0)
+            {
+                builder.Append("<p><strong>学习材料：</strong></p><ul>");
+                for (int i = 0; i < block.Materials.Count; i++)
+                {
+                    builder.AppendFormat("<li>{0}</li>", Encode(block.Materials[i]));
+                }
+                builder.Append("</ul>");
+            }
+
+            builder.AppendFormat("<p><strong>评价关注：</strong>{0}</p>", Encode(block.AssessmentFocus));
+            return builder.ToString();
+        }
+
+        public string BuildFullLessonLessonContent(string topic, FullLessonDraft draft)
+        {
+            if (!AIActivityPlanDraftHelper.IsValidFullLessonDraft(draft))
+            {
+                return string.Empty;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine(FullLessonPublishBeginMarker);
+            builder.AppendFormat("<p><strong>【AI整课主题】</strong>{0}</p>", Encode(AIActivityPlanPromptBuilder.BoundText(topic, AIActivityPlanPromptBuilder.MaxTopicLength)));
+            builder.AppendFormat("<p><strong>【AI整课概述】</strong>{0}</p>", Encode(draft.LessonSummary));
+            builder.Append("<ol>");
+            for (int i = 0; i < draft.Blocks.Count; i++)
+            {
+                FullLessonDraftBlock block = draft.Blocks[i];
+                builder.AppendFormat("<li><strong>{0}</strong>（{1}）<br />教学目的：{2}<br />课堂位置：{3}<br />预计时长：{4}</li>",
+                    Encode(block.Title),
+                    Encode(GetBlockTypeLabel(block.BlockType)),
+                    Encode(block.TeachingPurpose),
+                    Encode(block.LessonPosition),
+                    Encode(block.Minutes));
+            }
+            builder.Append("</ol>");
+            builder.AppendLine();
+            builder.Append(FullLessonPublishEndMarker);
+            return builder.ToString();
+        }
+
+        private static string GetBlockTypeLabel(string blockType)
+        {
+            string normalized = (blockType ?? string.Empty).Trim().ToLowerInvariant();
+            switch (normalized)
+            {
+                case "quiz":
+                    return "测验活动";
+                case "resource-study":
+                    return "资源学习";
+                case "webcourseware":
+                    return "网页课件";
+                case "guidedinquiry":
+                    return "引导探究";
+                default:
+                    return blockType ?? string.Empty;
+            }
         }
 
         private static List<string> NormalizeSelectedSectionKeys(IEnumerable<string> selectedSectionKeys)

@@ -102,6 +102,7 @@ public partial class Student_myinfo : System.Web.UI.Page
             LearnSite.BLL.Courses cs = new LearnSite.BLL.Courses();
             GridViewdonekc.DataSource = cs.ShowDoneCourseNew(LabelCids.Text);
             GridViewdonekc.DataBind();
+            BindComposedCourseSummary();
         }
     }
     protected void GridViewnewkc_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -194,6 +195,7 @@ public partial class Student_myinfo : System.Web.UI.Page
 
             if (!String.IsNullOrEmpty(myCid))
             {
+                AppendComposedProgress(ps, myCid);
                 int[] score = cbll.Workrecord(myCid);//获取任务完成得分，未完成为-1
                 string worknone = "<span style='display:inline-block;background-color:#E8E8E8;height:20px;width:20px; margin: 1px; text-align: center;' title='未完成'></span>";
                 string workdone = "<span style='display:inline-block;background-color:#B4E7B4;height:20px;width:20px;margin: 1px; text-align: center;' title='已完成'></span>";
@@ -232,7 +234,7 @@ public partial class Student_myinfo : System.Web.UI.Page
                         }
                     }
                    // Decimal perdone = Convert.ToDecimal(done) / Convert.ToDecimal(count);
-                    ps.Text = psstr;// +perdone.ToString("P0");
+                    ps.Text = ps.Text + psstr;// +perdone.ToString("P0");
                 }
             }
         }
@@ -243,6 +245,118 @@ public partial class Student_myinfo : System.Web.UI.Page
             //当鼠标离开的时候 将背景颜色还原的以前的颜色 
             e.Row.Attributes.Add("onmouseout", "this.style.backgroundColor=currentcolor,this.style.fontWeight='';");
         }
+    }
+
+    private void AppendComposedProgress(Literal target, string cidText)
+    {
+        int cid;
+        if (target == null || !Int32.TryParse(cidText, out cid))
+        {
+            return;
+        }
+
+        List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> summaries = LoadComposedSummaries(cid);
+        if (summaries == null || summaries.Count == 0)
+        {
+            return;
+        }
+
+        List<string> items = new List<string>();
+        for (int i = 0; i < summaries.Count; i++)
+        {
+            LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary summary = summaries[i];
+            string color = "#E8E8E8";
+            string title = "待发布";
+            if (summary.CompletionState == "completed")
+            {
+                color = "#B4E7B4";
+                title = "已完成";
+            }
+            else if (summary.CompletionState == "incomplete")
+            {
+                color = "#FDE68A";
+                title = "待完成";
+            }
+
+            items.Add("<span style='display:inline-block;background-color:" + color + ";height:20px;min-width:28px;padding:0 4px;line-height:20px;margin:1px;text-align:center;border-radius:999px;' title='整课第" + summary.Sort.ToString() + "环 " + HttpUtility.HtmlEncode(summary.Title ?? string.Empty) + " " + title + "'>" + summary.Sort.ToString() + "</span>");
+        }
+
+        target.Text = "<div style='margin-bottom:6px;color:#475569;font-size:12px;font-weight:700;'>整课环节</div>" + string.Join(string.Empty, items.ToArray());
+    }
+
+    private void BindComposedCourseSummary()
+    {
+        if (!LearnSite.Common.CookieHelp.IsStudentLogin())
+        {
+            PanelComposedCourseSummary.Visible = false;
+            LiteralComposedCourseSummary.Text = string.Empty;
+            return;
+        }
+
+        LearnSite.BLL.Courses cbll = new LearnSite.BLL.Courses();
+        System.Text.StringBuilder html = new System.Text.StringBuilder();
+        for (int i = 0; i < GridViewdonekc.Rows.Count; i++)
+        {
+            DataKey key = GridViewdonekc.DataKeys[i];
+            if (key == null)
+            {
+                continue;
+            }
+
+            int cid;
+            if (!Int32.TryParse(key[0].ToString(), out cid))
+            {
+                continue;
+            }
+
+            LearnSite.Model.Courses course = cbll.GetModel(cid);
+            List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> summaries = LoadComposedSummaries(cid);
+            if (course == null || summaries == null || summaries.Count == 0)
+            {
+                continue;
+            }
+
+            int completed = 0;
+            for (int j = 0; j < summaries.Count; j++)
+            {
+                if (summaries[j] != null && summaries[j].CompletionState == "completed")
+                {
+                    completed++;
+                }
+            }
+
+            html.Append("<div style='margin-bottom:8px;'><strong>");
+            html.Append(HttpUtility.HtmlEncode(course.Ctitle));
+            html.Append("</strong>：已完成 ");
+            html.Append(completed.ToString());
+            html.Append("/");
+            html.Append(summaries.Count.ToString());
+            html.Append(" 个整课环节</div>");
+        }
+
+        PanelComposedCourseSummary.Visible = html.Length > 0;
+        LiteralComposedCourseSummary.Text = html.ToString();
+    }
+
+    private List<LearnSite.Common.AIActivityPlanComposedRuntimeBlockSummary> LoadComposedSummaries(int cid)
+    {
+        LearnSite.BLL.Courses cbll = new LearnSite.BLL.Courses();
+        LearnSite.Model.Courses courseModel = cbll.GetModel(cid);
+        if (courseModel == null || !courseModel.Chid.HasValue)
+        {
+            return null;
+        }
+
+        LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
+        LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();
+        LearnSite.BLL.Works wbll = new LearnSite.BLL.Works();
+        int sid = cook.Sid;
+        return LearnSite.Common.AIActivityPlanComposedRuntimeHelper.LoadPublishedCourseSummaries(
+            cid,
+            courseModel.Chid.Value,
+            lid => lbll.GetModel(lid),
+            lid => kbll.GetModelme(sid, lid),
+            missionId => wbll.WorkPass(sid, missionId));
     }
     private void ShowSelf()
     {

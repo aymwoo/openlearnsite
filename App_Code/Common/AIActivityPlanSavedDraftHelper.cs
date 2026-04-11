@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace LearnSite.Common
@@ -29,7 +31,24 @@ namespace LearnSite.Common
 
         public int? LinkedListMenuId { get; set; }
 
+        public Dictionary<string, ActivityPlanPublishLinkPayload> PublishLinks { get; set; }
+
         public DateTime UpdatedAt { get; set; }
+    }
+
+    public class ActivityPlanPublishLinkPayload
+    {
+        public string BlockKey { get; set; }
+
+        public string BlockType { get; set; }
+
+        public int? MissionId { get; set; }
+
+        public int? ExamId { get; set; }
+
+        public int? PaperId { get; set; }
+
+        public int? ListMenuId { get; set; }
     }
 
     internal class ActivityPlanSavedDraftJsonModel
@@ -49,6 +68,8 @@ namespace LearnSite.Common
         public object Draft { get; set; }
 
         public object FullLessonDraft { get; set; }
+
+        public object PublishLinks { get; set; }
     }
 
     public static class AIActivityPlanSavedDraftHelper
@@ -84,7 +105,7 @@ namespace LearnSite.Common
             };
         }
 
-        public static LearnSite.Model.CourseActivityPlanDraft BuildFullLessonRecord(int cid, int hid, string topic, string grade, string duration, string teachingGoals, string existingCourseContent, FullLessonDraft draft, int? linkedMissionId = null, int? linkedListMenuId = null)
+        public static LearnSite.Model.CourseActivityPlanDraft BuildFullLessonRecord(int cid, int hid, string topic, string grade, string duration, string teachingGoals, string existingCourseContent, FullLessonDraft draft, int? linkedMissionId = null, int? linkedListMenuId = null, IDictionary<string, ActivityPlanPublishLinkPayload> publishLinks = null)
         {
             string normalizedTopic = AIActivityPlanPromptBuilder.BoundText(topic, AIActivityPlanPromptBuilder.MaxTopicLength);
             if (cid <= 0 || hid <= 0 || string.IsNullOrEmpty(normalizedTopic) || !AIActivityPlanDraftHelper.IsValidFullLessonDraft(draft))
@@ -107,7 +128,7 @@ namespace LearnSite.Common
                 Duration = normalizedDuration,
                 TeachingGoalsInput = normalizedGoals,
                 ExistingCourseContentSnapshot = normalizedExisting,
-                DraftJson = SerializeFullLessonDraftJson(normalizedTopic, normalizedGrade, normalizedDuration, normalizedGoals, normalizedExisting, draft),
+                DraftJson = SerializeFullLessonDraftJson(normalizedTopic, normalizedGrade, normalizedDuration, normalizedGoals, normalizedExisting, draft, publishLinks),
                 LinkedMissionId = linkedMissionId,
                 LinkedListMenuId = linkedListMenuId,
                 CreatedAt = now,
@@ -226,8 +247,26 @@ namespace LearnSite.Common
                 FullLessonDraft = draft,
                 LinkedMissionId = record.LinkedMissionId,
                 LinkedListMenuId = record.LinkedListMenuId,
+                PublishLinks = ParsePublishLinks(jsonModel.PublishLinks),
                 UpdatedAt = record.UpdatedAt
             };
+        }
+
+        public static ActivityPlanPublishLinkPayload GetPublishLink(IDictionary<string, ActivityPlanPublishLinkPayload> publishLinks, string blockKey)
+        {
+            if (publishLinks == null)
+            {
+                return null;
+            }
+
+            string normalizedBlockKey = AIActivityPlanPromptBuilder.BoundText(blockKey, 100);
+            if (string.IsNullOrEmpty(normalizedBlockKey))
+            {
+                return null;
+            }
+
+            ActivityPlanPublishLinkPayload link;
+            return publishLinks.TryGetValue(normalizedBlockKey, out link) ? link : null;
         }
 
         private static string SerializeDraftJson(string topic, string grade, string duration, string teachingGoals, string existingCourseContent, ActivityPlanDraft draft)
@@ -251,7 +290,7 @@ namespace LearnSite.Common
             });
         }
 
-        private static string SerializeFullLessonDraftJson(string topic, string grade, string duration, string teachingGoals, string existingCourseContent, FullLessonDraft draft)
+        private static string SerializeFullLessonDraftJson(string topic, string grade, string duration, string teachingGoals, string existingCourseContent, FullLessonDraft draft, IDictionary<string, ActivityPlanPublishLinkPayload> publishLinks)
         {
             return JsonConvert.SerializeObject(new
             {
@@ -268,8 +307,75 @@ namespace LearnSite.Common
                     lessonSummary = draft.LessonSummary,
                     totalMinutes = draft.TotalMinutes,
                     blocks = draft.Blocks
-                }
+                },
+                publishLinks = SerializePublishLinks(publishLinks)
             });
+        }
+
+        private static object SerializePublishLinks(IDictionary<string, ActivityPlanPublishLinkPayload> publishLinks)
+        {
+            if (publishLinks == null || publishLinks.Count == 0)
+            {
+                return null;
+            }
+
+            return publishLinks
+                .Where(entry => entry.Value != null && !string.IsNullOrEmpty((entry.Key ?? string.Empty).Trim()))
+                .OrderBy(entry => entry.Key, StringComparer.Ordinal)
+                .Select(entry => new
+                {
+                    blockKey = entry.Key,
+                    blockType = entry.Value.BlockType ?? string.Empty,
+                    missionId = entry.Value.MissionId,
+                    examId = entry.Value.ExamId,
+                    paperId = entry.Value.PaperId,
+                    listMenuId = entry.Value.ListMenuId
+                })
+                .ToList();
+        }
+
+        private static Dictionary<string, ActivityPlanPublishLinkPayload> ParsePublishLinks(object publishLinksToken)
+        {
+            Dictionary<string, ActivityPlanPublishLinkPayload> result = new Dictionary<string, ActivityPlanPublishLinkPayload>(StringComparer.OrdinalIgnoreCase);
+            if (publishLinksToken == null)
+            {
+                return result;
+            }
+
+            try
+            {
+                List<ActivityPlanPublishLinkPayload> links = JsonConvert.DeserializeObject<List<ActivityPlanPublishLinkPayload>>(JsonConvert.SerializeObject(publishLinksToken));
+                if (links == null)
+                {
+                    return result;
+                }
+
+                for (int i = 0; i < links.Count; i++)
+                {
+                    ActivityPlanPublishLinkPayload link = links[i];
+                    string blockKey = AIActivityPlanPromptBuilder.BoundText(link == null ? string.Empty : link.BlockKey, 100);
+                    if (string.IsNullOrEmpty(blockKey))
+                    {
+                        continue;
+                    }
+
+                    result[blockKey] = new ActivityPlanPublishLinkPayload
+                    {
+                        BlockKey = blockKey,
+                        BlockType = AIActivityPlanPromptBuilder.BoundText(link.BlockType, 50),
+                        MissionId = link.MissionId,
+                        ExamId = link.ExamId,
+                        PaperId = link.PaperId,
+                        ListMenuId = link.ListMenuId
+                    };
+                }
+            }
+            catch
+            {
+                return new Dictionary<string, ActivityPlanPublishLinkPayload>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            return result;
         }
 
         private static string FirstNonEmpty(string first, string second)

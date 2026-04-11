@@ -15,5 +15,9 @@ namespace LearnSite.Model
         public List<string> SelectedSectionKeys { get; set; }
 
         public LearnSite.Common.ActivityPlanDraft Draft { get; set; }
+
+        public LearnSite.Common.FullLessonDraft FullLessonDraft { get; set; }
+
+        public string ExistingCourseContent { get; set; }
     }
 }

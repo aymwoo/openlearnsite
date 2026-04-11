@@ -40,9 +40,9 @@ Archive: `.planning/milestones/v1.1-ROADMAP.md`
 ### 🚧 v1.2 AI 整课编排与活动组合
 
 - [x] **Phase 8: Full-lesson draft orchestration** - Teachers generate and review an ordered full-lesson draft made of typed activity blocks. (completed 2026-04-11)
-- [ ] **Phase 9: Existing activity block composition** - AI selects reusable quiz, resource-study, and web courseware blocks for the lesson flow.
-- [ ] **Phase 10: Guided inquiry fallback and combined publish** - Mixed drafts can include guided inquiry and publish as one confirmed classroom set.
-- [ ] **Phase 11: Composed runtime and progress visibility** - Published lesson blocks run in student flow with per-block completion visibility.
+- [x] **Phase 9: Existing activity block composition** - AI selects reusable quiz, resource-study, and web courseware blocks for the lesson flow. (completed 2026-04-11)
+- [x] **Phase 10: Guided inquiry fallback and combined publish** - Mixed drafts can include guided inquiry and publish as one confirmed classroom set. (completed 2026-04-11)
+- [x] **Phase 11: Composed runtime and progress visibility** - Published lesson blocks run in student flow with per-block completion visibility. (completed 2026-04-11)
 
 ## Phase Details
 
@@ -69,7 +69,10 @@ Plans:
   2. Teacher can get a composed resource-study block when the lesson needs guided reading or material study.
   3. Teacher can get a composed web courseware block when the lesson needs webpage-based presentation or interaction.
   4. Teacher can see AI choose among these existing activity types instead of forcing every step into the same generic format.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [x] `09-01-PLAN.md` — Add typed quiz, resource-study, and web courseware block payload contracts, validation, and preview-only handler support.
+- [x] `09-02-PLAN.md` — Upgrade the course editor to render type-aware existing-activity block previews while preserving block-level refinement and saved-draft behavior.
 **UI hint**: yes
 
 ### Phase 10: Guided inquiry fallback and combined publish
@@ -81,7 +84,10 @@ Plans:
   2. Teacher can preview the guided inquiry block inside the same full-lesson draft as the other generated blocks.
   3. Teacher can confirm one composed full-lesson draft and have the system create or update the matching classroom activity entries through one combined publish action.
   4. Teacher can publish a mixed draft that includes both reused existing activity types and guided inquiry without leaving the existing teacher workflow.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [x] `10-01-PLAN.md` — Add the `guidedInquiry` fallback block contract, fail-closed validation, full-lesson generation wiring, and mixed-draft preview support.
+- [x] `10-02-PLAN.md` — Add combined `fullLessonPublish` fan-out, block-keyed publish-link persistence, and one mixed publish action in the existing teacher workflow.
 **UI hint**: yes
 
 ### Phase 11: Composed runtime and progress visibility
@@ -93,7 +99,10 @@ Plans:
   2. Student can view each published block in a runtime that matches its selected activity type.
   3. Student can complete or submit work for each published block using that block's expected activity flow.
   4. Teacher and student completion views can distinguish progress across the composed lesson blocks after publication.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [x] `11-01-PLAN.md` — Add a fail-closed composed runtime/progress helper over full-lesson publish links and pin current student/teacher integration boundaries.
+- [x] `11-02-PLAN.md` — Wire composed block order, runtime context, and per-block progress visibility into the existing student and teacher surfaces.
 **UI hint**: yes
 
 ## Progress
@@ -108,6 +117,6 @@ Plans:
 | 6. Student activity entry and guided experience | v1.1 | 2/2 | Complete | 2026-04-11 |
 | 7. Submission and completion tracking | v1.1 | 2/2 | Complete | 2026-04-11 |
 | 8. Full-lesson draft orchestration | v1.2 | 2/2 | Complete | 2026-04-11 |
-| 9. Existing activity block composition | v1.2 | 0/TBD | Not started | - |
-| 10. Guided inquiry fallback and combined publish | v1.2 | 0/TBD | Not started | - |
-| 11. Composed runtime and progress visibility | v1.2 | 0/TBD | Not started | - |
+| 9. Existing activity block composition | v1.2 | 2/2 | Complete | 2026-04-11 |
+| 10. Guided inquiry fallback and combined publish | v1.2 | 2/2 | Complete | 2026-04-11 |
+| 11. Composed runtime and progress visibility | v1.2 | 2/2 | Complete | 2026-04-11 |
