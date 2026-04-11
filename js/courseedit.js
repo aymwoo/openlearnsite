@@ -151,7 +151,7 @@ var kindEditorObj;
                           vditorObj = new Vditor('vditor-container', {
                              height: 400,
                                  width: '100%',
-                             mode: 'ir',
+                             mode: 'sv',
                              upload: { handler: function (files) { LearnSiteEditorUploadHelper.handleVditorUpload(vditorObj, upjs, files); } },
                              preview: { mode: 'both' },
                              cache: { enable: false },

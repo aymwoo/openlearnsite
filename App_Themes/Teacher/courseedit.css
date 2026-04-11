@@ -115,6 +115,47 @@
         }
         .course-edit-field .course-edit-label { margin-bottom: 0.45rem; }
 
+        /* Compact metadata fields — tighter padding and shorter controls */
+        .course-edit-field-compact {
+            padding: 0.55rem 0.75rem;
+        }
+        .course-edit-field-compact .course-edit-label {
+            margin-bottom: 0.3rem;
+            font-size: 11px;
+        }
+        .course-edit-field-compact .course-edit-input,
+        .course-edit-field-compact .course-edit-select {
+            height: 32px;
+            min-height: 32px;
+            font-size: 12.5px;
+            padding: 0 10px;
+            border-radius: 0.55rem;
+        }
+        .course-edit-field-compact .course-edit-select {
+            padding-right: 26px;
+            background-position: right 8px center;
+        }
+        .course-edit-field-compact .course-edit-static {
+            min-height: 32px;
+            font-size: 12.5px;
+        }
+        .course-edit-field-compact .course-edit-static .course-edit-select {
+            width: 80px;
+            min-width: 80px;
+        }
+        .course-edit-field-compact .course-edit-publish {
+            min-height: 32px;
+            font-size: 12.5px;
+        }
+
+        /* Title field — slightly larger input for prominence */
+        .course-edit-field-title .course-edit-input {
+            height: 40px;
+            min-height: 40px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         .course-edit-editor-toolbar {
             display: flex; flex-wrap: wrap; justify-content: space-between;
             gap: 1rem; align-items: flex-end; margin-bottom: 14px;
