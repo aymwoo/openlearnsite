@@ -898,6 +898,33 @@ public class TeacherRegressionTests
         Assert.Contains("Mcontent.InnerHtml = \"此学案活动不存在！\";", showMissionCodeBehind, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ShowMission_ActivityPlanSubmissionState_ShouldExposeExplicitReadyResubmitAndLockedMessages()
+    {
+        var showMissionCodeBehind = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx.cs"));
+
+        Assert.Contains("ShowReadyToSubmitState", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("ShowResubmitState", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("ShowLockedSubmissionState", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("今天还没有提交作品，可先完成任务后上传结果！", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("你已经提交过该活动作品，可修改后重新提交！", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("该活动作品已被老师评价，当前不能重新提交！", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("Panelswfupload.Visible = true;", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("Panelswfupload.Visible = false;", showMissionCodeBehind, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ShowMission_ActivityPlanSubmissionState_ShouldKeepIpAndPriorWorkRestrictionsExplicit()
+    {
+        var showMissionCodeBehind = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx.cs"));
+
+        Assert.Contains("ShowIpBlockedState", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("ShowPreviousWorkRequiredState", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("已在该IP提交作品！", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("请先提交前面作品！", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("LabelMfiletype.Text != \"htm\"", showMissionCodeBehind, StringComparison.Ordinal);
+    }
+
     [Theory]
     [MemberData(nameof(GetContentPagesReturningToCourse))]
     public void ContentPages_ShouldKeepReturnToCourseCopy(string relativePath)
