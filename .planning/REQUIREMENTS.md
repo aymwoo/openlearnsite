@@ -62,11 +62,11 @@ the existing platform.
 
 | Requirement | Phase |
 |-------------|-------|
-| TAP-01 | |
-| TAP-02 | |
-| TAP-03 | |
-| SAE-01 | |
-| SAE-02 | |
-| SAE-03 | |
-| SCT-01 | |
-| SCT-02 | |
+| TAP-01 | Phase 5 |
+| TAP-02 | Phase 5 |
+| TAP-03 | Phase 5 |
+| SAE-01 | Phase 6 |
+| SAE-02 | Phase 6 |
+| SAE-03 | Phase 6 |
+| SCT-01 | Phase 7 |
+| SCT-02 | Phase 7 |
