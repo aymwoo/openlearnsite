@@ -1,4 +1,4 @@
-<%@ Page Title="" Language="C#" MasterPageFile="~/manager/Manage.master" StylesheetTheme="Teacher" AutoEventWireup="true" CodeFile="index.aspx.cs" Inherits="Manager_index" %>
+<%@ Page Title="" Language="C#" MasterPageFile="~/manager/Manage.master" AutoEventWireup="true" CodeFile="index.aspx.cs" Inherits="Manager_index" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
     <style type="text/css">
@@ -69,7 +69,7 @@
                 </div>
             </div>
 
-            <asp:TextBox ID="TextBox1" runat="server" SkinID="TextBoxindex" ReadOnly="true" Width="1px" style="display:none;"></asp:TextBox>
+            <asp:TextBox ID="TextBox1" runat="server" ReadOnly="true" Width="1px" style="display:none;"></asp:TextBox>
             <asp:TextBox ID="TextBox3" runat="server" ReadOnly="True" Width="1px" style="display:none;"></asp:TextBox>
             <asp:TextBox ID="TextBox7" runat="server" ReadOnly="True" Width="1px" style="display:none;"></asp:TextBox>
             <asp:TextBox ID="TextBox2" runat="server" ReadOnly="True" Width="1px" style="display:none;"></asp:TextBox>

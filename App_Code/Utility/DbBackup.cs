@@ -124,20 +124,35 @@ namespace LearnSite.DBUtility
             ArrayList dirs = GetBackupDirectories();
             foreach (string dir in dirs)
             {
-                if (!Directory.Exists(dir))
+                if (string.IsNullOrEmpty(dir))
                 {
                     continue;
                 }
-                DirectoryInfo di = new DirectoryInfo(dir);
-                FileInfo[] fis = di.GetFiles("*.bak");
-                foreach (FileInfo fi in fis)
+                try
                 {
-                    if (exists.ContainsKey(fi.FullName))
+                    if (!Directory.Exists(dir))
                     {
                         continue;
                     }
-                    exists.Add(fi.FullName, true);
-                    fileList.Add(fi);
+                    DirectoryInfo di = new DirectoryInfo(dir);
+                    FileInfo[] fis = di.GetFiles("*.bak");
+                    foreach (FileInfo fi in fis)
+                    {
+                        if (exists.ContainsKey(fi.FullName))
+                        {
+                            continue;
+                        }
+                        exists.Add(fi.FullName, true);
+                        fileList.Add(fi);
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    continue;
+                }
+                catch (Exception)
+                {
+                    continue;
                 }
             }
             return fileList;

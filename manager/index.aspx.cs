@@ -10,7 +10,7 @@ public partial class Manager_index : System.Web.UI.Page
     {
         LearnSite.Common.CookieHelp.JudgeIsAdmin();
         if (!IsPostBack)
-            Master.Page.Title = LearnSite.Common.CookieHelp.SetMainPageTitle() + "系统设置页面";
+            this.Page.Title = LearnSite.Common.CookieHelp.SetMainPageTitle() + "系统设置页面";
     }
     protected void Btnlogout_Click(object sender, EventArgs e)
     {
