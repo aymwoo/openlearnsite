@@ -9,7 +9,7 @@ milestone, so the next milestone starts at Phase 5.
 ## Milestones
 
 - ✅ **v1.0 milestone** — Phases 1-4 (shipped 2026-04-11)
-- 📋 **v1.1 教学环节生成与课堂活动投放** — Phases 5-7 (proposed)
+- ✅ **v1.1 教学环节生成与课堂活动投放** — Phases 5-7 (completed 2026-04-11)
 
 ## Phases
 
@@ -23,77 +23,20 @@ milestone, so the next milestone starts at Phase 5.
 
 </details>
 
+<details>
+<summary>✅ v1.1 教学环节生成与课堂活动投放 (Phases 5-7) — SHIPPED 2026-04-11</summary>
+
+- [x] Phase 5: Teacher activity publish foundation (3/3 plans) — completed 2026-04-11
+- [x] Phase 6: Student activity entry and guided experience (2/2 plans) — completed 2026-04-11
+- [x] Phase 7: Submission and completion tracking (2/2 plans) — completed 2026-04-11
+
+Archive: `.planning/milestones/v1.1-ROADMAP.md`
+
+</details>
+
 ### 📋 Next milestone
 
-- [x] Phase 5: Teacher activity publish foundation (completed 2026-04-11)
-- [ ] Phase 6: Student activity entry and guided experience (planned: 2 plans)
-- [ ] Phase 7: Submission and completion tracking (planned: 2 plans)
-
-## Proposed roadmap for v1.1
-
-**3 phases** | **8 requirements mapped** | All covered ✓
-
-| # | Phase | Goal | Requirements | Success criteria |
-|---|-------|------|--------------|------------------|
-| 5 | Teacher activity publish foundation | 3/3 | Complete   | 2026-04-11 |
-| 6 | Student activity entry and guided experience | Let students enter the published activity and follow generated guidance from the class menu | SAE-01, SAE-02, SAE-03 | 4 |
-| 7 | Submission and completion tracking | Let students submit activity results and record reliable completion state | SCT-01, SCT-02 | 4 |
-
-### Phase details
-
-**Phase 5: Teacher activity publish foundation**
-Goal: Turn approved AI output into a real lesson activity with explicit publish
-control and linked lesson-content update.
-Requirements: TAP-01, TAP-02, TAP-03
-Plans: 3 plans
-
-- [x] 05-01-PLAN.md — define publish contracts and stable mission/menu linkage
-- [x] 05-02-PLAN.md — build the synchronized publish core and content builders
-- [x] 05-03-PLAN.md — wire teacher publish controls and authenticated handler flow
-
-Success criteria:
-1. A teacher can confirm AI-generated activity output and create or update a
-   real course-linked lesson activity.
-2. A teacher can explicitly control whether the generated activity is published
-   before students can enter it.
-3. The confirmed publish flow updates teacher-side lesson content and the
-   student-enterable activity entry together.
-4. Publish changes are applied through one authenticated server-owned flow so
-   teacher and student visibility do not drift.
-
-**Phase 6: Student activity entry and guided experience**
-Goal: Let students enter the published activity and follow generated guidance
-from the class menu.
-Requirements: SAE-01, SAE-02, SAE-03
-Plans: 2 plans
-
-- [ ] 06-01-PLAN.md — lock student menu entry and mission-page open flow
-- [ ] 06-02-PLAN.md — finish guided mission rendering and Phase 6 validation
-
-Success criteria:
-1. A published AI-generated activity appears in the student's existing class
-   menu flow.
-2. A student can open the activity page from the menu entry in an authenticated
-   session.
-3. The activity page shows the published goal, instructions, and task steps.
-4. The student experience presents step-by-step learner guidance clearly enough
-   to complete the activity without relying on teacher-side draft context.
-
-**Phase 7: Submission and completion tracking**
-Goal: Let students submit activity results and record reliable completion state.
-Requirements: SCT-01, SCT-02
-Plans: 2 plans
-
-- [ ] 07-01-PLAN.md — lock AI mission submission onto existing upload handlers
-- [ ] 07-02-PLAN.md — harden completion recording and verify completed-state visibility
-
-Success criteria:
-1. A student can submit a result from the published AI-generated activity flow.
-2. A successful submission is linked to the correct lesson activity identity.
-3. Completion status is recorded after successful submission using the existing
-   classroom tracking model.
-4. Teacher-facing review or status surfaces can distinguish completed activity
-   submissions from untouched entries for the scoped flow.
+- No next milestone defined yet. Start with `/gsd-new-milestone`.
 
 ## Progress
 
@@ -104,5 +47,5 @@ Success criteria:
 | 3. Guided review and section regeneration | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 4. Selective apply and draft continuity | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 5. Teacher activity publish foundation | v1.1 | 3/3 | Complete | 2026-04-11 |
-| 6. Student activity entry and guided experience | v1.1 | 0/2 | Planned | - |
-| 7. Submission and completion tracking | v1.1 | 0/2 | Planned | - |
+| 6. Student activity entry and guided experience | v1.1 | 2/2 | Complete | 2026-04-11 |
+| 7. Submission and completion tracking | v1.1 | 2/2 | Complete | 2026-04-11 |

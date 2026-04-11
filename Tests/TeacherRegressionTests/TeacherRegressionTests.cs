@@ -844,8 +844,10 @@ public class TeacherRegressionTests
         Assert.Contains("ws.GetModelByStu(Int32.Parse(Wmid), Wnum)", uploadWork, StringComparison.Ordinal);
         Assert.Contains("ws.UpdateWorkUp(wmodelp.Wid, Wurl, NewFileName, Wlength, Wdate, checkcan, \"\")", uploadWork, StringComparison.Ordinal);
         Assert.Contains("ws.AddWorkUp(wmodel);", uploadWork, StringComparison.Ordinal);
-        Assert.Contains("kmodel.Klid = Int32.Parse(Wlid);", uploadWork, StringComparison.Ordinal);
-        Assert.Contains("kbll.Add(kmodel);", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("string Wextention = mmodel.Mfiletype;", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("limitext.Contains(Wfiletype)", uploadWork, StringComparison.Ordinal);
+        Assert.Contains("ws.EnsureMenuWorksCompletion(Int32.Parse(Wsid), Int32.Parse(Wlid), DateTime.Parse(LoginTime), Wdate);", uploadWork, StringComparison.Ordinal);
+        Assert.DoesNotContain("kbll.Add(kmodel);", uploadWork, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -863,8 +865,9 @@ public class TeacherRegressionTests
         Assert.Contains("ws.UpdateWorkUp(wmodelp.Wid, Wurl, NewFileName, Wlength, Wdate, checkcan, \"\")", uploadWorkM, StringComparison.Ordinal);
         Assert.Contains("ws.AddWorkUp(wmodel);", uploadWorkM, StringComparison.Ordinal);
         Assert.Contains("wmodel.Wlid = Int32.Parse(Wlid);", uploadWorkM, StringComparison.Ordinal);
-        Assert.Contains("kmodel.Klid = Int32.Parse(Wlid);", uploadWorkM, StringComparison.Ordinal);
-        Assert.Contains("kbll.Add(kmodel);", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("work_upload.InputStream != null && work_upload.ContentLength < maxSize", uploadWorkM, StringComparison.Ordinal);
+        Assert.Contains("ws.EnsureMenuWorksCompletion(Int32.Parse(Wsid), Int32.Parse(Wlid), DateTime.Parse(LoginTime), Wdate);", uploadWorkM, StringComparison.Ordinal);
+        Assert.DoesNotContain("kbll.Add(kmodel);", uploadWorkM, StringComparison.Ordinal);
     }
 
     [Fact]

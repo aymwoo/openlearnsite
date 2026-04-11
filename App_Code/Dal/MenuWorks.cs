@@ -128,16 +128,13 @@ namespace LearnSite.DAL
 				return false;
 			}
 
-			if (Exists(model.Ksid.Value, model.Klid.Value))
-			{
-				return true;
-			}
-
 			StringBuilder strSql=new StringBuilder();
 			strSql.Append("insert into MenuWorks(");
 			strSql.Append("Ksid,Klid,Ktime,Kseconds,Kcheck,Kstar)");
-			strSql.Append(" values (");
-			strSql.Append("@Ksid,@Klid,@Ktime,@Kseconds,@Kcheck,@Kstar)");
+			strSql.Append(" select ");
+			strSql.Append("@Ksid,@Klid,@Ktime,@Kseconds,@Kcheck,@Kstar");
+			strSql.Append(" where not exists (");
+			strSql.Append("select 1 from MenuWorks with (UPDLOCK, HOLDLOCK) where Ksid=@Ksid and Klid=@Klid)");
 			int kseconds = model.Kseconds.HasValue ? model.Kseconds.Value : (model.Ktime.HasValue ? model.Ktime.Value * 60 : 0);
 			SqlParameter[] parameters = {
 					new SqlParameter("@Ksid", SqlDbType.Int,4),
@@ -155,6 +152,10 @@ namespace LearnSite.DAL
 
 			int rows=DbHelperSQL.ExecuteSql(strSql.ToString(),parameters);
 			if (rows > 0)
+			{
+				return true;
+			}
+			if (Exists(model.Ksid.Value, model.Klid.Value))
 			{
 				return true;
 			}

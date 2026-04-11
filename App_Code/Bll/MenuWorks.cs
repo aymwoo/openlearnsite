@@ -80,12 +80,6 @@ namespace LearnSite.BLL
 				return false;
 			}
 
-			LearnSite.Model.MenuWorks exists = GetModelme(model.Ksid.Value, model.Klid.Value);
-			if (exists != null)
-			{
-				return true;
-			}
-
 			return Add(model);
 		}
 

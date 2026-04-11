@@ -53,7 +53,45 @@ public partial class Student_uploadwork : System.Web.UI.Page
                 string Wcid = mmodel.Mcid.ToString();
                 string Wmsort = mmodel.Msort.ToString();
                 string Wfiletype = work_upload.FileName.Substring(work_upload.FileName.LastIndexOf(".") + 1).ToLower(); 
-               // string Wextention = mmodel.Mfiletype;
+                string Wextention = mmodel.Mfiletype;
+                string limitext = Wextention;
+                switch (Wextention)
+                {
+                    case "doc":
+                        limitext = "*.doc;*.docx";
+                        break;
+                    case "ppt":
+                        limitext = "*.ppt;*.pptx";
+                        break;
+                    case "xls":
+                        limitext = "*.xls;*.xlsx";
+                        break;
+                    case "office":
+                        limitext = "*.doc;*.docx;*.ppt;*.pptx;*.xls;*.xlsx";
+                        break;
+                    case "sb":
+                        limitext = "*.sb;*.sb2;*.sb3";
+                        break;
+                    case "iframe":
+                        limitext = "*.psd;*.iframe";
+                        break;
+                    case "png":
+                    case "jpg":
+                        limitext = "*.png;*.jpg;*.jpeg;*.gif";
+                        break;
+                    default:
+                        limitext = "*." + Wextention;
+                        break;
+                }
+
+                if (!(Wfiletype == Wextention || limitext.Contains(Wfiletype)))
+                {
+                    Response.StatusCode = 200;
+                    Response.Write("选择的文件类型错误!");
+                    Response.End();
+                    return;
+                }
+
                 int Wlength = work_upload.ContentLength;
                 //Syear | Sgrade | Sclass | Sid | Sname | Wip | Sterm | LoginTime
                 

@@ -12,14 +12,23 @@ an executable classroom activity plan that is easier to use in real teaching.
 Teachers can turn a teaching topic into a concrete, teachable activity plan
 without having to manually break the lesson into steps.
 
-## Current Milestone: v1.1 教学环节生成与课堂活动投放
+## Current State
 
-**Goal:** Let the AI assistant generate usable teaching activity segments that fill teacher-side lesson content and can also be published as student-enterable classroom activities.
+**Shipped milestone:** v1.1 教学环节生成与课堂活动投放 (2026-04-11)
 
-**Target features:**
-- AI generates usable teaching activity segments and fills teacher-side lesson or course content
-- Generated output can also be published as a student-enterable classroom activity entry in class
-- Students can enter the activity page, view AI-generated activity content, follow steps, submit results, and have completion status recorded
+**Delivered:** Teachers can generate AI classroom activity segments in the
+existing editor, publish them into the brownfield student mission flow, and let
+students open, submit, and complete those activities with existing classroom
+tracking surfaces.
+
+## Next Milestone Goals
+
+- Define the next milestone with fresh scoped requirements in
+  `.planning/REQUIREMENTS.md`
+- Decide whether to deepen classroom activity reuse, richer student guidance,
+  or curriculum alignment as the next highest-value increment
+- Preserve the existing Web Forms publish/mission/upload flow as the brownfield
+  baseline unless new requirements justify broader changes
 
 ## Requirements
 
@@ -56,10 +65,16 @@ without having to manually break the lesson into steps.
 
 - [ ] Teachers can generate reusable, classroom-ready teaching activity
   segments from AI inside the existing planning workflow
-- [ ] Teachers can add generated activity output into lesson content and also
-  publish it as a student-enterable classroom activity
-- [ ] Students can open published AI-generated activities, follow guided steps,
-  submit results, and have participation or completion recorded
+
+### Validated in v1.1 milestone
+
+- ✓ Teachers can add generated activity output into lesson content and also
+  publish it as a student-enterable classroom activity — Validated in Phase 5:
+  Teacher activity publish foundation
+- ✓ Students can open published AI-generated activities, follow guided steps,
+  submit results, and have participation or completion recorded — Validated in
+  Phases 6-7: Student activity entry, guidance, submission, and completion
+  tracking
 
 ### Out of Scope
 
@@ -137,6 +152,14 @@ apply behavior with an authenticated teacher session and a live provider.
 | Keep review improvements section-scoped instead of regenerating the whole draft every time | Teachers need to preserve strong sections while refining weak ones | Validated in Phase 3 |
 | Store one current saved draft per course outside lesson body content | Draft continuity should not bypass the existing lesson save path or mix transient plan state into published content | Validated in Phase 4 |
 | Apply approved plan sections by appending labeled blocks into the editor | Append-only writeback avoids silent overwrite and fits the brownfield editor workflow | Validated in Phase 4 |
+| Publish approved AI activities through one brownfield transaction that links course, mission, and menu ids | Student entry must stay aligned with teacher-visible content and the existing classroom model | Validated in Phase 5 |
+| Keep student AI activities on the existing `showmission.aspx` and upload handlers instead of introducing AI-specific routes | The smallest safe change is to reuse the established student flow and tighten it with guards/tests | Validated in Phases 6-7 |
+| Record AI activity completion through existing `MenuWorks` state with duplicate-safe writes | Completion visibility must stay on the current classroom tracking model instead of fragmenting into an AI-only status store | Validated in Phase 7 |
+
+## Milestone History
+
+<details>
+<summary>Shipped milestone context</summary>
 
 ## Current State
 
@@ -145,9 +168,11 @@ surface now supports embedded topic-first generation, structured preview,
 section-level regeneration, saved-draft continuity, and selective append-only
 apply inside `teacher/courseedit.aspx`.
 
-v1.1 is now being defined. The next validated goal is to let teachers turn
-AI-generated planning output into usable classroom activity entries that
-students can enter, complete, and submit through the existing application.
+v1.1 shipped on 2026-04-11. Phases 5-7 are complete and the AI planning flow now
+extends through teacher publish, student entry, guided mission rendering,
+submission, and completion tracking inside the existing brownfield application.
+
+</details>
 
 ## Evolution
 
@@ -167,4 +192,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 for v1.1 milestone start*
+*Last updated: 2026-04-11 after v1.1 milestone archival*

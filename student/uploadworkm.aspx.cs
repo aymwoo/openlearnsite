@@ -86,7 +86,7 @@ public partial class Student_uploadworkm : System.Web.UI.Page
                 }
             if (Wfiletype == Wextention||limitext.Contains(Wfiletype))
             {
-                if (work_upload.InputStream != null || work_upload.InputStream.Length < maxSize)
+                if (work_upload.InputStream != null && work_upload.ContentLength < maxSize)
                 {
                     int Wlength = work_upload.ContentLength;
                     LearnSite.Model.Cook cook = new LearnSite.Model.Cook();
