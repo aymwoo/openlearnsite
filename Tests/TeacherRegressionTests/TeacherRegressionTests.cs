@@ -925,6 +925,30 @@ public class TeacherRegressionTests
         Assert.Contains("LabelMfiletype.Text != \"htm\"", showMissionCodeBehind, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ActivityPlanCompletion_StudentMenu_ShouldKeepFinishStateBackedByMenuWorksAndWorkPass()
+    {
+        var studentMenu = File.ReadAllText(Path.Combine(RepoRoot, "student", "Scm.master.cs"));
+
+        Assert.Contains("LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("lcount = kbll.GetMyLidCount(cook.Sid, lidall);", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("bool codepass = wbll.WorkPass(cook.Sid, Int32.Parse(Lxidstr));", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("ma.ImageUrl = urlfinish;", studentMenu, StringComparison.Ordinal);
+        Assert.DoesNotContain("AICompletion", studentMenu, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ActivityPlanCompletion_StudentSummary_ShouldKeepCompletedCourseAggregationOnLegacyModels()
+    {
+        var myInfo = File.ReadAllText(Path.Combine(RepoRoot, "student", "myinfo.aspx.cs"));
+
+        Assert.Contains("string wcids = wbll.ShowStuDoneWorkCids(mysnum, Cterm, Cgrade);", myInfo, StringComparison.Ordinal);
+        Assert.Contains("LearnSite.BLL.MenuWorks kbll = new LearnSite.BLL.MenuWorks();", myInfo, StringComparison.Ordinal);
+        Assert.Contains("string rcids = kbll.readCids(Int32.Parse(mySid));", myInfo, StringComparison.Ordinal);
+        Assert.Contains("LabelCids.Text = LearnSite.Common.WordProcess.SimpleWordsNew(allcids);", myInfo, StringComparison.Ordinal);
+        Assert.DoesNotContain("AICompletion", myInfo, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [MemberData(nameof(GetContentPagesReturningToCourse))]
     public void ContentPages_ShouldKeepReturnToCourseCopy(string relativePath)
