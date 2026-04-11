@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: complete
-stopped_at: Completed v1.0 milestone workflow
-last_updated: "2026-04-11T01:57:32.646Z"
+milestone: v1.1
+milestone_name: 教学环节生成与课堂活动投放
+status: planning
+stopped_at: Defining v1.1 requirements
+last_updated: "2026-04-11T00:00:00.000Z"
 last_activity: 2026-04-11
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -22,16 +22,17 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable
 activity plan without having to manually break the lesson into steps.
-**Current focus:** v1.0 milestone shipped — define the next milestone and close remaining manual UAT
+**Current focus:** Define and scope v1.1 around AI-generated teaching activities that can be published into the student classroom flow
 
 ## Current Position
 
-Milestone: v1.0 (milestone) — COMPLETE
-Plan: 8 of 8
-Status: Milestone archived and planning docs rolled forward for next milestone setup
+Milestone: v1.1 (教学环节生成与课堂活动投放)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
 Last activity: 2026-04-11
 
-Progress: [██████████] 100%
+Progress: [----------] 0%
 
 ## Performance Metrics
 
@@ -86,7 +87,9 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None for the scoped phase work.
+- Define scoped v1.1 requirements.
+- Decide which researched feature categories belong in this milestone.
+- Create and approve the v1.1 roadmap.
 
 ### Blockers/Concerns
 
@@ -95,5 +98,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-11T01:59:38.821Z
-Stopped at: Completed v1.0 milestone workflow
+Stopped at: Defining v1.1 requirements
 Resume file: None

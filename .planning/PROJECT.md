@@ -12,6 +12,15 @@ an executable classroom activity plan that is easier to use in real teaching.
 Teachers can turn a teaching topic into a concrete, teachable activity plan
 without having to manually break the lesson into steps.
 
+## Current Milestone: v1.1 教学环节生成与课堂活动投放
+
+**Goal:** Let the AI assistant generate usable teaching activity segments that fill teacher-side lesson content and can also be published as student-enterable classroom activities.
+
+**Target features:**
+- AI generates usable teaching activity segments and fills teacher-side lesson or course content
+- Generated output can also be published as a student-enterable classroom activity entry in class
+- Students can enter the activity page, view AI-generated activity content, follow steps, submit results, and have completion status recorded
+
 ## Requirements
 
 ### Validated
@@ -45,12 +54,12 @@ without having to manually break the lesson into steps.
 
 ### Active
 
-- [ ] Teachers can generate differentiated variants of the same activity plan
-  for different learner levels
-- [ ] Activity plan generation can align more deeply with curriculum or
-  standards frameworks beyond lightweight teacher guidance
-- [ ] Human validation should confirm saved-draft resume and append-only apply
-  flows in the live authenticated course editor
+- [ ] Teachers can generate reusable, classroom-ready teaching activity
+  segments from AI inside the existing planning workflow
+- [ ] Teachers can add generated activity output into lesson content and also
+  publish it as a student-enterable classroom activity
+- [ ] Students can open published AI-generated activities, follow guided steps,
+  submit results, and have participation or completion recorded
 
 ### Out of Scope
 
@@ -81,13 +90,20 @@ topic into executable classroom activities that fit real lesson organization.
 
 This project treats the existing AI and skills foundation as validated system
 capability, then adds a more teaching-aware planning experience focused on
-classroom activity design. The initial brownfield target is the existing teacher
-lesson or course editing surface, not a new standalone assistant.
+classroom activity design. The brownfield target remains the existing teacher
+lesson or course editing surface plus the existing student activity entry flow,
+not a new standalone assistant.
 
 v1.0 ships that lesson-planning loop end to end inside `teacher/courseedit.aspx`.
 Teachers can enter a topic, generate a structured activity-plan draft, regenerate
 individual sections, save one draft per course, resume it later, and append
 approved sections into the editor without auto-saving or auto-publishing.
+
+v1.1 shifts the next validated step from planning-only output to executable
+classroom activities. The milestone focus is turning AI-generated teaching
+segments into publishable learning activities that fit both the teacher authoring
+surface and the student classroom experience, including activity entry,
+submission, and completion tracking.
 
 Focused verification passed through the net8.0 slices of
 `Tests/CommonLogicTests/CommonLogicTests.csproj` and
@@ -129,8 +145,9 @@ surface now supports embedded topic-first generation, structured preview,
 section-level regeneration, saved-draft continuity, and selective append-only
 apply inside `teacher/courseedit.aspx`.
 
-The next milestone has not been defined yet. The main open work is choosing the
-next validated planning improvement and closing the remaining manual UAT items.
+v1.1 is now being defined. The next validated goal is to let teachers turn
+AI-generated planning output into usable classroom activity entries that
+students can enter, complete, and submit through the existing application.
 
 ## Evolution
 
@@ -150,4 +167,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 after v1.0 milestone completion*
+*Last updated: 2026-04-11 for v1.1 milestone start*
