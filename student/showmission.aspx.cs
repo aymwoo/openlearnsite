@@ -209,6 +209,39 @@ public partial class Student_showmission : System.Web.UI.Page
         }
     }
 
+    private void ShowReadyToSubmitState()
+    {
+        DateTime dt = DateTime.Now;
+        string today = dt.Year.ToString() + "-" + dt.Month.ToString() + "-" + dt.Day;
+        Labelmsg.Text = today + "<br/>今天还没有提交作品，可先完成任务后上传结果！";
+        Panelswfupload.Visible = true;
+    }
+
+    private void ShowResubmitState()
+    {
+        Labelmsg.Text = "你已经提交过该活动作品，可修改后重新提交！";
+        Panelswfupload.Visible = true;
+    }
+
+    private void ShowLockedSubmissionState()
+    {
+        Labelmsg.Text = "该活动作品已被老师评价，当前不能重新提交！";
+        Panelswfupload.Visible = false;
+    }
+
+    private void ShowIpBlockedState(string SnumDone)
+    {
+        Panelswfupload.Visible = false;
+        if (LabelMfiletype.Text != "htm")
+            Labelmsg.Text = SnumDone + "学号<br/>已在该IP提交作品！";
+    }
+
+    private void ShowPreviousWorkRequiredState()
+    {
+        Panelswfupload.Visible = false;
+        Labelmsg.Text = "请先提交前面作品！";
+    }
+
     private void ShowIpWorkDone()
     {
         string Sname = cook.Sname;
@@ -259,8 +292,7 @@ public partial class Student_showmission : System.Web.UI.Page
             bool ischeck = ws.IsChecked(Int32.Parse(Wid));
             if (ischeck)//判断作品有无评价
             {
-                Labelmsg.Text = "该作品已经评分!<br/>你不可以重新提交！";
-                Panelswfupload.Visible = false;
+                ShowLockedSubmissionState();
             }
             else
             {
@@ -268,20 +300,16 @@ public partial class Student_showmission : System.Web.UI.Page
                 {
                     if (Snum == SnumDone || isTeacher(Wid, Snum))
                     {
-                        Labelmsg.Text = "已提交该活动作品！<br/>可修改后重新提交！";
-                        Panelswfupload.Visible = true;
+                        ShowResubmitState();
                     }
                     else
                     {
-                        Panelswfupload.Visible = false;
-                        if (LabelMfiletype.Text != "htm")
-                            Labelmsg.Text = SnumDone + "学号<br/>已在该IP提交作品！";
+                        ShowIpBlockedState(SnumDone);
                     }
                 }
                 else
                 {
-                    Labelmsg.Text = "已提交该活动作品！！<br/>可修改后重新提交！";
-                    Panelswfupload.Visible = true;
+                    ShowResubmitState();
                 }
             }
         }
@@ -300,35 +328,27 @@ public partial class Student_showmission : System.Web.UI.Page
                 {
                     if (isExitFirstWork || minMsort == 0)//如果是上个任务已经提交或是第一个任务，则显示提交按钮
                     {
-                        DateTime dt = DateTime.Now;
-                        string today = dt.Year.ToString() + "-" + dt.Month.ToString() + "-" + dt.Day;
-                        Labelmsg.Text = today;
-                        Panelswfupload.Visible = true;
+                        ShowReadyToSubmitState();
                     }
                     else
                     {
-                        Labelmsg.Text = "请先提交前面作品！";
+                        ShowPreviousWorkRequiredState();
                     }
                 }
                 else
                 {
-                    Panelswfupload.Visible = false;
-                    if (LabelMfiletype.Text != "htm")
-                        Labelmsg.Text = SnumDone + "学号<br/>已在该IP提交作品！";
+                    ShowIpBlockedState(SnumDone);
                 }
             }
             else
             {
                 if (isExitFirstWork || minMsort == 0)//如果是上个任务已经提交或是第一个任务，则显示提交按钮
                 {
-                    DateTime dt = DateTime.Now;
-                    string today = dt.Year.ToString() + "-" + dt.Month.ToString() + "-" + dt.Day;
-                    Labelmsg.Text = today;
-                    Panelswfupload.Visible = true;
+                    ShowReadyToSubmitState();
                 }
                 else
                 {
-                    Labelmsg.Text = "请先提交前面作品！";
+                    ShowPreviousWorkRequiredState();
                 }
             }
         }
