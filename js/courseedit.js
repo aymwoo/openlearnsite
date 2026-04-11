@@ -144,26 +144,29 @@ var kindEditorObj;
                          }
                      }
 
-                     function initVditor() {
-                         if (vditorObj) return;
-                         const field = document.getElementById(window.__courseeditConfig.mcontentId);
-                         let initialContent = getPreferredVditorValue(lastVditorMarkdown !== null ? lastVditorMarkdown : (kindEditorObj ? kindEditorObj.html() : (field ? field.value : '')));
-                         vditorObj = new Vditor('vditor-container', {
+                      function initVditor() {
+                          if (vditorObj) return;
+                          const field = document.getElementById(window.__courseeditConfig.mcontentId);
+                          let initialContent = getPreferredVditorValue(lastVditorMarkdown !== null ? lastVditorMarkdown : (kindEditorObj ? kindEditorObj.html() : (field ? field.value : '')));
+                          vditorObj = new Vditor('vditor-container', {
                              height: 400,
                                  width: '100%',
                              mode: 'ir',
                              upload: { handler: function (files) { LearnSiteEditorUploadHelper.handleVditorUpload(vditorObj, upjs, files); } },
                              preview: { mode: 'both' },
                              cache: { enable: false },
-                             after: () => {
-                                 vditorReady = true;
-                                 let contentToSet = pendingVditorHtml !== null ? pendingVditorHtml : initialContent;
-                                 vditorObj.setValue(contentToSet || '');
-                                 rememberVditorState();
-                                 pendingVditorHtml = null;
-                             }
-                         });
-                     }
+                              after: () => {
+                                  vditorReady = true;
+                                  let contentToSet = pendingVditorHtml !== null ? pendingVditorHtml : initialContent;
+                                  vditorObj.setValue(contentToSet || '');
+                                  if (vditorObj.vditor && vditorObj.vditor.options && vditorObj.vditor.options.preview) {
+                                      vditorObj.vditor.options.preview.mode = 'both';
+                                  }
+                                  rememberVditorState();
+                                  pendingVditorHtml = null;
+                              }
+                          });
+                      }
 
                      function switchEditor(type) {
                          currentEditor = type;
@@ -187,18 +190,21 @@ var kindEditorObj;
                              if (wangContainer) wangContainer.style.display = 'block';
                              initWangEditor();
                              if (wangEditorObj && currentHtml) wangEditorObj.setHtml(currentHtml);
-                         } else if (type === 'vditor') {
-                             if (vditorContainer) vditorContainer.style.display = 'block';
-                             var vditorContent = shouldRestoreSavedMarkdown(currentHtml) ? lastVditorMarkdown : getPreferredVditorValue(currentHtml);
-                             if (!vditorObj) {
-                                 pendingVditorHtml = vditorContent;
-                                 initVditor();
-                             } else if (vditorReady) {
-                                 vditorObj.setValue(vditorContent || '');
-                                 rememberVditorState();
-                             } else {
-                                 pendingVditorHtml = vditorContent;
-                             }
+                          } else if (type === 'vditor') {
+                              if (vditorContainer) vditorContainer.style.display = 'block';
+                              var vditorContent = shouldRestoreSavedMarkdown(currentHtml) ? lastVditorMarkdown : getPreferredVditorValue(currentHtml);
+                              if (!vditorObj) {
+                                  pendingVditorHtml = vditorContent;
+                                  initVditor();
+                              } else if (vditorReady) {
+                                  if (vditorObj.vditor && vditorObj.vditor.options && vditorObj.vditor.options.preview) {
+                                      vditorObj.vditor.options.preview.mode = 'both';
+                                  }
+                                  vditorObj.setValue(vditorContent || '');
+                                  rememberVditorState();
+                              } else {
+                                  pendingVditorHtml = vditorContent;
+                              }
                          }
                      }
 

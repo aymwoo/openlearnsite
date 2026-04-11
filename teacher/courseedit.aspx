@@ -422,22 +422,22 @@
 
             <section class="course-edit-panel">
                 <div class="course-edit-grid">
-                    <div class="course-edit-field course-edit-field-wide">
+                    <div class="course-edit-field course-edit-field-title course-edit-field-wide">
                         <label class="course-edit-label" for="<%= Texttitle.ClientID %>">学案名称</label>
                         <asp:TextBox ID="Texttitle" runat="server" SkinID="TextBoxNormal" CssClass="course-edit-input"></asp:TextBox>
                     </div>
 
-                    <div class="course-edit-field">
+                    <div class="course-edit-field course-edit-field-compact course-edit-field-class">
                         <label class="course-edit-label" for="<%= DDLclass.ClientID %>">学案分类</label>
                         <asp:DropDownList ID="DDLclass" runat="server" Font-Size="9pt" CssClass="course-edit-select"></asp:DropDownList>
                     </div>
 
-                    <div class="course-edit-field">
+                    <div class="course-edit-field course-edit-field-compact course-edit-field-grade">
                         <label class="course-edit-label" for="<%= DDLcobj.ClientID %>">授课年级</label>
                         <asp:DropDownList ID="DDLcobj" runat="server" Font-Size="9pt" CssClass="course-edit-select"></asp:DropDownList>
                     </div>
 
-                    <div class="course-edit-field">
+                    <div class="course-edit-field course-edit-field-compact">
                         <label class="course-edit-label" for="<%= DDLCterm.ClientID %>">学期设置</label>
                         <div class="course-edit-static">
                             第&nbsp;<asp:DropDownList ID="DDLCterm" runat="server" Font-Names="Arial" Font-Size="8pt" CssClass="course-edit-select">
@@ -448,7 +448,7 @@
                         </div>
                     </div>
 
-                    <div class="course-edit-field">
+                    <div class="course-edit-field course-edit-field-compact">
                         <label class="course-edit-label" for="<%= DDLCks.ClientID %>">课节</label>
                         <div class="course-edit-static">
                             第&nbsp;<asp:DropDownList ID="DDLCks" runat="server" Font-Size="8pt" Font-Names="Arial" CssClass="course-edit-select"></asp:DropDownList>
@@ -456,7 +456,7 @@
                         </div>
                     </div>
 
-                    <div class="course-edit-field">
+                    <div class="course-edit-field course-edit-field-compact course-edit-field-publish-wrap">
                         <span class="course-edit-label">发布设置</span>
                         <label class="course-edit-publish" for="<%= CheckPublish.ClientID %>">
                             <asp:CheckBox ID="CheckPublish" runat="server" Text="是否发布" Checked="True" />
