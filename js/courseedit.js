@@ -7,24 +7,26 @@ var kindEditorObj;
                      var vditorReady = false;
                      var pendingVditorHtml = null;
                      var lastActivityPlanDraftResponse = null;
-                      var activityPlanSectionStates = {
-                          teachingGoals: { isLoading: false, error: '' },
-                          activitySteps: { isLoading: false, error: '' },
-                          resources: { isLoading: false, error: '' },
-                          assessment: { isLoading: false, error: '' },
-                          teacherReminder: { isLoading: false, error: '' }
-                      };
-                      var activityPlanSelectionState = {
-                          teachingGoals: false,
-                          activitySteps: false,
-                          resources: false,
-                          assessment: false,
+                     var lastFullLessonDraftResponse = null;
+                       var activityPlanSectionStates = {
+                           teachingGoals: { isLoading: false, error: '' },
+                           activitySteps: { isLoading: false, error: '' },
+                           resources: { isLoading: false, error: '' },
+                           assessment: { isLoading: false, error: '' },
+                           teacherReminder: { isLoading: false, error: '' }
+                       };
+                       var activityPlanSelectionState = {
+                           teachingGoals: false,
+                           activitySteps: false,
+                           resources: false,
+                           assessment: false,
                           teacherReminder: false
                       };
                       var activityPlanDraftStatus = {
                           hasDraft: false,
                           updatedAt: ''
                       };
+                      var fullLessonBlockStates = {};
                       var activityPlanSectionLabels = {
                           teachingGoals: '教学目标',
                           activitySteps: '活动步骤',
@@ -233,16 +235,17 @@ function syncContent() {
                          };
                       }
 
-                      function clearActivityPlanResult() {
-                          var elements = getActivityPlanElements();
-                          if (!elements.result) {
-                              return;
-                          }
+                       function clearActivityPlanResult() {
+                           var elements = getActivityPlanElements();
+                           if (!elements.result) {
+                               return;
+                           }
 
-                          elements.result.textContent = '';
-                          lastActivityPlanDraftResponse = null;
-                          resetActivityPlanSectionStates();
-                      }
+                           elements.result.textContent = '';
+                           lastActivityPlanDraftResponse = null;
+                           lastFullLessonDraftResponse = null;
+                           resetActivityPlanSectionStates();
+                       }
 
                      function renderActivityPlanPlaceholder(message) {
                          var elements = getActivityPlanElements();
@@ -274,12 +277,13 @@ function syncContent() {
                            }
                        }
 
-                      function resetActivityPlanSelections() {
-                          var keys = Object.keys(activityPlanSelectionState);
-                          for (var i = 0; i < keys.length; i++) {
-                              activityPlanSelectionState[keys[i]] = false;
-                          }
-                      }
+                       function resetActivityPlanSelections() {
+                           var keys = Object.keys(activityPlanSelectionState);
+                           for (var i = 0; i < keys.length; i++) {
+                               activityPlanSelectionState[keys[i]] = false;
+                           }
+                       }
+
 
                       function getSelectedActivityPlanSections() {
                           var keys = Object.keys(activityPlanSelectionState);
@@ -314,6 +318,38 @@ function syncContent() {
                               .replace(/'/g, '&#39;');
                       }
 
+                      function resetFullLessonBlockStates(blocks) {
+                          fullLessonBlockStates = {};
+                          if (!blocks || !blocks.length) {
+                              return;
+                          }
+
+                          for (var i = 0; i < blocks.length; i++) {
+                              var block = blocks[i] || {};
+                              var blockKey = (block.blockKey || '').trim();
+                              if (!blockKey) {
+                                  continue;
+                              }
+
+                              fullLessonBlockStates[blockKey] = { isLoading: false, error: '' };
+                          }
+                      }
+
+                      function getFullLessonBlockState(blockKey) {
+                          return fullLessonBlockStates[blockKey] || { isLoading: false, error: '' };
+                      }
+
+                      function setFullLessonBlockState(blockKey, isLoading, error) {
+                          if (!blockKey) {
+                              return;
+                          }
+
+                          fullLessonBlockStates[blockKey] = {
+                              isLoading: !!isLoading,
+                              error: error || ''
+                          };
+                      }
+
                       function setActivityPlanDraftStatus(hasDraft, updatedAt) {
                           activityPlanDraftStatus = {
                               hasDraft: !!hasDraft,
@@ -322,25 +358,25 @@ function syncContent() {
                           renderActivityPlanDraftBanner();
                       }
 
-                      function renderActivityPlanDraftBanner() {
-                          var elements = getActivityPlanElements();
-                          if (!elements.draftBanner || !elements.draftBannerText) {
-                              return;
-                          }
+                       function renderActivityPlanDraftBanner() {
+                           var elements = getActivityPlanElements();
+                           if (!elements.draftBanner || !elements.draftBannerText) {
+                               return;
+                           }
 
                           if (!activityPlanDraftStatus.hasDraft) {
                               elements.draftBanner.style.display = 'none';
                               return;
                           }
 
-                          var bannerText = '当前课程存在已保存的活动计划草案，可选择继续编辑。';
-                          if (activityPlanDraftStatus.updatedAt) {
-                              bannerText = '当前课程存在已保存的活动计划草案，最近更新于 ' + activityPlanDraftStatus.updatedAt + '。';
-                          }
+                           var bannerText = '当前课程存在已保存的活动计划草案，可选择继续编辑。';
+                           if (activityPlanDraftStatus.updatedAt) {
+                               bannerText = '当前课程存在已保存的整课活动计划草案，最近更新于 ' + activityPlanDraftStatus.updatedAt + '。';
+                           }
 
-                          elements.draftBannerText.textContent = bannerText;
-                          elements.draftBanner.style.display = 'block';
-                      }
+                           elements.draftBannerText.textContent = bannerText;
+                           elements.draftBanner.style.display = 'block';
+                       }
 
                       function setActivityPlanSectionState(sectionKey, isLoading, error) {
                           if (!activityPlanSectionStates[sectionKey]) {
@@ -460,23 +496,215 @@ function syncContent() {
                           container.appendChild(card);
                       }
 
-                     function appendActivityPlanField(container, label, value) {
-                         var field = document.createElement('div');
-                         appendTextElement(field, 'span', 'activity-plan-field-label', label);
-                         appendTextElement(field, 'div', 'activity-plan-field-value', value || '');
-                         container.appendChild(field);
-                     }
+                      function appendActivityPlanField(container, label, value) {
+                          var field = document.createElement('div');
+                          appendTextElement(field, 'span', 'activity-plan-field-label', label);
+                          appendTextElement(field, 'div', 'activity-plan-field-value', value || '');
+                          container.appendChild(field);
+                      }
 
-                      function renderActivityPlanDraft(responseData) {
-                           var elements = getActivityPlanElements();
-                           if (!elements.result || !responseData || !responseData.draft) {
+                      function isFullLessonDraftResponse(responseData) {
+                          return !!(responseData
+                              && responseData.draft
+                              && responseData.draft.blocks
+                              && responseData.draft.blocks.length);
+                      }
+
+                      function getFullLessonBlockMeta(label, value) {
+                          var item = document.createElement('span');
+                          item.className = 'activity-plan-block-meta';
+                          appendTextElement(item, 'strong', '', label + '：');
+                          item.appendChild(document.createTextNode(value || '未提供'));
+                          return item;
+                      }
+
+                      function appendFullLessonBlockStatus(card, blockKey) {
+                          var state = getFullLessonBlockState(blockKey);
+                          if (state.isLoading) {
+                              appendTextElement(card, 'div', 'activity-plan-section-status is-loading', '正在重生成当前环节，其余整课草案保持不变。');
+                          } else if (state.error) {
+                              appendTextElement(card, 'div', 'activity-plan-section-status is-error', state.error);
+                          }
+                      }
+
+                      function removeFullLessonBlock(blockKey) {
+                          if (!lastFullLessonDraftResponse || !lastFullLessonDraftResponse.draft || !blockKey) {
+                              return;
+                          }
+
+                          var currentDraft = lastFullLessonDraftResponse.draft;
+                          var currentBlocks = currentDraft.blocks || [];
+                          if (currentBlocks.length <= 1) {
+                              alert('整课草案至少需要保留一个环节，不能全部删除。');
+                              return;
+                          }
+
+                          var nextBlocks = [];
+                          for (var i = 0; i < currentBlocks.length; i++) {
+                              var block = currentBlocks[i] || {};
+                              if (!stringEqualsIgnoreCase(block.blockKey, blockKey)) {
+                                  nextBlocks.push(block);
+                              }
+                          }
+
+                          if (nextBlocks.length === currentBlocks.length) {
+                              return;
+                          }
+
+                          for (var j = 0; j < nextBlocks.length; j++) {
+                              nextBlocks[j].sort = j + 1;
+                          }
+
+                          lastFullLessonDraftResponse = {
+                              providerDisplayName: lastFullLessonDraftResponse.providerDisplayName,
+                              skillName: lastFullLessonDraftResponse.skillName,
+                              draft: {
+                                  schemaVersion: currentDraft.schemaVersion || 'v1.2-full-lesson',
+                                  topic: currentDraft.topic || '',
+                                  lessonSummary: currentDraft.lessonSummary || '',
+                                  totalMinutes: currentDraft.totalMinutes || '',
+                                  blocks: nextBlocks
+                              }
+                          };
+                          renderActivityPlanDraft(lastFullLessonDraftResponse);
+                      }
+
+                      function stringEqualsIgnoreCase(left, right) {
+                          return String(left || '').toLowerCase() === String(right || '').toLowerCase();
+                      }
+
+                      function renderFullLessonDraft(responseData) {
+                          var elements = getActivityPlanElements();
+                          if (!elements.result || !responseData || !responseData.draft) {
+                              return;
+                          }
+
+                          var draft = responseData.draft;
+                          var blocks = draft.blocks || [];
+                          lastFullLessonDraftResponse = responseData;
+                          lastActivityPlanDraftResponse = null;
+                          elements.result.textContent = '';
+                          resetActivityPlanSelections();
+
+                          if (!Object.keys(fullLessonBlockStates).length || Object.keys(fullLessonBlockStates).length !== blocks.length) {
+                              resetFullLessonBlockStates(blocks);
+                          }
+
+                          var container = document.createElement('div');
+                          container.className = 'activity-plan-draft';
+
+                          var meta = document.createElement('div');
+                          meta.className = 'activity-plan-draft-meta';
+                          meta.textContent = '当前为整课预览草案，不会自动写入学案内容。Provider：' + (responseData.providerDisplayName || '未标注') + '；技能：' + (responseData.skillName || '默认技能');
+                          container.appendChild(meta);
+
+                          var summaryCard = document.createElement('section');
+                          summaryCard.className = 'activity-plan-card';
+                          appendTextElement(summaryCard, 'h4', 'activity-plan-card-title', draft.topic || '整课草案');
+                          appendTextElement(summaryCard, 'div', 'activity-plan-field-value', draft.lessonSummary || '当前整课草案已按顺序生成课堂环节，可逐块查看与调整。');
+                          appendActivityPlanField(summaryCard, '总时长', draft.totalMinutes || '未提供');
+                          container.appendChild(summaryCard);
+
+                          if (!blocks.length) {
+                              appendTextElement(container, 'div', 'activity-plan-block-empty', '当前整课草案还没有可展示的课堂环节。');
+                              elements.result.appendChild(container);
+                              return;
+                          }
+
+                          var blockList = document.createElement('div');
+                          blockList.className = 'activity-plan-block-list';
+
+                          for (var i = 0; i < blocks.length; i++) {
+                              var block = blocks[i] || {};
+                              var blockKey = block.blockKey || '';
+                              var blockCard = document.createElement('section');
+                              blockCard.className = 'activity-plan-card activity-plan-block-card';
+
+                              var head = document.createElement('div');
+                              head.className = 'activity-plan-block-head';
+
+                              var titleWrap = document.createElement('div');
+                              titleWrap.className = 'activity-plan-block-title-wrap';
+                              appendTextElement(titleWrap, 'span', 'activity-plan-block-order', String(block.sort || (i + 1)));
+
+                              var titleContent = document.createElement('div');
+                              appendTextElement(titleContent, 'h4', 'activity-plan-card-title', block.title || '未命名环节');
+                              titleWrap.appendChild(titleContent);
+                              head.appendChild(titleWrap);
+
+                              var actions = document.createElement('div');
+                              actions.className = 'activity-plan-card-actions';
+
+                              var removeButton = document.createElement('button');
+                              removeButton.type = 'button';
+                              removeButton.className = 'activity-plan-section-action';
+                              removeButton.textContent = '移除此环节';
+                              removeButton.disabled = getFullLessonBlockState(blockKey).isLoading;
+                              removeButton.onclick = (function (key) {
+                                  return function () {
+                                      removeFullLessonBlock(key);
+                                  };
+                              })(blockKey);
+                              actions.appendChild(removeButton);
+
+                              var regenerateButton = document.createElement('button');
+                              regenerateButton.type = 'button';
+                              regenerateButton.className = 'activity-plan-section-action';
+                              regenerateButton.textContent = getFullLessonBlockState(blockKey).isLoading ? '正在重生成...' : '重生成此环节';
+                              regenerateButton.disabled = getFullLessonBlockState(blockKey).isLoading;
+                              regenerateButton.onclick = (function (key) {
+                                  return function () {
+                                      regenerateFullLessonBlock(key);
+                                  };
+                              })(blockKey);
+                              actions.appendChild(regenerateButton);
+
+                              head.appendChild(actions);
+                              blockCard.appendChild(head);
+
+                              var metaList = document.createElement('div');
+                              metaList.className = 'activity-plan-block-meta-list';
+                              metaList.appendChild(getFullLessonBlockMeta('活动类型', block.blockType || 'unknown'));
+                              metaList.appendChild(getFullLessonBlockMeta('教学目的', block.teachingPurpose || '未提供'));
+                              metaList.appendChild(getFullLessonBlockMeta('课堂位置', block.lessonPosition || '未提供'));
+                              metaList.appendChild(getFullLessonBlockMeta('预计时长', block.minutes || '未提供'));
+                              blockCard.appendChild(metaList);
+
+                              appendTextElement(blockCard, 'div', 'activity-plan-block-summary', block.teacherAction || block.studentAction || '当前环节暂无详细动作描述。');
+
+                              var grid = document.createElement('div');
+                              grid.className = 'activity-plan-block-grid';
+                              appendActivityPlanField(grid, '教师活动', block.teacherAction || '');
+                              appendActivityPlanField(grid, '学生活动', block.studentAction || '');
+                              appendActivityPlanField(grid, '学习材料', (block.materials || []).join('、'));
+                              appendActivityPlanField(grid, '评价关注点', block.assessmentFocus || '');
+                              appendActivityPlanField(grid, '草案状态', block.status || 'draft');
+                              blockCard.appendChild(grid);
+
+                              appendFullLessonBlockStatus(blockCard, blockKey);
+                              blockList.appendChild(blockCard);
+                          }
+
+                          container.appendChild(blockList);
+                          elements.result.appendChild(container);
+                      }
+
+                       function renderActivityPlanDraft(responseData) {
+                            var elements = getActivityPlanElements();
+                            if (!elements.result || !responseData || !responseData.draft) {
+                                return;
+                            }
+
+                           if (isFullLessonDraftResponse(responseData)) {
+                               renderFullLessonDraft(responseData);
                                return;
                            }
 
-                          var draft = responseData.draft;
-                          lastActivityPlanDraftResponse = responseData;
-                          elements.result.textContent = '';
-                          resetActivityPlanSelections();
+                           var draft = responseData.draft;
+                           lastActivityPlanDraftResponse = responseData;
+                           lastFullLessonDraftResponse = null;
+                           elements.result.textContent = '';
+                           resetActivityPlanSelections();
 
                           var container = document.createElement('div');
                           container.className = 'activity-plan-draft';
@@ -502,6 +730,10 @@ function syncContent() {
                        }
 
                       function buildActivityPlanApplyBlocks(sectionKeys) {
+                          if (lastFullLessonDraftResponse && lastFullLessonDraftResponse.draft) {
+                              return '';
+                          }
+
                           if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft || !sectionKeys || !sectionKeys.length) {
                               return '';
                           }
@@ -594,6 +826,11 @@ function syncContent() {
                       }
 
                       function applySelectedActivityPlanSections(sectionKeys) {
+                          if (lastFullLessonDraftResponse && lastFullLessonDraftResponse.draft) {
+                              alert('整课草案当前保持预览优先，本阶段不会自动写入学案正文。');
+                              return;
+                          }
+
                           if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
                               alert('请先生成或恢复活动计划草案');
                               return;
@@ -608,6 +845,11 @@ function syncContent() {
                       }
 
                       function publishActivityPlan() {
+                          if (lastFullLessonDraftResponse && lastFullLessonDraftResponse.draft) {
+                              alert('整课草案发布仍在后续阶段处理，本阶段不会直接发布或写入学案正文。');
+                              return;
+                          }
+
                           if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
                               alert('请先生成或恢复活动计划草案');
                               return;
@@ -665,18 +907,32 @@ function syncContent() {
                       }
 
                       function collectCurrentActivityPlanDraftPayload() {
+                          if (lastFullLessonDraftResponse && lastFullLessonDraftResponse.draft) {
+                              var fullLessonRequestContext = buildActivityPlanRequestContext();
+                              return {
+                                  topic: fullLessonRequestContext.topic,
+                                  grade: fullLessonRequestContext.grade,
+                                  duration: fullLessonRequestContext.duration,
+                                  teachingGoals: fullLessonRequestContext.teachingGoals,
+                                  existingCourseContent: fullLessonRequestContext.existingCourseContent,
+                                  currentDraft: JSON.stringify(lastFullLessonDraftResponse.draft || {}),
+                                  draftType: 'fullLesson'
+                              };
+                          }
+
                           if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
                               return null;
                           }
 
                           var requestContext = buildActivityPlanRequestContext();
                           return {
-                              topic: requestContext.topic,
-                              grade: requestContext.grade,
-                              duration: requestContext.duration,
-                              teachingGoals: requestContext.teachingGoals,
-                              existingCourseContent: requestContext.existingCourseContent,
-                              currentDraft: JSON.stringify(lastActivityPlanDraftResponse.draft || {})
+                               topic: requestContext.topic,
+                               grade: requestContext.grade,
+                               duration: requestContext.duration,
+                               teachingGoals: requestContext.teachingGoals,
+                               existingCourseContent: requestContext.existingCourseContent,
+                               currentDraft: JSON.stringify(lastActivityPlanDraftResponse.draft || {}),
+                               draftType: 'activityPlan'
                           };
                       }
 
@@ -712,12 +968,12 @@ function syncContent() {
                               }
                           };
 
-                          xhr.send('action=activityPlanSaveDraft'
-                              + '&cid=' + encodeURIComponent(cid)
-                              + '&topic=' + encodeURIComponent(payload.topic)
-                              + '&grade=' + encodeURIComponent(payload.grade)
-                              + '&duration=' + encodeURIComponent(payload.duration)
-                              + '&teachingGoals=' + encodeURIComponent(payload.teachingGoals)
+                          xhr.send('action=' + encodeURIComponent(payload.draftType === 'fullLesson' ? 'fullLessonSaveDraft' : 'activityPlanSaveDraft')
+                               + '&cid=' + encodeURIComponent(cid)
+                               + '&topic=' + encodeURIComponent(payload.topic)
+                               + '&grade=' + encodeURIComponent(payload.grade)
+                               + '&duration=' + encodeURIComponent(payload.duration)
+                               + '&teachingGoals=' + encodeURIComponent(payload.teachingGoals)
                               + '&existingCourseContent=' + encodeURIComponent(payload.existingCourseContent)
                               + '&currentDraft=' + encodeURIComponent(payload.currentDraft));
                       }
@@ -772,7 +1028,7 @@ function syncContent() {
                               }
                           };
 
-                          xhr.send('action=activityPlanLoadDraft&cid=' + encodeURIComponent(cid));
+                          xhr.send('action=fullLessonLoadDraft&cid=' + encodeURIComponent(cid));
                       }
 
                       function deleteSavedActivityPlanDraft(callback) {
@@ -805,7 +1061,7 @@ function syncContent() {
                               }
                           };
 
-                          xhr.send('action=activityPlanDeleteDraft&cid=' + encodeURIComponent(cid));
+                          xhr.send('action=fullLessonDeleteDraft&cid=' + encodeURIComponent(cid));
                       }
 
                       function checkSavedActivityPlanDraftStatus(callback) {
@@ -838,7 +1094,7 @@ function syncContent() {
                               }
                           };
 
-                          xhr.send('action=activityPlanDraftStatus&cid=' + encodeURIComponent(cid));
+                          xhr.send('action=fullLessonDraftStatus&cid=' + encodeURIComponent(cid));
                       }
 
                       function maybeHandleSavedDraftBeforeGenerate(requestContext, continueGenerate) {
@@ -848,7 +1104,7 @@ function syncContent() {
                                   return;
                               }
 
-                              var keepEditing = window.confirm('当前课程已有已保存草案。选择“确定”将继续上次草案，选择“取消”将替换旧草案并重新生成。');
+                              var keepEditing = window.confirm('当前课程已有已保存整课草案。选择“确定”将继续上次草案，选择“取消”将替换旧草案并重新生成。');
                               if (keepEditing) {
                                   resumeSavedActivityPlanDraft();
                                   return;
@@ -886,6 +1142,10 @@ function syncContent() {
                       }
 
                       function regenerateActivityPlanSection(sectionTarget) {
+                          if (lastFullLessonDraftResponse && lastFullLessonDraftResponse.draft) {
+                              return;
+                          }
+
                           if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
                               return;
                           }
@@ -960,13 +1220,124 @@ function syncContent() {
                               + '&teachingGoals=' + encodeURIComponent(requestContext.teachingGoals)
                               + '&existingCourseContent=' + encodeURIComponent(requestContext.existingCourseContent)
                               + '&sectionTarget=' + encodeURIComponent(sectionTarget)
+                               + '&currentDraft=' + encodeURIComponent(JSON.stringify(previousResponse.draft || {})));
+                       }
+
+                      function regenerateFullLessonBlock(blockKey) {
+                          if (!lastFullLessonDraftResponse || !lastFullLessonDraftResponse.draft) {
+                              return;
+                          }
+
+                          if (!blockKey || getFullLessonBlockState(blockKey).isLoading) {
+                              return;
+                          }
+
+                          var requestContext = buildActivityPlanRequestContext();
+                          if (!requestContext.topic) {
+                              alert('请输入主题或知识点');
+                              var elements = getActivityPlanElements();
+                              if (elements.topic) {
+                                  elements.topic.focus();
+                              }
+                              return;
+                          }
+
+                          var previousResponse = lastFullLessonDraftResponse;
+                          setFullLessonBlockState(blockKey, true, '');
+                          renderActivityPlanDraft(lastFullLessonDraftResponse);
+
+                          var xhr = new XMLHttpRequest();
+                          xhr.timeout = 125000;
+                          xhr.open('POST', 'aiprovider_api.ashx', true);
+                          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                          xhr.onreadystatechange = function () {
+                              if (xhr.readyState !== 4) {
+                                  return;
+                              }
+
+                              if (xhr.status === 200) {
+                                  try {
+                                      var res = JSON.parse(xhr.responseText || '{}');
+                                      if (res.success && res.data && res.data.draft) {
+                                          setFullLessonBlockState(blockKey, false, '');
+                                          lastFullLessonDraftResponse = res.data;
+                                          renderActivityPlanDraft(lastFullLessonDraftResponse);
+                                      } else {
+                                          setFullLessonBlockState(blockKey, false, res.msg || '当前环节重生成失败，请稍后重试。');
+                                          lastFullLessonDraftResponse = previousResponse;
+                                          renderActivityPlanDraft(lastFullLessonDraftResponse);
+                                      }
+                                  } catch (e) {
+                                      setFullLessonBlockState(blockKey, false, '当前环节返回结果解析失败，请稍后重试。');
+                                      lastFullLessonDraftResponse = previousResponse;
+                                      renderActivityPlanDraft(lastFullLessonDraftResponse);
+                                  }
+                              } else {
+                                  setFullLessonBlockState(blockKey, false, '当前环节请求失败，状态码：' + xhr.status);
+                                  lastFullLessonDraftResponse = previousResponse;
+                                  renderActivityPlanDraft(lastFullLessonDraftResponse);
+                              }
+                          };
+
+                          xhr.onerror = function () {
+                              setFullLessonBlockState(blockKey, false, '当前环节网络异常，未能连接整课草案接口。');
+                              lastFullLessonDraftResponse = previousResponse;
+                              renderActivityPlanDraft(lastFullLessonDraftResponse);
+                          };
+
+                          xhr.ontimeout = function () {
+                              setFullLessonBlockState(blockKey, false, '当前环节重生成超时，请稍后重试。');
+                              lastFullLessonDraftResponse = previousResponse;
+                              renderActivityPlanDraft(lastFullLessonDraftResponse);
+                          };
+
+                          xhr.send('action=fullLessonRegenerateBlock'
+                              + '&cid=' + encodeURIComponent(cid)
+                              + '&topic=' + encodeURIComponent(requestContext.topic)
+                              + '&grade=' + encodeURIComponent(requestContext.grade)
+                              + '&duration=' + encodeURIComponent(requestContext.duration)
+                              + '&teachingGoals=' + encodeURIComponent(requestContext.teachingGoals)
+                              + '&existingCourseContent=' + encodeURIComponent(requestContext.existingCourseContent)
+                              + '&blockKey=' + encodeURIComponent(blockKey)
                               + '&currentDraft=' + encodeURIComponent(JSON.stringify(previousResponse.draft || {})));
                       }
 
                      function buildActivityPlanCopyText() {
-                         if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
-                             return '';
+                         if (lastFullLessonDraftResponse && lastFullLessonDraftResponse.draft) {
+                             var fullLessonDraft = lastFullLessonDraftResponse.draft;
+                             var lessonLines = [];
+                             lessonLines.push('【整课主题】');
+                             lessonLines.push(fullLessonDraft.topic || '');
+                             lessonLines.push('');
+                             lessonLines.push('【整课概述】');
+                             lessonLines.push(fullLessonDraft.lessonSummary || '');
+                             lessonLines.push('');
+                             lessonLines.push('【总时长】');
+                             lessonLines.push(fullLessonDraft.totalMinutes || '');
+                             lessonLines.push('');
+                             lessonLines.push('【课堂环节】');
+
+                             var fullLessonBlocks = fullLessonDraft.blocks || [];
+                             for (var blockIndex = 0; blockIndex < fullLessonBlocks.length; blockIndex++) {
+                                 var lessonBlock = fullLessonBlocks[blockIndex] || {};
+                                 lessonLines.push((lessonBlock.sort || (blockIndex + 1)) + '. ' + (lessonBlock.title || '未命名环节'));
+                                 lessonLines.push('活动类型：' + (lessonBlock.blockType || 'unknown'));
+                                 lessonLines.push('教学目的：' + (lessonBlock.teachingPurpose || ''));
+                                 lessonLines.push('课堂位置：' + (lessonBlock.lessonPosition || ''));
+                                 lessonLines.push('预计时长：' + (lessonBlock.minutes || ''));
+                                 lessonLines.push('教师活动：' + (lessonBlock.teacherAction || ''));
+                                 lessonLines.push('学生活动：' + (lessonBlock.studentAction || ''));
+                                 lessonLines.push('学习材料：' + ((lessonBlock.materials || []).join('、')));
+                                 lessonLines.push('评价关注点：' + (lessonBlock.assessmentFocus || ''));
+                                 lessonLines.push('');
+                             }
+
+                             return lessonLines.join('\n').trim();
                          }
+
+                          if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
+                              return '';
+                          }
 
                          var draft = lastActivityPlanDraftResponse.draft;
                          var sections = [];
@@ -1061,18 +1432,18 @@ function syncContent() {
                              return;
                          }
 
-                        var topic = elements.topic.value.trim();
-                        if (!topic) {
-                            alert('请输入主题或知识点');
-                            elements.topic.focus();
-                            return;
-                        }
+                         var topic = elements.topic.value.trim();
+                         if (!topic) {
+                             alert('请输入主题或知识点');
+                             elements.topic.focus();
+                             return;
+                         }
 
-                         var requestContext = buildActivityPlanRequestContext();
+                          var requestContext = buildActivityPlanRequestContext();
                           var runGenerateRequest = function () {
                               setActivityPlanLoading(true);
                               clearActivityPlanResult();
-                              renderActivityPlanPlaceholder('生成中，结构化草案完成后会显示在这里。');
+                              renderActivityPlanPlaceholder('生成中，整课草案完成后会显示在这里。');
                               setActivityPlanProgress(10, '正在提交请求', '已发送主题、结构化字段和当前学案内容。');
 
                               var xhr = new XMLHttpRequest();
@@ -1081,11 +1452,11 @@ function syncContent() {
                               xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                               xhr.onreadystatechange = function () {
                                   if (xhr.readyState === 2) {
-                                      setActivityPlanProgress(45, '服务端处理中', '活动计划助手正在整理课堂活动方案。');
+                                      setActivityPlanProgress(45, '服务端处理中', '活动计划助手正在整理整课活动方案。');
                                       return;
                                   }
                                   if (xhr.readyState === 3) {
-                                      setActivityPlanProgress(75, '正在整理结果', '已收到返回数据，正在整理显示内容。');
+                                      setActivityPlanProgress(75, '正在整理结果', '已收到返回数据，正在整理整课环节卡片。');
                                       return;
                                   }
                                   if (xhr.readyState !== 4) {
@@ -1098,7 +1469,7 @@ function syncContent() {
                                           var res = JSON.parse(xhr.responseText);
                                           if (res.success) {
                                               renderActivityPlanDraft(res.data || null);
-                                              setActivityPlanProgress(100, '生成完成', '已生成结构化预览草案，当前不会自动写入学案内容。');
+                                              setActivityPlanProgress(100, '生成完成', '已生成整课预览草案，当前不会自动写入学案内容。');
                                           } else {
                                               clearActivityPlanResult();
                                               setActivityPlanProgress(100, '生成失败', res.msg || 'AI Provider 返回错误，请稍后重试。');
@@ -1130,7 +1501,8 @@ function syncContent() {
                                   alert('请求超时，请稍后重试');
                               };
 
-                              xhr.send('action=activityPlan'
+                              xhr.send('action=fullLessonGenerate'
+                                  + '&cid=' + encodeURIComponent(cid)
                                   + '&topic=' + encodeURIComponent(topic)
                                   + '&grade=' + encodeURIComponent(requestContext.grade)
                                   + '&duration=' + encodeURIComponent(requestContext.duration)

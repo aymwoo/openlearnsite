@@ -27,6 +27,89 @@
             box-shadow: 0 10px 24px -22px rgba(79, 70, 229, 0.55);
         }
 
+        .activity-plan-card.activity-plan-block-card {
+            border-color: rgba(79, 70, 229, 0.18);
+            background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+        }
+
+        .activity-plan-block-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .activity-plan-block-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .activity-plan-block-title-wrap {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .activity-plan-block-order {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: #ffffff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            box-shadow: 0 10px 18px -16px rgba(79, 70, 229, 0.8);
+        }
+
+        .activity-plan-block-meta-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .activity-plan-block-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.32rem 0.68rem;
+            border-radius: 999px;
+            background: rgba(79, 70, 229, 0.08);
+            color: #3730a3;
+            font-size: 0.76rem;
+            line-height: 1.4;
+        }
+
+        .activity-plan-block-meta strong {
+            color: #312e81;
+        }
+
+        .activity-plan-block-summary {
+            margin-bottom: 0.8rem;
+            color: #334155;
+            line-height: 1.7;
+        }
+
+        .activity-plan-block-grid {
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .activity-plan-block-empty {
+            padding: 1rem;
+            border-radius: 0.9rem;
+            border: 1px dashed rgba(148, 163, 184, 0.8);
+            background: rgba(248, 250, 252, 0.95);
+            color: #475569;
+            font-size: 0.82rem;
+            line-height: 1.7;
+        }
+
         .activity-plan-card-head {
             display: flex;
             align-items: flex-start;
@@ -220,6 +303,14 @@
             line-height: 1.6;
             color: #475569;
         }
+
+        .activity-plan-preview-note {
+            margin-top: 0.45rem;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            color: #475569;
+        }
+
     </style>
     
 
@@ -378,6 +469,7 @@
                             </div>
                             <div class="ai-panel-group">
                                 <label class="ai-panel-label" for="activity-plan-result">计划草案预览</label>
+                                <div id="activity-plan-preview-note" class="activity-plan-preview-note">整课模式会按顺序展示课堂环节卡片，并保留草案预览、保存与逐块调整，不会自动写入下方学案正文。</div>
                                 <div id="activity-plan-result" class="ai-result-area" aria-live="polite"></div>
                             </div>
                         </div>

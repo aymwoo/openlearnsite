@@ -704,6 +704,10 @@ public class TeacherRegressionTests
         Assert.Contains("复制草案", courseEdit, StringComparison.Ordinal);
         Assert.DoesNotContain("学科", courseEdit, StringComparison.Ordinal);
         Assert.Contains("OnClientClick=\"return syncContent();\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-preview-note", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("整课模式会按顺序展示课堂环节卡片", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-block-card", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-block-meta-list", courseEdit, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -713,25 +717,26 @@ public class TeacherRegressionTests
 
         Assert.Contains("switchEditor(", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("syncContent()", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("action=activityPlan", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("action=activityPlanRegenerateSection", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=fullLessonGenerate", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=fullLessonRegenerateBlock", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-topic", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-grade", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-duration", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("activity-plan-goals", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("existingCourseContent", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("sectionTarget", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("blockKey", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("currentDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("renderActivityPlanDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("renderFullLessonDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("buildActivityPlanCopyText", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("regenerateActivityPlanSection", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("lastActivityPlanDraftResponse = previousResponse", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("regenerateFullLessonBlock", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("lastFullLessonDraftResponse = previousResponse", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("document.createElement", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("'teachingGoals'", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("'activitySteps'", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("'resources'", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("'assessment'", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("'teacherReminder'", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("blockType", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("teachingPurpose", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("lessonPosition", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("minutes", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("removeFullLessonBlock", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("regenerate-step", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("resultArea.innerHTML = text", courseEditScript, StringComparison.Ordinal);
     }
@@ -760,22 +765,27 @@ public class TeacherRegressionTests
         var courseEditScript = File.ReadAllText(Path.Combine(RepoRoot, "js", "courseedit.js"));
 
         Assert.Contains("var activityPlanDraftStatus =", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("var lastFullLessonDraftResponse = null;", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("resetFullLessonBlockStates", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("setFullLessonBlockState", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("var activityPlanSelectionState =", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("toggleActivityPlanSectionSelection", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("applySelectedActivityPlanSections", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("confirmActivityPlanApply", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("appendActivityPlanSectionsToEditor", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("escapeActivityPlanHtml", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("action=activityPlanDraftStatus", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("action=activityPlanSaveDraft", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("action=activityPlanLoadDraft", courseEditScript, StringComparison.Ordinal);
-        Assert.Contains("action=activityPlanDeleteDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=fullLessonDraftStatus", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("fullLessonSaveDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("fullLessonLoadDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("fullLessonDeleteDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("function publishActivityPlan()", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("action=activityPlanPublish", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("updatedCourseContent", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("maybeHandleSavedDraftBeforeGenerate", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("checkSavedActivityPlanDraftStatus(function (status)", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("window.confirm", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("整课草案当前保持预览优先，本阶段不会自动写入学案正文", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("整课草案发布仍在后续阶段处理，本阶段不会直接发布或写入学案正文", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("action=saveCourse", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("Btnedit.click()", courseEditScript, StringComparison.Ordinal);
     }
@@ -793,6 +803,44 @@ public class TeacherRegressionTests
         Assert.Contains("field.value = existingContent + appendedContent", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("replace(existingContent", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("dedupe", courseEditScript, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void CourseEdit_FullLessonPreview_ShouldRenderOrderedBlockCardsFromServerDtoOnly()
+    {
+        var courseEditScript = File.ReadAllText(Path.Combine(RepoRoot, "js", "courseedit.js"));
+
+        Assert.Contains("isFullLessonDraftResponse", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("renderFullLessonDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("activity-plan-block-order", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("活动类型", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("教学目的", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("课堂位置", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("预计时长", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("block.blockType", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("block.teachingPurpose", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("block.lessonPosition", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("block.minutes", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("innerHTML = block", courseEditScript, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CourseEdit_FullLessonBlockActions_ShouldStayScopedByBlockKeyAndKeepBodyUntouched()
+    {
+        var courseEditScript = File.ReadAllText(Path.Combine(RepoRoot, "js", "courseedit.js"));
+
+        Assert.Contains("removeFullLessonBlock(blockKey)", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("regenerateFullLessonBlock(blockKey)", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("setFullLessonBlockState(blockKey, true, '')", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=fullLessonRegenerateBlock", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("&blockKey=", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("currentBlocks.length <= 1", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("nextBlocks[j].sort = j + 1;", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("draftType === 'fullLesson' ? 'fullLessonSaveDraft' : 'activityPlanSaveDraft'", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("fullLessonLoadDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("fullLessonDraftStatus", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("整课草案当前保持预览优先，本阶段不会自动写入学案正文", courseEditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("action=fullLessonPublish", courseEditScript, StringComparison.Ordinal);
     }
 
     [Fact]

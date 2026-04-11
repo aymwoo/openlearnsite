@@ -781,10 +781,46 @@ public class aiprovider_api : IHttpHandler {
             return;
         }
 
+        LearnSite.Common.AIActivityPlanPromptRequest request = new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = topic,
+            Grade = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["grade"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxGradeLength),
+            Duration = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["duration"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength),
+            TeachingGoals = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["teachingGoals"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTeachingGoalsLength),
+            ExistingCourseContent = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["existingCourseContent"], 4000)
+        };
+
+        LearnSite.BLL.AIActivityPlanDraftGenerator generator = new LearnSite.BLL.AIActivityPlanDraftGenerator();
+        LearnSite.BLL.ActivityPlanDraftGenerationResult result = generator.Generate(request);
+        if (!result.Success || result.Draft == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new
+            {
+                success = false,
+                msg = result == null ? "整课草案生成失败。" : result.Message,
+                providerDisplayName = result == null ? string.Empty : result.ProviderDisplayName,
+                skillName = result == null ? string.Empty : result.SkillName
+            }));
+            return;
+        }
+
+        LearnSite.Common.FullLessonDraft fullLessonDraft = BuildFullLessonDraftFromActivityPlan(topic, request.Duration, result.Draft);
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidFullLessonDraft(fullLessonDraft))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "整课草案结果无效。" }));
+            return;
+        }
+
         context.Response.Write(JsonConvert.SerializeObject(new
         {
-            success = false,
-            msg = "Full lesson generation is not available until the Phase 8 preview orchestration layer is wired."
+            success = true,
+            data = new
+            {
+                providerDisplayName = result.ProviderDisplayName,
+                skillName = result.SkillName,
+                message = "整课活动草案已生成。",
+                draft = SerializeFullLessonDraft(fullLessonDraft)
+            }
         }));
     }
 
@@ -824,10 +860,47 @@ public class aiprovider_api : IHttpHandler {
             return;
         }
 
+        LearnSite.Common.AIActivityPlanPromptRequest request = new LearnSite.Common.AIActivityPlanPromptRequest
+        {
+            Topic = topic,
+            Grade = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["grade"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxGradeLength),
+            Duration = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["duration"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength),
+            TeachingGoals = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["teachingGoals"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTeachingGoalsLength),
+            ExistingCourseContent = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["existingCourseContent"], 4000)
+        };
+
+        LearnSite.BLL.AIActivityPlanDraftGenerator generator = new LearnSite.BLL.AIActivityPlanDraftGenerator();
+        LearnSite.BLL.ActivityPlanDraftGenerationResult result = generator.Generate(request);
+        if (!result.Success || result.Draft == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new
+            {
+                success = false,
+                msg = result == null ? "整课草案环节重生成失败。" : result.Message,
+                providerDisplayName = result == null ? string.Empty : result.ProviderDisplayName,
+                skillName = result == null ? string.Empty : result.SkillName
+            }));
+            return;
+        }
+
+        LearnSite.Common.FullLessonDraft generatedDraft = BuildFullLessonDraftFromActivityPlan(topic, request.Duration, result.Draft);
+        LearnSite.Common.FullLessonDraft mergedDraft = ReplaceFullLessonBlock(currentDraft, generatedDraft, blockKey);
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidFullLessonDraft(mergedDraft))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "整课草案环节结果无效。" }));
+            return;
+        }
+
         context.Response.Write(JsonConvert.SerializeObject(new
         {
-            success = false,
-            msg = "Full lesson block regeneration is not available until the Phase 8 preview orchestration layer is wired."
+            success = true,
+            data = new
+            {
+                providerDisplayName = result.ProviderDisplayName,
+                skillName = result.SkillName,
+                message = "整课草案指定环节已更新。",
+                draft = SerializeFullLessonDraft(mergedDraft)
+            }
         }));
     }
 
@@ -1037,6 +1110,308 @@ public class aiprovider_api : IHttpHandler {
         }
 
         return true;
+    }
+
+    private object SerializeFullLessonDraft(LearnSite.Common.FullLessonDraft draft)
+    {
+        if (draft == null)
+        {
+            return null;
+        }
+
+        return new
+        {
+            schemaVersion = draft.SchemaVersion,
+            topic = draft.Topic,
+            lessonSummary = draft.LessonSummary,
+            totalMinutes = draft.TotalMinutes,
+            blocks = draft.Blocks.Select(block => new
+            {
+                blockKey = block.BlockKey,
+                sort = block.Sort,
+                blockType = block.BlockType,
+                title = block.Title,
+                minutes = block.Minutes,
+                teachingPurpose = block.TeachingPurpose,
+                lessonPosition = block.LessonPosition,
+                teacherAction = block.TeacherAction,
+                studentAction = block.StudentAction,
+                materials = block.Materials,
+                assessmentFocus = block.AssessmentFocus,
+                status = block.Status
+            }).ToList()
+        };
+    }
+
+    private LearnSite.Common.FullLessonDraft BuildFullLessonDraftFromActivityPlan(string topic, string duration, LearnSite.Common.ActivityPlanDraft planDraft)
+    {
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidDraft(planDraft))
+        {
+            return null;
+        }
+
+        LearnSite.Common.FullLessonDraft fullLessonDraft = new LearnSite.Common.FullLessonDraft();
+        fullLessonDraft.Topic = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(topic, LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength);
+        fullLessonDraft.LessonSummary = BuildFullLessonSummary(planDraft);
+        fullLessonDraft.TotalMinutes = GetFullLessonTotalMinutes(duration, planDraft);
+        fullLessonDraft.Blocks = new List<LearnSite.Common.FullLessonDraftBlock>();
+
+        if (planDraft.TeachingGoals != null && planDraft.TeachingGoals.Count > 0)
+        {
+            fullLessonDraft.Blocks.Add(new LearnSite.Common.FullLessonDraftBlock
+            {
+                BlockKey = "teaching-goals-1",
+                Sort = 1,
+                BlockType = "mission",
+                Title = "教学目标对齐",
+                Minutes = "5分钟",
+                TeachingPurpose = "明确本课学习目标",
+                LessonPosition = "导入",
+                TeacherAction = string.Join("；", planDraft.TeachingGoals.ToArray()),
+                StudentAction = "阅读并确认本课目标，带着问题进入学习。",
+                Materials = new List<string> { "目标提示", "导学问题" },
+                AssessmentFocus = "学生能说出本课核心学习目标",
+                Status = "draft"
+            });
+        }
+
+        if (planDraft.ActivitySteps != null)
+        {
+            for (int i = 0; i < planDraft.ActivitySteps.Count; i++)
+            {
+                LearnSite.Common.ActivityPlanDraftStep step = planDraft.ActivitySteps[i];
+                if (step == null)
+                {
+                    continue;
+                }
+
+                fullLessonDraft.Blocks.Add(new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "activity-step-" + (i + 1).ToString(),
+                    Sort = fullLessonDraft.Blocks.Count + 1,
+                    BlockType = i == planDraft.ActivitySteps.Count - 1 ? "quiz" : "mission",
+                    Title = string.IsNullOrEmpty(step.Title) ? "课堂活动" : step.Title,
+                    Minutes = step.Minutes,
+                    TeachingPurpose = GetTeachingPurposeForStep(step, i),
+                    LessonPosition = GetLessonPositionForStep(i, planDraft.ActivitySteps.Count),
+                    TeacherAction = step.TeacherAction,
+                    StudentAction = step.StudentAction,
+                    Materials = BuildBlockMaterials(step.ResourceSuggestion),
+                    AssessmentFocus = step.AssessmentCheck,
+                    Status = "draft"
+                });
+            }
+        }
+
+        if (planDraft.Resources != null && planDraft.Resources.Count > 0)
+        {
+            fullLessonDraft.Blocks.Add(new LearnSite.Common.FullLessonDraftBlock
+            {
+                BlockKey = "resource-study-1",
+                Sort = fullLessonDraft.Blocks.Count + 1,
+                BlockType = "ware",
+                Title = "资源学习支持",
+                Minutes = "5分钟",
+                TeachingPurpose = "补充关键资源支持课堂推进",
+                LessonPosition = "拓展",
+                TeacherAction = "引导学生结合资源完成巩固或拓展。",
+                StudentAction = string.Join("；", planDraft.Resources.ToArray()),
+                Materials = new List<string>(planDraft.Resources),
+                AssessmentFocus = planDraft.Assessment != null && planDraft.Assessment.Count > 0 ? string.Join("；", planDraft.Assessment.ToArray()) : "关注学生对资源的理解与应用",
+                Status = "draft"
+            });
+        }
+
+        if (fullLessonDraft.Blocks.Count == 0)
+        {
+            return null;
+        }
+
+        for (int index = 0; index < fullLessonDraft.Blocks.Count; index++)
+        {
+            fullLessonDraft.Blocks[index].Sort = index + 1;
+        }
+
+        return fullLessonDraft;
+    }
+
+    private LearnSite.Common.FullLessonDraft ReplaceFullLessonBlock(LearnSite.Common.FullLessonDraft currentDraft, LearnSite.Common.FullLessonDraft generatedDraft, string blockKey)
+    {
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidFullLessonDraft(currentDraft)
+            || !LearnSite.Common.AIActivityPlanDraftHelper.IsValidFullLessonDraft(generatedDraft)
+            || string.IsNullOrEmpty(blockKey))
+        {
+            return null;
+        }
+
+        LearnSite.Common.FullLessonDraft merged = new LearnSite.Common.FullLessonDraft();
+        merged.SchemaVersion = currentDraft.SchemaVersion;
+        merged.Topic = currentDraft.Topic;
+        merged.LessonSummary = generatedDraft.LessonSummary;
+        merged.TotalMinutes = currentDraft.TotalMinutes;
+        merged.Blocks = new List<LearnSite.Common.FullLessonDraftBlock>();
+
+        LearnSite.Common.FullLessonDraftBlock replacement = generatedDraft.Blocks.FirstOrDefault();
+        if (replacement == null)
+        {
+            return null;
+        }
+
+        bool replaced = false;
+        foreach (LearnSite.Common.FullLessonDraftBlock block in currentDraft.Blocks)
+        {
+            if (block == null)
+            {
+                continue;
+            }
+
+            if (string.Equals(block.BlockKey, blockKey, StringComparison.OrdinalIgnoreCase))
+            {
+                LearnSite.Common.FullLessonDraftBlock nextBlock = new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = block.BlockKey,
+                    Sort = merged.Blocks.Count + 1,
+                    BlockType = replacement.BlockType,
+                    Title = replacement.Title,
+                    Minutes = replacement.Minutes,
+                    TeachingPurpose = replacement.TeachingPurpose,
+                    LessonPosition = block.LessonPosition,
+                    TeacherAction = replacement.TeacherAction,
+                    StudentAction = replacement.StudentAction,
+                    Materials = replacement.Materials == null ? new List<string>() : new List<string>(replacement.Materials),
+                    AssessmentFocus = replacement.AssessmentFocus,
+                    Status = "draft"
+                };
+                merged.Blocks.Add(nextBlock);
+                replaced = true;
+            }
+            else
+            {
+                merged.Blocks.Add(new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = block.BlockKey,
+                    Sort = merged.Blocks.Count + 1,
+                    BlockType = block.BlockType,
+                    Title = block.Title,
+                    Minutes = block.Minutes,
+                    TeachingPurpose = block.TeachingPurpose,
+                    LessonPosition = block.LessonPosition,
+                    TeacherAction = block.TeacherAction,
+                    StudentAction = block.StudentAction,
+                    Materials = block.Materials == null ? new List<string>() : new List<string>(block.Materials),
+                    AssessmentFocus = block.AssessmentFocus,
+                    Status = block.Status
+                });
+            }
+        }
+
+        return replaced ? merged : null;
+    }
+
+    private string BuildFullLessonSummary(LearnSite.Common.ActivityPlanDraft draft)
+    {
+        List<string> parts = new List<string>();
+        if (draft.TeachingGoals != null && draft.TeachingGoals.Count > 0)
+        {
+            parts.Add("围绕“" + draft.TeachingGoals[0] + "”组织整课活动。"
+                + (draft.TeachingGoals.Count > 1 ? "兼顾“" + draft.TeachingGoals[draft.TeachingGoals.Count - 1] + "”。" : string.Empty));
+        }
+
+        if (draft.ActivitySteps != null && draft.ActivitySteps.Count > 0)
+        {
+            parts.Add("课堂按 " + draft.ActivitySteps.Count.ToString() + " 个核心环节推进。\n");
+        }
+
+        return string.Join(string.Empty, parts.ToArray()).Replace("\n", string.Empty).Trim();
+    }
+
+    private string GetFullLessonTotalMinutes(string duration, LearnSite.Common.ActivityPlanDraft draft)
+    {
+        string normalized = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(duration, LearnSite.Common.AIActivityPlanPromptBuilder.MaxDurationLength);
+        if (!string.IsNullOrEmpty(normalized))
+        {
+            return normalized;
+        }
+
+        int total = 0;
+        if (draft.ActivitySteps != null)
+        {
+            foreach (LearnSite.Common.ActivityPlanDraftStep step in draft.ActivitySteps)
+            {
+                if (step == null || string.IsNullOrEmpty(step.Minutes))
+                {
+                    continue;
+                }
+
+                string digits = new string(step.Minutes.Where(char.IsDigit).ToArray());
+                int minutes;
+                if (int.TryParse(digits, out minutes))
+                {
+                    total += minutes;
+                }
+            }
+        }
+
+        return total > 0 ? total.ToString() + "分钟" : "40分钟";
+    }
+
+    private string GetTeachingPurposeForStep(LearnSite.Common.ActivityPlanDraftStep step, int index)
+    {
+        if (step == null)
+        {
+            return "推进课堂学习";
+        }
+
+        if (!string.IsNullOrEmpty(step.AssessmentCheck))
+        {
+            return step.AssessmentCheck;
+        }
+
+        if (index == 0)
+        {
+            return "激活旧知并建立学习情境";
+        }
+
+        return "推进核心学习任务";
+    }
+
+    private string GetLessonPositionForStep(int index, int totalCount)
+    {
+        if (index == 0)
+        {
+            return "导入";
+        }
+
+        if (index == totalCount - 1)
+        {
+            return "总结";
+        }
+
+        return "展开";
+    }
+
+    private List<string> BuildBlockMaterials(string resourceSuggestion)
+    {
+        List<string> items = new List<string>();
+        if (!string.IsNullOrEmpty(resourceSuggestion))
+        {
+            string[] segments = resourceSuggestion.Split(new[] { '；', ';', '、' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string segment in segments)
+            {
+                string value = segment == null ? string.Empty : segment.Trim();
+                if (!string.IsNullOrEmpty(value) && !items.Contains(value))
+                {
+                    items.Add(value);
+                }
+            }
+        }
+
+        if (items.Count == 0)
+        {
+            items.Add("课堂活动单");
+        }
+
+        return items;
     }
 
     private void WriteAiChatResponse(HttpContext context, string prompt, double temperature, int maxTokens, string errorPrefix)
