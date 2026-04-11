@@ -432,10 +432,10 @@
                                 <p class="ai-panel-tip-text">先输入主题或知识点，再按需补充年级、课时和教学目标。当前学案内容会自动作为支持背景发送。</p>
                             </div>
                             <div id="activity-plan-draft-banner" class="activity-plan-draft-banner" aria-live="polite">
-                                <p class="activity-plan-draft-banner-title">继续上次草案</p>
-                                <p id="activity-plan-draft-banner-text" class="activity-plan-draft-banner-text">当前课程存在已保存的活动计划草案，可选择继续编辑或重新开始。</p>
+                                <p class="activity-plan-draft-banner-title">继续上次整课草案</p>
+                                <p id="activity-plan-draft-banner-text" class="activity-plan-draft-banner-text">当前课程存在已保存的整课活动计划草案，可选择继续编辑或重新开始。</p>
                                 <div class="activity-plan-draft-banner-actions">
-                                    <button type="button" id="activity-plan-resume-btn" class="ai-action-btn" onclick="resumeSavedActivityPlanDraft()">继续上次草案</button>
+                                    <button type="button" id="activity-plan-resume-btn" class="ai-action-btn" onclick="resumeSavedActivityPlanDraft()">继续上次整课草案</button>
                                 </div>
                             </div>
                             <div class="ai-panel-group">

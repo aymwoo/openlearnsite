@@ -750,7 +750,7 @@ public class TeacherRegressionTests
         Assert.Contains("id=\"activity-plan-resume-btn\"", courseEdit, StringComparison.Ordinal);
         Assert.Contains("id=\"activity-plan-save-draft-btn\"", courseEdit, StringComparison.Ordinal);
         Assert.Contains("id=\"activity-plan-apply-selected-btn\"", courseEdit, StringComparison.Ordinal);
-        Assert.Contains("继续上次草案", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("继续上次整课草案", courseEdit, StringComparison.Ordinal);
         Assert.Contains("保存草案", courseEdit, StringComparison.Ordinal);
         Assert.Contains("应用所选章节", courseEdit, StringComparison.Ordinal);
         Assert.Contains("id=\"activity-plan-publish-toggle\"", courseEdit, StringComparison.Ordinal);
