@@ -1018,6 +1018,42 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void ActivityPlanMissionView_BuildActivityGuideView_ExtractsGoalInstructionsAndOrderedSteps()
+    {
+        string missionContent = new LearnSite.Common.AIActivityPlanPublishContentBuilder().BuildMissionContent("认识分数", BuildValidActivityPlanDraft());
+
+        var result = LearnSite.Common.AIActivityPlanMissionViewHelper.BuildActivityGuideView(missionContent);
+
+        Assert.NotNull(result);
+        Assert.Contains("理解分数含义", result.GoalHtml, StringComparison.Ordinal);
+        Assert.Contains("准备资源：分数卡片", result.InstructionsHtml, StringComparison.Ordinal);
+        Assert.Contains("完成后检查：观察学生是否能正确说出二分之一", result.InstructionsHtml, StringComparison.Ordinal);
+        Assert.Contains("学习提示：注意让学生先说生活例子。", result.InstructionsHtml, StringComparison.Ordinal);
+        Assert.Contains("<ol>", result.StepsHtml, StringComparison.Ordinal);
+        Assert.Contains("情境导入", result.StepsHtml, StringComparison.Ordinal);
+        Assert.Contains("时长：5分钟", result.StepsHtml, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanMissionView_BuildActivityGuideView_FailsClosedWhenActivityMarkersMissing()
+    {
+        var result = LearnSite.Common.AIActivityPlanMissionViewHelper.BuildActivityGuideView("<h2>普通活动</h2><p>没有结构化活动计划标记</p>");
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void ActivityPlanMissionView_Source_UsesPublishedMissionContentOnly()
+    {
+        string source = ReadRepoFile("App_Code", "Common", "AIActivityPlanMissionViewHelper.cs");
+
+        Assert.Contains("BuildActivityGuideView(string missionContent)", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("DraftJson", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("localStorage", source, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("teacher/", source, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void ActivityPlanDraftRoute_Source_ExposesStatusSaveLoadAndDeleteActions()
     {
         string source = ReadRepoFile("teacher", "aiprovider_api.ashx");

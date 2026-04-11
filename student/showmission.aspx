@@ -29,6 +29,20 @@
                 <asp:Label ID="LabelLid" runat="server" Visible="False"></asp:Label>
                 <asp:HiddenField ID="HiddenMissionRaw" runat="server" />
             </div>
+            <asp:Panel ID="PanelActivityGuide" runat="server" Visible="False">
+                <div class="prog-subpanel" style="margin-bottom:16px;background:#f8fbff;border:1px solid #dbeafe;">
+                    <div class="prog-subpanel-title">学习目标</div>
+                    <div class="prog-guide-copy"><asp:Literal ID="LiteralActivityGuideGoal" runat="server"></asp:Literal></div>
+                </div>
+                <div class="prog-subpanel" style="margin-bottom:16px;background:#f8fbff;border:1px solid #dbeafe;">
+                    <div class="prog-subpanel-title">活动说明</div>
+                    <div class="prog-guide-copy"><asp:Literal ID="LiteralActivityGuideInstructions" runat="server"></asp:Literal></div>
+                </div>
+                <div class="prog-subpanel" style="margin-bottom:16px;background:#f8fbff;border:1px solid #dbeafe;">
+                    <div class="prog-subpanel-title">任务步骤</div>
+                    <div class="prog-guide-copy"><asp:Literal ID="LiteralActivityGuideSteps" runat="server"></asp:Literal></div>
+                </div>
+            </asp:Panel>
             <div id="Mcontent" style="color:#334155;line-height:1.85;font-size:1.05rem;word-wrap:break-word;word-break:break-word;" runat="server"></div>
         </div>
     </div>

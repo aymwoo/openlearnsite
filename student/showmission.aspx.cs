@@ -39,6 +39,11 @@ public partial class Student_showmission : System.Web.UI.Page
             LearnSite.BLL.ListMenu lbll = new LearnSite.BLL.ListMenu();
             LearnSite.Model.ListMenu lmodel = new LearnSite.Model.ListMenu();
             lmodel = lbll.GetModel(Int32.Parse(Lid));
+            if (lmodel == null || !lmodel.Lxid.HasValue)
+            {
+                ShowMissionNotFound();
+                return;
+            }
 
             LearnSite.Model.Mission model = new LearnSite.Model.Mission();
             LearnSite.BLL.Mission mn = new LearnSite.BLL.Mission();
@@ -59,6 +64,20 @@ public partial class Student_showmission : System.Web.UI.Page
                 string decodedContent = HttpUtility.HtmlDecode(model.Mcontent);
                 HiddenMissionRaw.Value = decodedContent;
                 Mcontent.InnerHtml = decodedContent;
+                LearnSite.Common.ActivityPlanMissionGuideView guide = LearnSite.Common.AIActivityPlanMissionViewHelper.BuildActivityGuideView(model.Mcontent);
+                PanelActivityGuide.Visible = guide != null;
+                if (guide != null)
+                {
+                    LiteralActivityGuideGoal.Text = guide.GoalHtml;
+                    LiteralActivityGuideInstructions.Text = guide.InstructionsHtml;
+                    LiteralActivityGuideSteps.Text = guide.StepsHtml;
+                }
+                else
+                {
+                    LiteralActivityGuideGoal.Text = string.Empty;
+                    LiteralActivityGuideInstructions.Text = string.Empty;
+                    LiteralActivityGuideSteps.Text = string.Empty;
+                }
                 LabelSnum.Text = sSnum;
                 LabelMfiletype.Text = sWfiletype;
                 bool isupload = model.Mupload;
@@ -153,13 +172,27 @@ public partial class Student_showmission : System.Web.UI.Page
             }
             else
             {
-                HiddenMissionRaw.Value = string.Empty;
-                Mcontent.InnerHtml = "此学案活动不存在！";
-                Panelworks.Visible = false;
+                ShowMissionNotFound();
             }
 
         }
+        else
+        {
+            ShowMissionNotFound();
+        }
 
+    }
+
+    private void ShowMissionNotFound()
+    {
+        HiddenMissionRaw.Value = string.Empty;
+        PanelActivityGuide.Visible = false;
+        LiteralActivityGuideGoal.Text = string.Empty;
+        LiteralActivityGuideInstructions.Text = string.Empty;
+        LiteralActivityGuideSteps.Text = string.Empty;
+        Mcontent.InnerHtml = "此学案活动不存在！";
+        Panelworks.Visible = false;
+        Panelgroup.Visible = false;
     }
     private bool isTeacher(string Wid, string Snum)
     {

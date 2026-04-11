@@ -830,6 +830,34 @@ public class TeacherRegressionTests
         Assert.DoesNotContain("ma.NavigateUrl = \"~/student/show\" + mUrl + \".aspx?lid=\" + Lid;", studentMenu, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ShowMission_ActivityPlanStudentShell_ShouldExposeGuidedSectionsAndUploadPanel()
+    {
+        var showMissionPage = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx"));
+
+        Assert.Contains("ID=\"PanelActivityGuide\"", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("学习目标", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("活动说明", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("任务步骤", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("ID=\"LiteralActivityGuideSteps\"", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("ID=\"Panelworks\"", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("HiddenMissionRaw", showMissionPage, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ShowMission_ActivityPlanStudentCodeBehind_ShouldShapeGuidanceAndFailClosed()
+    {
+        var showMissionCodeBehind = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx.cs"));
+
+        Assert.Contains("BuildActivityGuideView", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("PanelActivityGuide.Visible = guide != null;", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("LiteralActivityGuideGoal.Text = guide.GoalHtml;", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("LiteralActivityGuideSteps.Text = guide.StepsHtml;", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("HiddenMissionRaw.Value = decodedContent;", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("Mcontent.InnerHtml = decodedContent;", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("Mcontent.InnerHtml = \"此学案活动不存在！\";", showMissionCodeBehind, StringComparison.Ordinal);
+    }
+
     [Theory]
     [MemberData(nameof(GetContentPagesReturningToCourse))]
     public void ContentPages_ShouldKeepReturnToCourseCopy(string relativePath)
