@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: 教学环节生成与课堂活动投放
-status: planning
-stopped_at: Defining v1.1 requirements
-last_updated: "2026-04-11T00:00:00.000Z"
+milestone_name: **3 phases** | **8 requirements mapped** | All covered ✓
+status: verifying
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-04-11T03:54:40.464Z"
 last_activity: 2026-04-11
 progress:
-  total_phases: 3
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 1
+  completed_phases: 1
+  total_plans: 3
+  completed_plans: 3
+  percent: 100
 ---
 
 # Project State
@@ -22,14 +22,14 @@ See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable
 activity plan without having to manually break the lesson into steps.
-**Current focus:** Define and scope v1.1 around AI-generated teaching activities that can be published into the student classroom flow
+**Current focus:** Phase 05 — teacher-activity-publish-foundation
 
 ## Current Position
 
 Milestone: v1.1 (教学环节生成与课堂活动投放)
-Phase: 5 of 7
-Plan: 0 of 3 phases started
-Status: Roadmap proposed, awaiting approval
+Phase: 05 (teacher-activity-publish-foundation) — EXECUTING
+Plan: 3 of 3
+Status: Phase complete — ready for verification
 Last activity: 2026-04-11
 
 Progress: [----------] 0%
@@ -58,6 +58,9 @@ Progress: [----------] 0%
 
 | Phase 04 P01 | 38m | 2 tasks | 8 files |
 | Phase 04 P02 | 26m | 2 tasks | 3 files |
+| Phase 05 P01 | 4min | 2 tasks | 8 files |
+| Phase 05 P02 | 5min | 2 tasks | 4 files |
+| Phase 05 P03 | 4min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -84,6 +87,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Apply approved plan sections by appending labeled blocks into the existing editor content instead of calling a second lesson-save path.
 - [Phase 04]: Recheck saved-draft status on generate so replace-versus-continue prompts do not rely only on stale browser state.
 - [Milestone v1.0]: Archive detailed v1.0 roadmap and requirements into `.planning/milestones/` and keep the live roadmap ready for next-milestone planning.
+- [Phase 05]: Use explicit publish request/result models and draft-linked mission/menu ids to keep one stable AI activity identity per course.
+- [Phase 05]: Route course, mission, menu, and draft-link writes through one publish transaction and write the editor back from committed server content.
 
 ### Pending Todos
 
@@ -96,6 +101,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-11T01:59:38.821Z
-Stopped at: Awaiting roadmap approval for v1.1
+Last session: 2026-04-11T03:54:25.002Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None

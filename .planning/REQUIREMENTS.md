@@ -12,11 +12,11 @@ the existing platform.
 
 ### Teacher activity publishing
 
-- [ ] **TAP-01**: Teacher can turn approved AI-generated teaching activity output
+- [x] **TAP-01**: Teacher can turn approved AI-generated teaching activity output
   into a real lesson activity linked to the current course.
-- [ ] **TAP-02**: Teacher can choose whether the generated lesson activity is
+- [x] **TAP-02**: Teacher can choose whether the generated lesson activity is
   published to students before students can enter it.
-- [ ] **TAP-03**: Teacher can use one confirmed action to both add generated
+- [x] **TAP-03**: Teacher can use one confirmed action to both add generated
   activity output into lesson content and publish a matching student-enterable
   activity entry.
 

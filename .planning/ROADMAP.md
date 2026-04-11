@@ -25,7 +25,7 @@ milestone, so the next milestone starts at Phase 5.
 
 ### 📋 Next milestone
 
-- [ ] Phase 5: Teacher activity publish foundation
+- [x] Phase 5: Teacher activity publish foundation (completed 2026-04-11)
 - [ ] Phase 6: Student activity entry and guided experience
 - [ ] Phase 7: Submission and completion tracking
 
@@ -35,7 +35,7 @@ milestone, so the next milestone starts at Phase 5.
 
 | # | Phase | Goal | Requirements | Success criteria |
 |---|-------|------|--------------|------------------|
-| 5 | Teacher activity publish foundation | Turn approved AI output into a real lesson activity with explicit publish control and linked lesson-content update | TAP-01, TAP-02, TAP-03 | 4 |
+| 5 | Teacher activity publish foundation | 3/3 | Complete   | 2026-04-11 |
 | 6 | Student activity entry and guided experience | Let students enter the published activity and follow generated guidance from the class menu | SAE-01, SAE-02, SAE-03 | 4 |
 | 7 | Submission and completion tracking | Let students submit activity results and record reliable completion state | SCT-01, SCT-02 | 4 |
 
@@ -45,6 +45,12 @@ milestone, so the next milestone starts at Phase 5.
 Goal: Turn approved AI output into a real lesson activity with explicit publish
 control and linked lesson-content update.
 Requirements: TAP-01, TAP-02, TAP-03
+Plans: 3 plans
+
+- [ ] 05-01-PLAN.md — define publish contracts and stable mission/menu linkage
+- [ ] 05-02-PLAN.md — build the synchronized publish core and content builders
+- [ ] 05-03-PLAN.md — wire teacher publish controls and authenticated handler flow
+
 Success criteria:
 1. A teacher can confirm AI-generated activity output and create or update a
    real course-linked lesson activity.
@@ -87,6 +93,6 @@ Success criteria:
 | 2. Structured plan draft generation | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 3. Guided review and section regeneration | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 4. Selective apply and draft continuity | v1.0 | 2/2 | Complete | 2026-04-10 |
-| 5. Teacher activity publish foundation | v1.1 | 0/0 | Proposed | - |
+| 5. Teacher activity publish foundation | v1.1 | 0/3 | Planned | - |
 | 6. Student activity entry and guided experience | v1.1 | 0/0 | Proposed | - |
 | 7. Submission and completion tracking | v1.1 | 0/0 | Proposed | - |
