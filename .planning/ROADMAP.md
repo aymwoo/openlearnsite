@@ -26,8 +26,8 @@ milestone, so the next milestone starts at Phase 5.
 ### 📋 Next milestone
 
 - [x] Phase 5: Teacher activity publish foundation (completed 2026-04-11)
-- [ ] Phase 6: Student activity entry and guided experience
-- [ ] Phase 7: Submission and completion tracking
+- [ ] Phase 6: Student activity entry and guided experience (planned: 2 plans)
+- [ ] Phase 7: Submission and completion tracking (planned: 2 plans)
 
 ## Proposed roadmap for v1.1
 
@@ -65,6 +65,11 @@ Success criteria:
 Goal: Let students enter the published activity and follow generated guidance
 from the class menu.
 Requirements: SAE-01, SAE-02, SAE-03
+Plans: 2 plans
+
+- [ ] 06-01-PLAN.md — lock student menu entry and mission-page open flow
+- [ ] 06-02-PLAN.md — finish guided mission rendering and Phase 6 validation
+
 Success criteria:
 1. A published AI-generated activity appears in the student's existing class
    menu flow.
@@ -77,6 +82,11 @@ Success criteria:
 **Phase 7: Submission and completion tracking**
 Goal: Let students submit activity results and record reliable completion state.
 Requirements: SCT-01, SCT-02
+Plans: 2 plans
+
+- [ ] 07-01-PLAN.md — lock AI mission submission onto existing upload handlers
+- [ ] 07-02-PLAN.md — harden completion recording and verify completed-state visibility
+
 Success criteria:
 1. A student can submit a result from the published AI-generated activity flow.
 2. A successful submission is linked to the correct lesson activity identity.
@@ -94,5 +104,5 @@ Success criteria:
 | 3. Guided review and section regeneration | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 4. Selective apply and draft continuity | v1.0 | 2/2 | Complete | 2026-04-10 |
 | 5. Teacher activity publish foundation | v1.1 | 3/3 | Complete | 2026-04-11 |
-| 6. Student activity entry and guided experience | v1.1 | 0/0 | Proposed | - |
-| 7. Submission and completion tracking | v1.1 | 0/0 | Proposed | - |
+| 6. Student activity entry and guided experience | v1.1 | 0/2 | Planned | - |
+| 7. Submission and completion tracking | v1.1 | 0/2 | Planned | - |

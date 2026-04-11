@@ -22,11 +22,11 @@ the existing platform.
 
 ### Student activity experience
 
-- [ ] **SAE-01**: Student can enter a published AI-generated activity from the
+- [x] **SAE-01**: Student can enter a published AI-generated activity from the
   current class menu.
-- [ ] **SAE-02**: Student can view the published activity goal, instructions,
+- [x] **SAE-02**: Student can view the published activity goal, instructions,
   and task steps on the activity page.
-- [ ] **SAE-03**: Student can follow step-by-step learner guidance rendered from
+- [x] **SAE-03**: Student can follow step-by-step learner guidance rendered from
   the generated activity content.
 
 ### Submission and completion tracking
