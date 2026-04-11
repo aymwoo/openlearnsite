@@ -30,6 +30,10 @@
                 <asp:HiddenField ID="HiddenMissionRaw" runat="server" />
             </div>
             <asp:Panel ID="PanelActivityGuide" runat="server" Visible="False">
+                <div class="prog-subpanel" style="margin-bottom:16px;background:#eff6ff;border:1px solid #bfdbfe;">
+                    <div class="prog-subpanel-title">学习建议</div>
+                    <div class="prog-guide-copy"><asp:Literal ID="LiteralActivityGuideNotice" runat="server"></asp:Literal></div>
+                </div>
                 <div class="prog-subpanel" style="margin-bottom:16px;background:#f8fbff;border:1px solid #dbeafe;">
                     <div class="prog-subpanel-title">学习目标</div>
                     <div class="prog-guide-copy"><asp:Literal ID="LiteralActivityGuideGoal" runat="server"></asp:Literal></div>

@@ -836,7 +836,9 @@ public class TeacherRegressionTests
         var showMissionPage = File.ReadAllText(Path.Combine(RepoRoot, "student", "showmission.aspx"));
 
         Assert.Contains("ID=\"PanelActivityGuide\"", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("ID=\"LiteralActivityGuideNotice\"", showMissionPage, StringComparison.Ordinal);
         Assert.Contains("学习目标", showMissionPage, StringComparison.Ordinal);
+        Assert.Contains("学习建议", showMissionPage, StringComparison.Ordinal);
         Assert.Contains("活动说明", showMissionPage, StringComparison.Ordinal);
         Assert.Contains("任务步骤", showMissionPage, StringComparison.Ordinal);
         Assert.Contains("ID=\"LiteralActivityGuideSteps\"", showMissionPage, StringComparison.Ordinal);
@@ -851,6 +853,7 @@ public class TeacherRegressionTests
 
         Assert.Contains("BuildActivityGuideView", showMissionCodeBehind, StringComparison.Ordinal);
         Assert.Contains("PanelActivityGuide.Visible = guide != null;", showMissionCodeBehind, StringComparison.Ordinal);
+        Assert.Contains("LiteralActivityGuideNotice.Text = \"<p>请先阅读活动主题与任务步骤，再按顺序完成学习任务，最后在右侧作品提交区上传结果。</p>\";", showMissionCodeBehind, StringComparison.Ordinal);
         Assert.Contains("LiteralActivityGuideGoal.Text = guide.GoalHtml;", showMissionCodeBehind, StringComparison.Ordinal);
         Assert.Contains("LiteralActivityGuideSteps.Text = guide.StepsHtml;", showMissionCodeBehind, StringComparison.Ordinal);
         Assert.Contains("HiddenMissionRaw.Value = decodedContent;", showMissionCodeBehind, StringComparison.Ordinal);

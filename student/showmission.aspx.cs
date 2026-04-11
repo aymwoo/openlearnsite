@@ -68,12 +68,14 @@ public partial class Student_showmission : System.Web.UI.Page
                 PanelActivityGuide.Visible = guide != null;
                 if (guide != null)
                 {
+                    LiteralActivityGuideNotice.Text = "<p>请先阅读活动主题与任务步骤，再按顺序完成学习任务，最后在右侧作品提交区上传结果。</p>";
                     LiteralActivityGuideGoal.Text = guide.GoalHtml;
                     LiteralActivityGuideInstructions.Text = guide.InstructionsHtml;
                     LiteralActivityGuideSteps.Text = guide.StepsHtml;
                 }
                 else
                 {
+                    LiteralActivityGuideNotice.Text = string.Empty;
                     LiteralActivityGuideGoal.Text = string.Empty;
                     LiteralActivityGuideInstructions.Text = string.Empty;
                     LiteralActivityGuideSteps.Text = string.Empty;
@@ -187,6 +189,7 @@ public partial class Student_showmission : System.Web.UI.Page
     {
         HiddenMissionRaw.Value = string.Empty;
         PanelActivityGuide.Visible = false;
+        LiteralActivityGuideNotice.Text = string.Empty;
         LiteralActivityGuideGoal.Text = string.Empty;
         LiteralActivityGuideInstructions.Text = string.Empty;
         LiteralActivityGuideSteps.Text = string.Empty;
