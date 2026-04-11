@@ -153,7 +153,7 @@ public partial class Student_Scm : System.Web.UI.MasterPage
                     {
                         case "1":
                             ma.ImageUrl = "~/images/mission.png";
-                            ma.NavigateUrl = "~/student/show" + mUrl + ".aspx?lid=" + Lid;
+                            ma.NavigateUrl = "~/student/showmission.aspx?lid=" + Lid;
                             break;
                         case "2":
                             ma.ImageUrl = "~/images/survey.png";

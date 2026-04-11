@@ -809,6 +809,27 @@ public class TeacherRegressionTests
         Assert.DoesNotContain("insert into ListMenu", handler, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void ActivityPlanStudentEntry_Publisher_ShouldKeepMissionMenuContract()
+    {
+        var publisher = File.ReadAllText(Path.Combine(RepoRoot, "App_Code", "Dal", "AIActivityPlanPublisher.cs"));
+
+        Assert.Contains("@Ltype", publisher, StringComparison.Ordinal);
+        Assert.Contains("command.Parameters.AddWithValue(\"@Ltype\", 1);", publisher, StringComparison.Ordinal);
+        Assert.Contains("command.Parameters.AddWithValue(\"@Mupload\", true);", publisher, StringComparison.Ordinal);
+        Assert.Contains("command.Parameters.AddWithValue(\"@Lshow\", request.PublishToStudents);", publisher, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanStudentEntry_ShowMissionRoute_ShouldStayPinnedToLegacyMissionPage()
+    {
+        var studentMenu = File.ReadAllText(Path.Combine(RepoRoot, "student", "Scm.master.cs"));
+
+        Assert.Contains("case \"1\":", studentMenu, StringComparison.Ordinal);
+        Assert.Contains("ma.NavigateUrl = \"~/student/showmission.aspx?lid=\" + Lid;", studentMenu, StringComparison.Ordinal);
+        Assert.DoesNotContain("ma.NavigateUrl = \"~/student/show\" + mUrl + \".aspx?lid=\" + Lid;", studentMenu, StringComparison.Ordinal);
+    }
+
     [Theory]
     [MemberData(nameof(GetContentPagesReturningToCourse))]
     public void ContentPages_ShouldKeepReturnToCourseCopy(string relativePath)
