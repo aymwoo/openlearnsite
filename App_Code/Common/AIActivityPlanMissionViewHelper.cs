@@ -33,8 +33,9 @@ namespace LearnSite.Common
                 return null;
             }
 
+            string topicInstruction = BuildTopicInstructionHtml(normalized);
             string goalHtml = BuildGoalHtml(sections["教学目标"]);
-            string instructionsHtml = BuildInstructionsHtml(sections);
+            string instructionsHtml = BuildInstructionsHtml(sections, topicInstruction);
             string stepsHtml = BuildStepsHtml(sections["活动步骤"]);
             if (string.IsNullOrEmpty(goalHtml) || string.IsNullOrEmpty(instructionsHtml) || string.IsNullOrEmpty(stepsHtml))
             {
@@ -90,9 +91,14 @@ namespace LearnSite.Common
             return builder.ToString();
         }
 
-        private static string BuildInstructionsHtml(IDictionary<string, string> sections)
+        private static string BuildInstructionsHtml(IDictionary<string, string> sections, string topicInstruction)
         {
             List<string> instructions = new List<string>();
+            if (!string.IsNullOrEmpty(topicInstruction))
+            {
+                instructions.Add(topicInstruction);
+            }
+
             AppendInstructionItems(instructions, sections, "教学资源", "准备资源：");
             AppendInstructionItems(instructions, sections, "评价设计", "完成后检查：");
             if (sections.ContainsKey("教师提醒"))
@@ -118,6 +124,23 @@ namespace LearnSite.Common
 
             builder.Append("</ul>");
             return builder.ToString();
+        }
+
+        private static string BuildTopicInstructionHtml(string missionContent)
+        {
+            Match match = Regex.Match(missionContent ?? string.Empty, "<h2>(.*?)</h2>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            if (!match.Success)
+            {
+                return string.Empty;
+            }
+
+            string topic = StripTags(match.Groups[1].Value);
+            if (string.IsNullOrEmpty(topic))
+            {
+                return string.Empty;
+            }
+
+            return "活动主题：" + Encode(topic);
         }
 
         private static void AppendInstructionItems(List<string> instructions, IDictionary<string, string> sections, string sectionName, string prefix)

@@ -1025,6 +1025,7 @@ public class CommonLogicTests : IDisposable
         var result = LearnSite.Common.AIActivityPlanMissionViewHelper.BuildActivityGuideView(missionContent);
 
         Assert.NotNull(result);
+        Assert.Contains("活动主题：认识分数", result.InstructionsHtml, StringComparison.Ordinal);
         Assert.Contains("理解分数含义", result.GoalHtml, StringComparison.Ordinal);
         Assert.Contains("准备资源：分数卡片", result.InstructionsHtml, StringComparison.Ordinal);
         Assert.Contains("完成后检查：观察学生是否能正确说出二分之一", result.InstructionsHtml, StringComparison.Ordinal);
@@ -1032,6 +1033,25 @@ public class CommonLogicTests : IDisposable
         Assert.Contains("<ol>", result.StepsHtml, StringComparison.Ordinal);
         Assert.Contains("情境导入", result.StepsHtml, StringComparison.Ordinal);
         Assert.Contains("时长：5分钟", result.StepsHtml, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanMissionView_BuildActivityGuideView_KeepsInstructionOrderStable()
+    {
+        string missionContent = new LearnSite.Common.AIActivityPlanPublishContentBuilder().BuildMissionContent("分数加法", BuildValidActivityPlanDraft());
+
+        var result = LearnSite.Common.AIActivityPlanMissionViewHelper.BuildActivityGuideView(missionContent);
+
+        Assert.NotNull(result);
+        int topicIndex = result.InstructionsHtml.IndexOf("活动主题：分数加法", StringComparison.Ordinal);
+        int resourceIndex = result.InstructionsHtml.IndexOf("准备资源：分数卡片", StringComparison.Ordinal);
+        int assessmentIndex = result.InstructionsHtml.IndexOf("完成后检查：观察学生是否能正确说出二分之一", StringComparison.Ordinal);
+        int reminderIndex = result.InstructionsHtml.IndexOf("学习提示：注意让学生先说生活例子。", StringComparison.Ordinal);
+
+        Assert.True(topicIndex >= 0, "Expected topic instruction.");
+        Assert.True(resourceIndex > topicIndex, "Expected resource guidance after topic.");
+        Assert.True(assessmentIndex > resourceIndex, "Expected assessment guidance after resources.");
+        Assert.True(reminderIndex > assessmentIndex, "Expected reminder after assessment guidance.");
     }
 
     [Fact]
