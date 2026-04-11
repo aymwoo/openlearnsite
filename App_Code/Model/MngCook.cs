@@ -47,6 +47,7 @@ namespace LearnSite.Model
         /// <returns></returns>
         public bool IsExist()
         {
+            System.Diagnostics.Trace.WriteLine("MngCook.IsExist: _ss = '" + (_ss ?? "null") + "'");
             if (string.IsNullOrEmpty(_ss))
                 return false;
             else
