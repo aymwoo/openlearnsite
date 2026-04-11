@@ -30,14 +30,27 @@ without having to manually break the lesson into steps.
   with only a topic required, optional structured guidance, and existing lesson
   content reused through the current AI provider route — Validated in Phase 1:
   Embedded planning entry
+- ✓ Generated activity plans include teaching goals, step-by-step activity
+  flow, time allocation, interaction methods, resource suggestions, and
+  assessment design — Validated in Phase 2: Structured plan draft generation
+- ✓ The first version works inside the existing teacher lesson or course
+  editing page instead of a separate planning product — Validated through
+  Phases 1-4 in v1.0 milestone
+- ✓ Teachers can preview a generated activity plan, regenerate individual
+  sections, and keep the rest of the draft stable during review — Validated in
+  Phase 3: Guided review and section regeneration
+- ✓ Teachers can selectively append approved sections into existing lesson
+  content and save or resume one course draft later — Validated in Phase 4:
+  Selective apply and draft continuity
 
 ### Active
 
-- [ ] Generated activity plans include teaching goals, step-by-step activity
-  flow, time allocation, interaction methods, resource suggestions, and
-  assessment design
-- [ ] The first version works inside the existing teacher lesson or course
-  editing page instead of a separate planning product
+- [ ] Teachers can generate differentiated variants of the same activity plan
+  for different learner levels
+- [ ] Activity plan generation can align more deeply with curriculum or
+  standards frameworks beyond lightweight teacher guidance
+- [ ] Human validation should confirm saved-draft resume and append-only apply
+  flows in the live authenticated course editor
 
 ### Out of Scope
 
@@ -71,6 +84,17 @@ capability, then adds a more teaching-aware planning experience focused on
 classroom activity design. The initial brownfield target is the existing teacher
 lesson or course editing surface, not a new standalone assistant.
 
+v1.0 ships that lesson-planning loop end to end inside `teacher/courseedit.aspx`.
+Teachers can enter a topic, generate a structured activity-plan draft, regenerate
+individual sections, save one draft per course, resume it later, and append
+approved sections into the editor without auto-saving or auto-publishing.
+
+Focused verification passed through the net8.0 slices of
+`Tests/CommonLogicTests/CommonLogicTests.csproj` and
+`Tests/TeacherRegressionTests/TeacherRegressionTests.csproj`. Remaining
+follow-up is manual browser verification of saved-draft resume and append-only
+apply behavior with an authenticated teacher session and a live provider.
+
 ## Constraints
 
 - **Tech stack**: Build on the existing ASP.NET Web Forms architecture and the
@@ -92,13 +116,21 @@ lesson or course editing surface, not a new standalone assistant.
 | Start from the teacher lesson or course editing page instead of a separate assistant | Teachers already prepare content in this surface, so the smallest useful change is to improve the existing flow | Validated in Phase 1 |
 | Focus v1 on activity-plan generation | The main pain is converting a topic into executable activities, not broad AI coverage everywhere | Validated in Phase 1 |
 | Require only a topic or knowledge point as the minimum prompt | Lower input friction increases the chance teachers actually use the tool during preparation | Validated in Phase 1 |
-| Generate full pedagogical structure, not just prose content | The missing value is organization of goals, steps, interactions, resources, and assessment | — Pending |
+| Generate full pedagogical structure, not just prose content | The missing value is organization of goals, steps, interactions, resources, and assessment | Validated in Phase 2 |
+| Keep the generated plan preview-only until the teacher explicitly chooses what to keep | Teacher trust depends on review before lesson content changes | Validated in Phases 2-4 |
+| Keep review improvements section-scoped instead of regenerating the whole draft every time | Teachers need to preserve strong sections while refining weak ones | Validated in Phase 3 |
+| Store one current saved draft per course outside lesson body content | Draft continuity should not bypass the existing lesson save path or mix transient plan state into published content | Validated in Phase 4 |
+| Apply approved plan sections by appending labeled blocks into the editor | Append-only writeback avoids silent overwrite and fits the brownfield editor workflow | Validated in Phase 4 |
 
 ## Current State
 
-Phase 1 complete — teachers can open a dedicated activity-plan assistant inside
-`teacher/courseedit.aspx`, submit topic-first structured requests, and reuse the
-existing authenticated AI provider path.
+v1.0 milestone shipped on 2026-04-11. Phases 1-4 are complete and the planning
+surface now supports embedded topic-first generation, structured preview,
+section-level regeneration, saved-draft continuity, and selective append-only
+apply inside `teacher/courseedit.aspx`.
+
+The next milestone has not been defined yet. The main open work is choosing the
+next validated planning improvement and closing the remaining manual UAT items.
 
 ## Evolution
 
@@ -118,4 +150,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-10 after Phase 1 completion*
+*Last updated: 2026-04-11 after v1.0 milestone completion*

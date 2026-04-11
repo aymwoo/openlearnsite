@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-04-10T16:33:44.337Z"
-last_activity: 2026-04-10
+status: complete
+stopped_at: Completed v1.0 milestone workflow
+last_updated: "2026-04-11T01:57:32.646Z"
+last_activity: 2026-04-11
 progress:
   total_phases: 4
   completed_phases: 4
@@ -18,18 +18,18 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-10)
+See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable
 activity plan without having to manually break the lesson into steps.
-**Current focus:** Phase 04 complete — selective-apply-and-draft-continuity
+**Current focus:** v1.0 milestone shipped — define the next milestone and close remaining manual UAT
 
 ## Current Position
 
-Phase: 04 (selective-apply-and-draft-continuity) — COMPLETE
-Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-04-10
+Milestone: v1.0 (milestone) — COMPLETE
+Plan: 8 of 8
+Status: Milestone archived and planning docs rolled forward for next milestone setup
+Last activity: 2026-04-11
 
 Progress: [██████████] 100%
 
@@ -82,6 +82,7 @@ Recent decisions affecting current work:
 - [Phase 04]: Require explicit draft-status checks and teacher-owned course authorization before any save, load, or delete draft action succeeds.
 - [Phase 04]: Apply approved plan sections by appending labeled blocks into the existing editor content instead of calling a second lesson-save path.
 - [Phase 04]: Recheck saved-draft status on generate so replace-versus-continue prompts do not rely only on stale browser state.
+- [Milestone v1.0]: Archive detailed v1.0 roadmap and requirements into `.planning/milestones/` and keep the live roadmap ready for next-milestone planning.
 
 ### Pending Todos
 
@@ -93,6 +94,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-10T16:33:09.197Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-04-11T01:59:38.821Z
+Stopped at: Completed v1.0 milestone workflow
 Resume file: None
