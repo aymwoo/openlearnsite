@@ -21,6 +21,10 @@ namespace LearnSite.Common
 
         public ActivityPlanDraft Draft { get; set; }
 
+        public string DraftType { get; set; }
+
+        public FullLessonDraft FullLessonDraft { get; set; }
+
         public int? LinkedMissionId { get; set; }
 
         public int? LinkedListMenuId { get; set; }
@@ -30,6 +34,8 @@ namespace LearnSite.Common
 
     internal class ActivityPlanSavedDraftJsonModel
     {
+        public string DraftType { get; set; }
+
         public string Topic { get; set; }
 
         public string Grade { get; set; }
@@ -41,6 +47,8 @@ namespace LearnSite.Common
         public string ExistingCourseContent { get; set; }
 
         public object Draft { get; set; }
+
+        public object FullLessonDraft { get; set; }
     }
 
     public static class AIActivityPlanSavedDraftHelper
@@ -69,6 +77,37 @@ namespace LearnSite.Common
                 TeachingGoalsInput = normalizedGoals,
                 ExistingCourseContentSnapshot = normalizedExisting,
                 DraftJson = SerializeDraftJson(normalizedTopic, normalizedGrade, normalizedDuration, normalizedGoals, normalizedExisting, draft),
+                LinkedMissionId = linkedMissionId,
+                LinkedListMenuId = linkedListMenuId,
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+        }
+
+        public static LearnSite.Model.CourseActivityPlanDraft BuildFullLessonRecord(int cid, int hid, string topic, string grade, string duration, string teachingGoals, string existingCourseContent, FullLessonDraft draft, int? linkedMissionId = null, int? linkedListMenuId = null)
+        {
+            string normalizedTopic = AIActivityPlanPromptBuilder.BoundText(topic, AIActivityPlanPromptBuilder.MaxTopicLength);
+            if (cid <= 0 || hid <= 0 || string.IsNullOrEmpty(normalizedTopic) || !AIActivityPlanDraftHelper.IsValidFullLessonDraft(draft))
+            {
+                return null;
+            }
+
+            string normalizedGrade = AIActivityPlanPromptBuilder.BoundText(grade, AIActivityPlanPromptBuilder.MaxGradeLength);
+            string normalizedDuration = AIActivityPlanPromptBuilder.BoundText(duration, AIActivityPlanPromptBuilder.MaxDurationLength);
+            string normalizedGoals = AIActivityPlanPromptBuilder.BoundText(teachingGoals, AIActivityPlanPromptBuilder.MaxTeachingGoalsLength);
+            string normalizedExisting = AIActivityPlanPromptBuilder.BoundText(existingCourseContent, 4000);
+            DateTime now = DateTime.Now;
+
+            return new LearnSite.Model.CourseActivityPlanDraft
+            {
+                Cid = cid,
+                Hid = hid,
+                Topic = normalizedTopic,
+                Grade = normalizedGrade,
+                Duration = normalizedDuration,
+                TeachingGoalsInput = normalizedGoals,
+                ExistingCourseContentSnapshot = normalizedExisting,
+                DraftJson = SerializeFullLessonDraftJson(normalizedTopic, normalizedGrade, normalizedDuration, normalizedGoals, normalizedExisting, draft),
                 LinkedMissionId = linkedMissionId,
                 LinkedListMenuId = linkedListMenuId,
                 CreatedAt = now,
@@ -121,6 +160,7 @@ namespace LearnSite.Common
                 Cid = record.Cid,
                 Hid = record.Hid,
                 Topic = topic,
+                DraftType = "activityPlan",
                 Grade = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.Grade, record.Grade), AIActivityPlanPromptBuilder.MaxGradeLength),
                 Duration = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.Duration, record.Duration), AIActivityPlanPromptBuilder.MaxDurationLength),
                 TeachingGoals = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.TeachingGoals, record.TeachingGoalsInput), AIActivityPlanPromptBuilder.MaxTeachingGoalsLength),
@@ -132,10 +172,69 @@ namespace LearnSite.Common
             };
         }
 
+        public static ActivityPlanSavedDraftPayload ParseFullLessonRecord(LearnSite.Model.CourseActivityPlanDraft record, int expectedCid, int expectedHid)
+        {
+            if (record == null || expectedCid <= 0 || expectedHid <= 0)
+            {
+                return null;
+            }
+
+            if (record.Cid != expectedCid || record.Hid != expectedHid)
+            {
+                return null;
+            }
+
+            string topic = AIActivityPlanPromptBuilder.BoundText(record.Topic, AIActivityPlanPromptBuilder.MaxTopicLength);
+            if (string.IsNullOrEmpty(topic))
+            {
+                return null;
+            }
+
+            ActivityPlanSavedDraftJsonModel jsonModel;
+            try
+            {
+                jsonModel = JsonConvert.DeserializeObject<ActivityPlanSavedDraftJsonModel>(record.DraftJson ?? string.Empty);
+            }
+            catch
+            {
+                return null;
+            }
+
+            if (jsonModel == null || jsonModel.FullLessonDraft == null)
+            {
+                return null;
+            }
+
+            string reparsedJson = JsonConvert.SerializeObject(jsonModel.FullLessonDraft);
+            FullLessonDraft draft = AIActivityPlanDraftHelper.ParseFullLessonDraft(reparsedJson);
+            if (!AIActivityPlanDraftHelper.IsValidFullLessonDraft(draft))
+            {
+                return null;
+            }
+
+            return new ActivityPlanSavedDraftPayload
+            {
+                Cid = record.Cid,
+                Hid = record.Hid,
+                Topic = topic,
+                DraftType = "fullLesson",
+                Grade = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.Grade, record.Grade), AIActivityPlanPromptBuilder.MaxGradeLength),
+                Duration = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.Duration, record.Duration), AIActivityPlanPromptBuilder.MaxDurationLength),
+                TeachingGoals = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.TeachingGoals, record.TeachingGoalsInput), AIActivityPlanPromptBuilder.MaxTeachingGoalsLength),
+                ExistingCourseContent = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.ExistingCourseContent, record.ExistingCourseContentSnapshot), 4000),
+                Draft = null,
+                FullLessonDraft = draft,
+                LinkedMissionId = record.LinkedMissionId,
+                LinkedListMenuId = record.LinkedListMenuId,
+                UpdatedAt = record.UpdatedAt
+            };
+        }
+
         private static string SerializeDraftJson(string topic, string grade, string duration, string teachingGoals, string existingCourseContent, ActivityPlanDraft draft)
         {
             return JsonConvert.SerializeObject(new
             {
+                draftType = "activityPlan",
                 topic = topic,
                 grade = grade,
                 duration = duration,
@@ -148,6 +247,27 @@ namespace LearnSite.Common
                     resources = draft.Resources,
                     assessment = draft.Assessment,
                     teacherReminder = draft.TeacherReminder
+                }
+            });
+        }
+
+        private static string SerializeFullLessonDraftJson(string topic, string grade, string duration, string teachingGoals, string existingCourseContent, FullLessonDraft draft)
+        {
+            return JsonConvert.SerializeObject(new
+            {
+                draftType = "fullLesson",
+                topic = topic,
+                grade = grade,
+                duration = duration,
+                teachingGoals = teachingGoals,
+                existingCourseContent = existingCourseContent,
+                fullLessonDraft = new
+                {
+                    schemaVersion = draft.SchemaVersion,
+                    topic = draft.Topic,
+                    lessonSummary = draft.LessonSummary,
+                    totalMinutes = draft.TotalMinutes,
+                    blocks = draft.Blocks
                 }
             });
         }

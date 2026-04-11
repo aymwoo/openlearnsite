@@ -35,6 +35,55 @@ namespace LearnSite.Common
         public string AssessmentCheck { get; set; }
     }
 
+    public class FullLessonDraft
+    {
+        public FullLessonDraft()
+        {
+            SchemaVersion = "v1.2-full-lesson";
+            Topic = string.Empty;
+            LessonSummary = string.Empty;
+            TotalMinutes = string.Empty;
+            Blocks = new List<FullLessonDraftBlock>();
+        }
+
+        public string SchemaVersion { get; set; }
+        public string Topic { get; set; }
+        public string LessonSummary { get; set; }
+        public string TotalMinutes { get; set; }
+        public List<FullLessonDraftBlock> Blocks { get; set; }
+    }
+
+    public class FullLessonDraftBlock
+    {
+        public FullLessonDraftBlock()
+        {
+            BlockKey = string.Empty;
+            BlockType = string.Empty;
+            Title = string.Empty;
+            Minutes = string.Empty;
+            TeachingPurpose = string.Empty;
+            LessonPosition = string.Empty;
+            TeacherAction = string.Empty;
+            StudentAction = string.Empty;
+            Materials = new List<string>();
+            AssessmentFocus = string.Empty;
+            Status = string.Empty;
+        }
+
+        public string BlockKey { get; set; }
+        public int Sort { get; set; }
+        public string BlockType { get; set; }
+        public string Title { get; set; }
+        public string Minutes { get; set; }
+        public string TeachingPurpose { get; set; }
+        public string LessonPosition { get; set; }
+        public string TeacherAction { get; set; }
+        public string StudentAction { get; set; }
+        public List<string> Materials { get; set; }
+        public string AssessmentFocus { get; set; }
+        public string Status { get; set; }
+    }
+
     public static class AIActivityPlanDraftHelper
     {
         private static readonly string[] AllowedSectionTargets = new[]
@@ -74,10 +123,82 @@ namespace LearnSite.Common
             return IsValidDraft(draft) ? draft : null;
         }
 
+        public static FullLessonDraft ParseFullLessonDraft(string responseText)
+        {
+            JToken token = ParseRootToken(responseText);
+            if (token == null)
+            {
+                return null;
+            }
+
+            JObject draftObject = ExtractFullLessonDraftObject(token);
+            if (draftObject == null)
+            {
+                return null;
+            }
+
+            FullLessonDraft draft = new FullLessonDraft();
+            draft.SchemaVersion = NormalizeString(GetFirstToken(draftObject, "schemaVersion"));
+            if (string.IsNullOrEmpty(draft.SchemaVersion))
+            {
+                draft.SchemaVersion = "v1.2-full-lesson";
+            }
+
+            draft.Topic = NormalizeString(GetFirstToken(draftObject, "topic", "lessonTopic", "主题", "课题"));
+            draft.LessonSummary = NormalizeString(GetFirstToken(draftObject, "lessonSummary", "summary", "lessonOverview", "整课概述", "课程概述"));
+            draft.TotalMinutes = NormalizeMinutes(GetFirstToken(draftObject, "totalMinutes", "duration", "lessonMinutes", "总时长", "课时"));
+            draft.Blocks = NormalizeFullLessonBlocks(GetFirstToken(draftObject, "blocks", "lessonBlocks", "fullLessonBlocks", "环节", "活动块"));
+            if (draft.Blocks == null)
+            {
+                return null;
+            }
+
+            return IsValidFullLessonDraft(draft) ? draft : null;
+        }
+
         public static bool IsSupportedSectionTarget(string sectionTarget)
         {
             string normalizedTarget = SafeTrim(sectionTarget);
             return AllowedSectionTargets.Any(target => string.Equals(target, normalizedTarget, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static bool IsValidFullLessonDraft(FullLessonDraft draft)
+        {
+            if (draft == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(SafeTrim(draft.Topic))
+                || string.IsNullOrEmpty(SafeTrim(draft.LessonSummary))
+                || string.IsNullOrEmpty(SafeTrim(draft.TotalMinutes))
+                || draft.Blocks == null
+                || draft.Blocks.Count == 0)
+            {
+                return false;
+            }
+
+            HashSet<string> keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < draft.Blocks.Count; i++)
+            {
+                FullLessonDraftBlock block = draft.Blocks[i];
+                if (!IsValidFullLessonBlock(block))
+                {
+                    return false;
+                }
+
+                if (!keys.Add(block.BlockKey))
+                {
+                    return false;
+                }
+
+                if (block.Sort != i + 1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static string[] GetAllowedSectionTargets()
@@ -213,6 +334,27 @@ namespace LearnSite.Common
                 && !string.IsNullOrEmpty(SafeTrim(step.AssessmentCheck));
         }
 
+        private static bool IsValidFullLessonBlock(FullLessonDraftBlock block)
+        {
+            if (block == null)
+            {
+                return false;
+            }
+
+            return !string.IsNullOrEmpty(SafeTrim(block.BlockKey))
+                && block.Sort > 0
+                && !string.IsNullOrEmpty(SafeTrim(block.BlockType))
+                && !string.IsNullOrEmpty(SafeTrim(block.Title))
+                && !string.IsNullOrEmpty(SafeTrim(block.Minutes))
+                && !string.IsNullOrEmpty(SafeTrim(block.TeachingPurpose))
+                && !string.IsNullOrEmpty(SafeTrim(block.LessonPosition))
+                && !string.IsNullOrEmpty(SafeTrim(block.TeacherAction))
+                && !string.IsNullOrEmpty(SafeTrim(block.StudentAction))
+                && block.Materials != null
+                && block.Materials.Count > 0
+                && !string.IsNullOrEmpty(SafeTrim(block.AssessmentFocus));
+        }
+
         private static JToken ParseRootToken(string responseText)
         {
             string trimmed = SafeTrim(responseText);
@@ -259,6 +401,29 @@ namespace LearnSite.Common
 
             if (GetFirstToken(obj, "teachingGoals", "goals", "goalList", "教学目标", "目标") != null
                 || GetFirstToken(obj, "activitySteps", "steps", "stepFlow", "flow", "活动步骤", "教学步骤") != null)
+            {
+                return obj;
+            }
+
+            return null;
+        }
+
+        private static JObject ExtractFullLessonDraftObject(JToken token)
+        {
+            JObject obj = token as JObject;
+            if (obj == null)
+            {
+                return null;
+            }
+
+            JToken nested = GetFirstToken(obj, "draft", "data", "result", "fullLessonDraft");
+            JObject nestedObject = nested as JObject;
+            if (nestedObject != null)
+            {
+                obj = nestedObject;
+            }
+
+            if (GetFirstToken(obj, "blocks", "lessonBlocks", "fullLessonBlocks", "环节", "活动块") != null)
             {
                 return obj;
             }
@@ -324,6 +489,79 @@ namespace LearnSite.Common
             }
 
             return steps;
+        }
+
+        private static List<FullLessonDraftBlock> NormalizeFullLessonBlocks(JToken token)
+        {
+            List<FullLessonDraftBlock> blocks = new List<FullLessonDraftBlock>();
+            if (token == null)
+            {
+                return blocks;
+            }
+
+            JArray array = token as JArray;
+            if (array == null)
+            {
+                JObject obj = token as JObject;
+                if (obj != null)
+                {
+                    JToken nested = GetFirstToken(obj, "items", "blocks", "lessonBlocks", "list", "环节", "活动块");
+                    array = nested as JArray;
+                }
+            }
+
+            if (array == null)
+            {
+                return blocks;
+            }
+
+            foreach (JToken item in array)
+            {
+                FullLessonDraftBlock block = NormalizeFullLessonBlock(item as JObject);
+                if (block == null)
+                {
+                    return null;
+                }
+
+                blocks.Add(block);
+            }
+
+            return blocks;
+        }
+
+        private static FullLessonDraftBlock NormalizeFullLessonBlock(JObject blockObject)
+        {
+            if (blockObject == null)
+            {
+                return null;
+            }
+
+            int sort;
+            string sortText = NormalizeString(GetFirstToken(blockObject, "sort", "order", "index", "序号"));
+            if (!int.TryParse(sortText, out sort) || sort <= 0)
+            {
+                return null;
+            }
+
+            FullLessonDraftBlock block = new FullLessonDraftBlock();
+            block.BlockKey = NormalizeString(GetFirstToken(blockObject, "blockKey", "key", "id", "块标识", "环节标识"));
+            block.Sort = sort;
+            block.BlockType = NormalizeString(GetFirstToken(blockObject, "blockType", "type", "activityType", "类型", "环节类型"));
+            block.Title = NormalizeString(GetFirstToken(blockObject, "title", "name", "label", "标题", "环节标题"));
+            block.Minutes = NormalizeMinutes(GetFirstToken(blockObject, "minutes", "duration", "time", "时长", "分钟", "用时"));
+            block.TeachingPurpose = NormalizeString(GetFirstToken(blockObject, "teachingPurpose", "purpose", "goal", "教学目的", "教学意图"));
+            block.LessonPosition = NormalizeString(GetFirstToken(blockObject, "lessonPosition", "position", "stage", "lessonStage", "教学位置", "课堂位置"));
+            block.TeacherAction = NormalizeString(GetFirstToken(blockObject, "teacherAction", "teacher", "teacherTask", "教师活动", "教师行为"));
+            block.StudentAction = NormalizeString(GetFirstToken(blockObject, "studentAction", "student", "studentTask", "学生活动", "学生行为"));
+            block.Materials = NormalizeStringList(GetFirstToken(blockObject, "materials", "resources", "materialList", "材料", "资源"));
+            block.AssessmentFocus = NormalizeString(GetFirstToken(blockObject, "assessmentFocus", "assessment", "check", "评价重点", "评价关注点"));
+            block.Status = NormalizeString(GetFirstToken(blockObject, "status", "blockStatus", "状态"));
+            if (string.IsNullOrEmpty(block.Status))
+            {
+                block.Status = "draft";
+            }
+
+            return IsValidFullLessonBlock(block) ? block : null;
         }
 
         private static ActivityPlanDraftStep NormalizeStep(JObject stepObject, int sort)
