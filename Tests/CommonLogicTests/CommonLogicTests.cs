@@ -985,6 +985,39 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void ActivityPlanPublishRequest_Source_DefinesExplicitPublishContract()
+    {
+        string source = ReadRepoFile("App_Code", "Model", "AIActivityPlanPublishRequest.cs");
+
+        Assert.Contains("public int Cid", source, StringComparison.Ordinal);
+        Assert.Contains("public int Hid", source, StringComparison.Ordinal);
+        Assert.Contains("public string Topic", source, StringComparison.Ordinal);
+        Assert.Contains("public bool PublishToStudents", source, StringComparison.Ordinal);
+        Assert.Contains("public List<string> SelectedSectionKeys", source, StringComparison.Ordinal);
+        Assert.Contains("public LearnSite.Common.ActivityPlanDraft Draft", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanPublishResult_Source_DefinesExplicitPublishResultContract()
+    {
+        string source = ReadRepoFile("App_Code", "Model", "AIActivityPlanPublishResult.cs");
+
+        Assert.Contains("public int MissionId", source, StringComparison.Ordinal);
+        Assert.Contains("public int ListMenuId", source, StringComparison.Ordinal);
+        Assert.Contains("public string MissionTitle", source, StringComparison.Ordinal);
+        Assert.Contains("public bool PublishedToStudents", source, StringComparison.Ordinal);
+        Assert.Contains("public string UpdatedCourseContent", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ActivityPlanPublishRequest_Source_KeepsAiFlowSeparateFromLegacyMissionPublishDefault()
+    {
+        string source = ReadRepoFile("teacher", "aiprovider_api.ashx");
+
+        Assert.DoesNotContain("CheckPublish.Checked", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ActivityPlanDraftRoute_Source_ExposesStatusSaveLoadAndDeleteActions()
     {
         string source = ReadRepoFile("teacher", "aiprovider_api.ashx");
