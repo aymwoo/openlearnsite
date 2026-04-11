@@ -74,6 +74,15 @@ without having to manually break the lesson into steps.
   Phases 6-7: Student activity entry, guidance, submission, and completion
   tracking
 
+### Validated in v1.2 milestone
+
+- ✓ Teachers can generate and preview an AI-composed full-lesson draft as
+  ordered activity blocks inside `teacher/courseedit.aspx` — Validated in Phase 8:
+  Full-lesson draft orchestration
+- ✓ Teachers can remove or regenerate one generated lesson block and save or
+  resume the full-lesson draft without silently writing into lesson body content
+  — Validated in Phase 8: Full-lesson draft orchestration
+
 ### Out of Scope
 
 - Full end-to-end teaching lifecycle redesign — the current effort focuses on
@@ -167,6 +176,11 @@ that can combine multiple activity types, reuse existing teacher activity pages
 where possible, and introduce a guided inquiry block when current activity
 types are not enough.
 
+Phase 8 shipped on 2026-04-11. The teacher course editor can now request a
+full-lesson draft, render ordered block cards from a server-owned DTO, and
+refine one block at a time through remove/regenerate/save/resume flows while
+keeping the lesson body unchanged until explicit later actions.
+
 ## Milestone History
 
 <details>
@@ -203,4 +217,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-11 after v1.2 milestone start*
+*Last updated: 2026-04-11 after Phase 8 completion*

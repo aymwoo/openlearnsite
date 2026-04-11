@@ -8,11 +8,11 @@ activity plan without having to manually break the lesson into steps.
 
 ### Full-lesson orchestration
 
-- [ ] **ORCH-01**: Teacher can generate a structured full-lesson draft composed
+- [x] **ORCH-01**: Teacher can generate a structured full-lesson draft composed
   of multiple ordered activity blocks instead of one plain-text activity.
-- [ ] **ORCH-02**: Teacher can preview each generated block with its activity
+- [x] **ORCH-02**: Teacher can preview each generated block with its activity
   type, teaching purpose, and position in the lesson flow before publishing.
-- [ ] **ORCH-03**: Teacher can remove or regenerate an individual generated block
+- [x] **ORCH-03**: Teacher can remove or regenerate an individual generated block
   without discarding the rest of the full-lesson draft.
 
 ### Existing activity composition
@@ -74,9 +74,9 @@ activity plan without having to manually break the lesson into steps.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ORCH-01 | Phase 8 | Pending |
-| ORCH-02 | Phase 8 | Pending |
-| ORCH-03 | Phase 8 | Pending |
+| ORCH-01 | Phase 8 | Complete |
+| ORCH-02 | Phase 8 | Complete |
+| ORCH-03 | Phase 8 | Complete |
 | COMP-01 | Phase 9 | Pending |
 | COMP-02 | Phase 9 | Pending |
 | COMP-03 | Phase 9 | Pending |
@@ -95,4 +95,4 @@ activity plan without having to manually break the lesson into steps.
 
 ---
 *Requirements defined: 2026-04-11*
-*Last updated: 2026-04-11 after v1.2 roadmap creation*
+*Last updated: 2026-04-11 after Phase 8 completion*

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: AI 整课编排与活动组合
-status: roadmap-ready
-stopped_at: Roadmap created for milestone v1.2; Phase 8 ready to plan
-last_updated: "2026-04-11T00:00:00Z"
+status: phase-complete
+stopped_at: Completed phase 08 execution and verification
+last_updated: "2026-04-11T12:41:49.659Z"
 last_activity: 2026-04-11
 progress:
-  total_phases: 11
-  completed_phases: 7
-  total_plans: 7
-  completed_plans: 7
-  percent: 64
+  total_phases: 4
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -21,22 +21,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-11)
 
 **Core value:** Teachers can turn a teaching topic into a concrete, teachable activity plan without having to manually break the lesson into steps.
-**Current focus:** Phase 8 planning for structured full-lesson orchestration in `teacher/courseedit.aspx`
+**Current focus:** Phase 09 planning for existing activity block composition
 
 ## Current Position
 
 Milestone: v1.2 (AI 整课编排与活动组合)
-Phase: 8 of 11 (Full-lesson draft orchestration)
-Plan: 0 of TBD
-Status: Ready to plan
-Last activity: 2026-04-11 — v1.2 roadmap written and traceability mapped
+Phase: 09 (existing-activity-block-composition)
+Plan: Not started
+Status: Phase 08 complete — ready to plan next phase
+Last activity: 2026-04-11
 
-Progress: [██████░░░░] 64%
+Progress: [███████░░░] 73%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+
+- Total plans completed: 9
 - Average duration: -
 - Total execution time: -
 
@@ -46,9 +47,11 @@ Progress: [██████░░░░] 64%
 |-------|-------|-------|----------|
 | 01-04 | 8 | - | - |
 | 05-07 | 7 | - | - |
-| 08-11 | 0 | - | - |
+| 08-11 | 2 | - | - |
+| 08 | 2 | - | - |
 
 **Recent Trend:**
+
 - Last 5 plans: Phase 05-07 completed on 2026-04-11
 - Trend: Stable
 
@@ -73,5 +76,5 @@ Progress: [██████░░░░] 64%
 ## Session Continuity
 
 Last session: 2026-04-11
-Stopped at: Roadmap created for milestone v1.2; Phase 8 ready for `/gsd-plan-phase 8`
-Resume file: .planning/ROADMAP.md
+Stopped at: Completed phase 08 execution and verification
+Resume file: .planning/phases/08-full-lesson-draft-orchestration/08-VERIFICATION.md

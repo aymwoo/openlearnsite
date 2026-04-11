@@ -39,7 +39,7 @@ Archive: `.planning/milestones/v1.1-ROADMAP.md`
 
 ### 🚧 v1.2 AI 整课编排与活动组合
 
-- [ ] **Phase 8: Full-lesson draft orchestration** - Teachers generate and review an ordered full-lesson draft made of typed activity blocks.
+- [x] **Phase 8: Full-lesson draft orchestration** - Teachers generate and review an ordered full-lesson draft made of typed activity blocks. (completed 2026-04-11)
 - [ ] **Phase 9: Existing activity block composition** - AI selects reusable quiz, resource-study, and web courseware blocks for the lesson flow.
 - [ ] **Phase 10: Guided inquiry fallback and combined publish** - Mixed drafts can include guided inquiry and publish as one confirmed classroom set.
 - [ ] **Phase 11: Composed runtime and progress visibility** - Published lesson blocks run in student flow with per-block completion visibility.
@@ -54,7 +54,10 @@ Archive: `.planning/milestones/v1.1-ROADMAP.md`
   1. Teacher can generate a structured full-lesson draft that appears as multiple ordered activity blocks instead of one plain-text activity.
   2. Teacher can preview each generated block with its activity type, teaching purpose, and lesson position before deciding what to keep.
   3. Teacher can remove or regenerate one block without discarding the rest of the full-lesson draft.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [x] 08-01-PLAN.md — Add the full-lesson draft contract, helper validation, and parallel authenticated `fullLesson*` draft actions.
+- [x] 08-02-PLAN.md — Upgrade the course-editor assistant to ordered block preview with block-level remove/regenerate controls.
 **UI hint**: yes
 
 ### Phase 9: Existing activity block composition
@@ -104,7 +107,7 @@ Archive: `.planning/milestones/v1.1-ROADMAP.md`
 | 5. Teacher activity publish foundation | v1.1 | 3/3 | Complete | 2026-04-11 |
 | 6. Student activity entry and guided experience | v1.1 | 2/2 | Complete | 2026-04-11 |
 | 7. Submission and completion tracking | v1.1 | 2/2 | Complete | 2026-04-11 |
-| 8. Full-lesson draft orchestration | v1.2 | 0/TBD | Not started | - |
+| 8. Full-lesson draft orchestration | v1.2 | 2/2 | Complete | 2026-04-11 |
 | 9. Existing activity block composition | v1.2 | 0/TBD | Not started | - |
 | 10. Guided inquiry fallback and combined publish | v1.2 | 0/TBD | Not started | - |
 | 11. Composed runtime and progress visibility | v1.2 | 0/TBD | Not started | - |
