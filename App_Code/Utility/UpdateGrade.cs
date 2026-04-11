@@ -2683,10 +2683,22 @@ namespace LearnSite.DBUtility
                 sb.Append(" [TeachingGoalsInput] NVARCHAR(500) NULL,");
                 sb.Append(" [ExistingCourseContentSnapshot] NVARCHAR(MAX) NULL,");
                 sb.Append(" [DraftJson] NVARCHAR(MAX) NOT NULL,");
+                sb.Append(" [LinkedMissionId] INT NULL,");
+                sb.Append(" [LinkedListMenuId] INT NULL,");
                 sb.Append(" [CreatedAt] DATETIME NOT NULL DEFAULT GETDATE(),");
                 sb.Append(" [UpdatedAt] DATETIME NOT NULL DEFAULT GETDATE()");
                 sb.Append(" )");
                 DbHelperSQL.ExecuteSql(sb.ToString());
+            }
+
+            if (!DbHelperSQL.ColumnExists("CourseActivityPlanDraft", "LinkedMissionId"))
+            {
+                DbHelperSQL.AddColumn("CourseActivityPlanDraft", "LinkedMissionId", "int", -1);
+            }
+
+            if (!DbHelperSQL.ColumnExists("CourseActivityPlanDraft", "LinkedListMenuId"))
+            {
+                DbHelperSQL.AddColumn("CourseActivityPlanDraft", "LinkedListMenuId", "int", -1);
             }
 
             string checkIndexSql = "select count(1) from sys.indexes where name='UX_CourseActivityPlanDraft_Cid' and object_id = object_id('CourseActivityPlanDraft')";

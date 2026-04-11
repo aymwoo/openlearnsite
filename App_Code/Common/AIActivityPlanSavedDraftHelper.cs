@@ -21,6 +21,10 @@ namespace LearnSite.Common
 
         public ActivityPlanDraft Draft { get; set; }
 
+        public int? LinkedMissionId { get; set; }
+
+        public int? LinkedListMenuId { get; set; }
+
         public DateTime UpdatedAt { get; set; }
     }
 
@@ -41,7 +45,7 @@ namespace LearnSite.Common
 
     public static class AIActivityPlanSavedDraftHelper
     {
-        public static LearnSite.Model.CourseActivityPlanDraft BuildRecord(int cid, int hid, string topic, string grade, string duration, string teachingGoals, string existingCourseContent, ActivityPlanDraft draft)
+        public static LearnSite.Model.CourseActivityPlanDraft BuildRecord(int cid, int hid, string topic, string grade, string duration, string teachingGoals, string existingCourseContent, ActivityPlanDraft draft, int? linkedMissionId = null, int? linkedListMenuId = null)
         {
             string normalizedTopic = AIActivityPlanPromptBuilder.BoundText(topic, AIActivityPlanPromptBuilder.MaxTopicLength);
             if (cid <= 0 || hid <= 0 || string.IsNullOrEmpty(normalizedTopic) || !AIActivityPlanDraftHelper.IsValidDraft(draft))
@@ -65,6 +69,8 @@ namespace LearnSite.Common
                 TeachingGoalsInput = normalizedGoals,
                 ExistingCourseContentSnapshot = normalizedExisting,
                 DraftJson = SerializeDraftJson(normalizedTopic, normalizedGrade, normalizedDuration, normalizedGoals, normalizedExisting, draft),
+                LinkedMissionId = linkedMissionId,
+                LinkedListMenuId = linkedListMenuId,
                 CreatedAt = now,
                 UpdatedAt = now
             };
@@ -120,6 +126,8 @@ namespace LearnSite.Common
                 TeachingGoals = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.TeachingGoals, record.TeachingGoalsInput), AIActivityPlanPromptBuilder.MaxTeachingGoalsLength),
                 ExistingCourseContent = AIActivityPlanPromptBuilder.BoundText(FirstNonEmpty(jsonModel.ExistingCourseContent, record.ExistingCourseContentSnapshot), 4000),
                 Draft = draft,
+                LinkedMissionId = record.LinkedMissionId,
+                LinkedListMenuId = record.LinkedListMenuId,
                 UpdatedAt = record.UpdatedAt
             };
         }

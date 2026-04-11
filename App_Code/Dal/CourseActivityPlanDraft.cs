@@ -11,7 +11,7 @@ namespace LearnSite.DAL
         public LearnSite.Model.CourseActivityPlanDraft GetCurrentByCourse(int cid, int hid)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select top 1 Id,Cid,Hid,Topic,Grade,Duration,TeachingGoalsInput,ExistingCourseContentSnapshot,DraftJson,CreatedAt,UpdatedAt ");
+            strSql.Append("select top 1 Id,Cid,Hid,Topic,Grade,Duration,TeachingGoalsInput,ExistingCourseContentSnapshot,DraftJson,LinkedMissionId,LinkedListMenuId,CreatedAt,UpdatedAt ");
             strSql.Append("from CourseActivityPlanDraft where Cid=@Cid and Hid=@Hid order by Id desc");
             SqlParameter[] parameters = {
                 new SqlParameter("@Cid", SqlDbType.Int, 4),
@@ -54,12 +54,12 @@ namespace LearnSite.DAL
             strSql.Append("begin ");
             strSql.Append("update CourseActivityPlanDraft set Hid=@Hid,Topic=@Topic,Grade=@Grade,Duration=@Duration,");
             strSql.Append("TeachingGoalsInput=@TeachingGoalsInput,ExistingCourseContentSnapshot=@ExistingCourseContentSnapshot,");
-            strSql.Append("DraftJson=@DraftJson,UpdatedAt=@UpdatedAt where Cid=@Cid; ");
+            strSql.Append("DraftJson=@DraftJson,LinkedMissionId=isnull(@LinkedMissionId,LinkedMissionId),LinkedListMenuId=isnull(@LinkedListMenuId,LinkedListMenuId),UpdatedAt=@UpdatedAt where Cid=@Cid; ");
             strSql.Append("end ");
             strSql.Append("else ");
             strSql.Append("begin ");
-            strSql.Append("insert into CourseActivityPlanDraft(Cid,Hid,Topic,Grade,Duration,TeachingGoalsInput,ExistingCourseContentSnapshot,DraftJson,CreatedAt,UpdatedAt) ");
-            strSql.Append("values(@Cid,@Hid,@Topic,@Grade,@Duration,@TeachingGoalsInput,@ExistingCourseContentSnapshot,@DraftJson,@CreatedAt,@UpdatedAt); ");
+            strSql.Append("insert into CourseActivityPlanDraft(Cid,Hid,Topic,Grade,Duration,TeachingGoalsInput,ExistingCourseContentSnapshot,DraftJson,LinkedMissionId,LinkedListMenuId,CreatedAt,UpdatedAt) ");
+            strSql.Append("values(@Cid,@Hid,@Topic,@Grade,@Duration,@TeachingGoalsInput,@ExistingCourseContentSnapshot,@DraftJson,@LinkedMissionId,@LinkedListMenuId,@CreatedAt,@UpdatedAt); ");
             strSql.Append("end");
             return strSql.ToString();
         }
@@ -75,6 +75,8 @@ namespace LearnSite.DAL
                 new SqlParameter("@TeachingGoalsInput", SqlDbType.NVarChar, 500),
                 new SqlParameter("@ExistingCourseContentSnapshot", SqlDbType.NVarChar, -1),
                 new SqlParameter("@DraftJson", SqlDbType.NVarChar, -1),
+                new SqlParameter("@LinkedMissionId", SqlDbType.Int),
+                new SqlParameter("@LinkedListMenuId", SqlDbType.Int),
                 new SqlParameter("@CreatedAt", SqlDbType.DateTime),
                 new SqlParameter("@UpdatedAt", SqlDbType.DateTime)
             };
@@ -86,8 +88,10 @@ namespace LearnSite.DAL
             parameters[5].Value = model.TeachingGoalsInput ?? string.Empty;
             parameters[6].Value = model.ExistingCourseContentSnapshot ?? string.Empty;
             parameters[7].Value = model.DraftJson ?? string.Empty;
-            parameters[8].Value = model.CreatedAt == DateTime.MinValue ? DateTime.Now : model.CreatedAt;
-            parameters[9].Value = model.UpdatedAt == DateTime.MinValue ? DateTime.Now : model.UpdatedAt;
+            parameters[8].Value = model.LinkedMissionId.HasValue ? (object)model.LinkedMissionId.Value : DBNull.Value;
+            parameters[9].Value = model.LinkedListMenuId.HasValue ? (object)model.LinkedListMenuId.Value : DBNull.Value;
+            parameters[10].Value = model.CreatedAt == DateTime.MinValue ? DateTime.Now : model.CreatedAt;
+            parameters[11].Value = model.UpdatedAt == DateTime.MinValue ? DateTime.Now : model.UpdatedAt;
             return parameters;
         }
 
@@ -117,6 +121,14 @@ namespace LearnSite.DAL
             model.TeachingGoalsInput = row["TeachingGoalsInput"] == null ? string.Empty : row["TeachingGoalsInput"].ToString();
             model.ExistingCourseContentSnapshot = row["ExistingCourseContentSnapshot"] == null ? string.Empty : row["ExistingCourseContentSnapshot"].ToString();
             model.DraftJson = row["DraftJson"] == null ? string.Empty : row["DraftJson"].ToString();
+            if (row.Table.Columns.Contains("LinkedMissionId") && row["LinkedMissionId"] != DBNull.Value && row["LinkedMissionId"].ToString() != string.Empty)
+            {
+                model.LinkedMissionId = int.Parse(row["LinkedMissionId"].ToString());
+            }
+            if (row.Table.Columns.Contains("LinkedListMenuId") && row["LinkedListMenuId"] != DBNull.Value && row["LinkedListMenuId"].ToString() != string.Empty)
+            {
+                model.LinkedListMenuId = int.Parse(row["LinkedListMenuId"].ToString());
+            }
             if (row["CreatedAt"] != null && row["CreatedAt"].ToString() != string.Empty)
             {
                 model.CreatedAt = DateTime.Parse(row["CreatedAt"].ToString());

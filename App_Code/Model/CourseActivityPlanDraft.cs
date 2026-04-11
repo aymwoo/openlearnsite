@@ -36,6 +36,10 @@ namespace LearnSite.Model
 
         public string DraftJson { get; set; }
 
+        public int? LinkedMissionId { get; set; }
+
+        public int? LinkedListMenuId { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
