@@ -748,6 +748,10 @@ public class TeacherRegressionTests
         Assert.Contains("继续上次草案", courseEdit, StringComparison.Ordinal);
         Assert.Contains("保存草案", courseEdit, StringComparison.Ordinal);
         Assert.Contains("应用所选章节", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-publish-toggle\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("id=\"activity-plan-publish-btn\"", courseEdit, StringComparison.Ordinal);
+        Assert.Contains("活动默认保持隐藏", courseEdit, StringComparison.Ordinal);
+        Assert.DoesNotContain("id=\"activity-plan-publish-toggle\" runat=\"server\"", courseEdit, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -766,6 +770,9 @@ public class TeacherRegressionTests
         Assert.Contains("action=activityPlanSaveDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("action=activityPlanLoadDraft", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("action=activityPlanDeleteDraft", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("function publishActivityPlan()", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("action=activityPlanPublish", courseEditScript, StringComparison.Ordinal);
+        Assert.Contains("updatedCourseContent", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("maybeHandleSavedDraftBeforeGenerate", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("checkSavedActivityPlanDraftStatus(function (status)", courseEditScript, StringComparison.Ordinal);
         Assert.Contains("window.confirm", courseEditScript, StringComparison.Ordinal);
@@ -786,6 +793,20 @@ public class TeacherRegressionTests
         Assert.Contains("field.value = existingContent + appendedContent", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("replace(existingContent", courseEditScript, StringComparison.Ordinal);
         Assert.DoesNotContain("dedupe", courseEditScript, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ActivityPlanPublish_Handler_ShouldStayAuthorizedAndDelegateToPublishCore()
+    {
+        var handler = File.ReadAllText(Path.Combine(TeacherRoot, "aiprovider_api.ashx"));
+
+        Assert.Contains("case \"activityPlanPublish\":", handler, StringComparison.Ordinal);
+        Assert.Contains("TryGetAuthorizedCourse", handler, StringComparison.Ordinal);
+        Assert.Contains("AIActivityPlanDraftHelper.ParseDraft", handler, StringComparison.Ordinal);
+        Assert.Contains("AIActivityPlanPublisher", handler, StringComparison.Ordinal);
+        Assert.Contains("updatedCourseContent", handler, StringComparison.Ordinal);
+        Assert.DoesNotContain("insert into Mission", handler, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("insert into ListMenu", handler, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]

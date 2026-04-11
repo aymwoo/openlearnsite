@@ -191,6 +191,35 @@
             flex-wrap: wrap;
             gap: 0.55rem;
         }
+
+        .activity-plan-publish-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            padding: 0.75rem 0.85rem;
+            border-radius: 0.9rem;
+            background: rgba(15, 23, 42, 0.04);
+            color: #334155;
+        }
+
+        .activity-plan-publish-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .activity-plan-publish-toggle input {
+            margin: 0;
+        }
+
+        .activity-plan-publish-note {
+            font-size: 0.78rem;
+            line-height: 1.6;
+            color: #475569;
+        }
     </style>
     
 
@@ -357,6 +386,14 @@
                                 <button type="button" class="ai-action-btn" onclick="copyActivityPlanResult()">复制草案</button>
                                 <button type="button" id="activity-plan-save-draft-btn" class="ai-action-btn" onclick="saveCurrentActivityPlanDraft()">保存草案</button>
                                 <button type="button" id="activity-plan-apply-selected-btn" class="ai-action-btn" onclick="applySelectedActivityPlanSections()">应用所选章节</button>
+                            </div>
+                            <div class="activity-plan-publish-row">
+                                <label class="activity-plan-publish-toggle" for="activity-plan-publish-toggle">
+                                    <input type="checkbox" id="activity-plan-publish-toggle" />
+                                    <span>同时发布给学生</span>
+                                </label>
+                                <div class="activity-plan-publish-note">活动默认保持隐藏，只有勾选后才会同步开放给学生查看。</div>
+                                <button type="button" id="activity-plan-publish-btn" class="ai-generate-btn" onclick="publishActivityPlan()">确认发布活动计划</button>
                             </div>
                         </div>
                     </aside>

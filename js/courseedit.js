@@ -607,6 +607,63 @@ function syncContent() {
                           appendActivityPlanSectionsToEditor(sectionsToApply);
                       }
 
+                      function publishActivityPlan() {
+                          if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
+                              alert('请先生成或恢复活动计划草案');
+                              return;
+                          }
+
+                          var selectedSections = getSelectedActivityPlanSections();
+                          if (!selectedSections.length) {
+                              alert('请至少选择一个要写入学案的章节');
+                              return;
+                          }
+
+                          var elements = getActivityPlanElements();
+                          var topic = elements.topic ? elements.topic.value.trim() : '';
+                          if (!topic) {
+                              alert('请输入主题或知识点');
+                              if (elements.topic) {
+                                  elements.topic.focus();
+                              }
+                              return;
+                          }
+
+                          var publishToggle = document.getElementById('activity-plan-publish-toggle');
+                          var publishToStudents = publishToggle ? !!publishToggle.checked : false;
+                          var xhr = new XMLHttpRequest();
+                          xhr.open('POST', 'aiprovider_api.ashx', true);
+                          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                          xhr.onreadystatechange = function () {
+                              if (xhr.readyState !== 4) {
+                                  return;
+                              }
+
+                              if (xhr.status === 200) {
+                                  try {
+                                      var res = JSON.parse(xhr.responseText || '{}');
+                                      if (res.success && res.data) {
+                                          setCourseEditContentValue(res.data.updatedCourseContent || '');
+                                          alert(res.data.publishedToStudents ? '活动计划已同步发布给学生。' : '活动计划已保存，当前仍对学生隐藏。');
+                                      } else {
+                                          alert(res.msg || '发布活动计划失败');
+                                      }
+                                  } catch (e) {
+                                      alert('发布活动计划返回解析失败');
+                                  }
+                              } else {
+                                  alert('发布活动计划失败，状态码：' + xhr.status);
+                              }
+                          };
+
+                          xhr.send('action=activityPlanPublish'
+                              + '&cid=' + encodeURIComponent(cid)
+                              + '&topic=' + encodeURIComponent(topic)
+                              + '&publishToStudents=' + encodeURIComponent(publishToStudents ? 'true' : 'false')
+                              + '&selectedSections=' + encodeURIComponent(JSON.stringify(selectedSections))
+                              + '&currentDraft=' + encodeURIComponent(JSON.stringify(lastActivityPlanDraftResponse.draft || {})));
+                      }
+
                       function collectCurrentActivityPlanDraftPayload() {
                           if (!lastActivityPlanDraftResponse || !lastActivityPlanDraftResponse.draft) {
                               return null;

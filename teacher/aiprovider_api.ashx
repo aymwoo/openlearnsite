@@ -67,6 +67,9 @@ public class aiprovider_api : IHttpHandler {
                 case "activityPlanDeleteDraft":
                     ActivityPlanDeleteDraft(context);
                     break;
+                case "activityPlanPublish":
+                    ActivityPlanPublish(context);
+                    break;
                 case "listSkills":
                     GetSkillList(context);
                     break;
@@ -684,6 +687,92 @@ public class aiprovider_api : IHttpHandler {
             success = deleted,
             msg = deleted ? "Saved draft deleted." : "Saved draft not found."
         }));
+    }
+
+    private void ActivityPlanPublish(HttpContext context)
+    {
+        int cid;
+        LearnSite.Model.Courses course;
+        if (!TryGetAuthorizedCourse(context, out cid, out course))
+        {
+            return;
+        }
+
+        List<string> selectedSections = ParseSelectedSections(context.Request["selectedSections"]);
+        if (selectedSections == null || selectedSections.Count == 0)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Selected sections are required." }));
+            return;
+        }
+
+        LearnSite.Common.ActivityPlanDraft draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseDraft(context.Request["currentDraft"]);
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidDraft(draft))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Current draft is invalid." }));
+            return;
+        }
+
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        bool publishToStudents = string.Equals(context.Request["publishToStudents"], "true", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(context.Request["publishToStudents"], "1", StringComparison.OrdinalIgnoreCase);
+
+        LearnSite.Model.AIActivityPlanPublishRequest request = new LearnSite.Model.AIActivityPlanPublishRequest
+        {
+            Cid = cid,
+            Hid = tcook.Hid,
+            Topic = context.Request["topic"],
+            PublishToStudents = publishToStudents,
+            SelectedSectionKeys = selectedSections,
+            Draft = draft
+        };
+
+        LearnSite.Model.AIActivityPlanPublishResult result = new LearnSite.BLL.AIActivityPlanPublisher().Publish(request);
+        if (result == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "活动计划发布失败。" }));
+            return;
+        }
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                missionId = result.MissionId,
+                listMenuId = result.ListMenuId,
+                missionTitle = result.MissionTitle,
+                publishedToStudents = result.PublishedToStudents,
+                updatedCourseContent = result.UpdatedCourseContent
+            }
+        }));
+    }
+
+    private List<string> ParseSelectedSections(string selectedSectionsJson)
+    {
+        if (string.IsNullOrEmpty(selectedSectionsJson))
+        {
+            return new List<string>();
+        }
+
+        try
+        {
+            JArray sections = JArray.Parse(selectedSectionsJson);
+            List<string> result = new List<string>();
+            foreach (JToken section in sections)
+            {
+                string key = section == null ? string.Empty : section.ToString();
+                if (LearnSite.Common.AIActivityPlanDraftHelper.IsSupportedSectionTarget(key))
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result;
+        }
+        catch
+        {
+            return new List<string>();
+        }
     }
 
     private bool TryGetAuthorizedCourse(HttpContext context, out int cid, out LearnSite.Model.Courses course)
