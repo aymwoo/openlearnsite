@@ -964,6 +964,58 @@ public class CommonLogicTests : IDisposable
     }
 
     [Fact]
+    public void FullLessonDraftHelper_ParseFullLessonDraft_RejectsMalformedOrPartialBlocks()
+    {
+        string response = "{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": \"40分钟\",\n  \"blocks\": [\n    {\n      \"blockKey\": \"opening-1\",\n      \"sort\": 1,\n      \"blockType\": \"mission\",\n      \"title\": \"情境导入\",\n      \"minutes\": 5,\n      \"teachingPurpose\": \"激活旧知\",\n      \"lessonPosition\": \"导入\",\n      \"teacherAction\": \"展示生活图片\",\n      \"studentAction\": \"观察并表达\",\n      \"materials\": [\"图片\"],\n      \"assessmentFocus\": \"能否联系生活\"\n    },\n    {\n      \"blockKey\": \"explore-1\",\n      \"sort\": 2,\n      \"title\": \"合作探究\",\n      \"minutes\": 15,\n      \"teacherAction\": \"发放操作材料\",\n      \"studentAction\": \"分组操作\",\n      \"materials\": [\"圆片\"],\n      \"assessmentFocus\": \"是否会表示二分之一\"\n    }\n  ]\n}";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
+
+        Assert.Null(draft);
+    }
+
+    [Fact]
+    public void FullLessonDraftHelper_ParseFullLessonDraft_RequiresStableBlockMetadataAndOrderedSort()
+    {
+        string response = "```json\n{\n  \"topic\": \"认识分数\",\n  \"lessonSummary\": \"围绕分数概念展开整课活动\",\n  \"totalMinutes\": 40,\n  \"blocks\": [\n    {\n      \"blockKey\": \"opening-1\",\n      \"sort\": 1,\n      \"blockType\": \"mission\",\n      \"title\": \"情境导入\",\n      \"minutes\": 5,\n      \"teachingPurpose\": \"激活旧知\",\n      \"lessonPosition\": \"导入\",\n      \"teacherAction\": \"展示生活图片\",\n      \"studentAction\": \"观察并表达\",\n      \"materials\": [\"图片\", \"分数卡\"],\n      \"assessmentFocus\": \"能否联系生活\"\n    },\n    {\n      \"blockKey\": \"practice-1\",\n      \"sort\": 2,\n      \"blockType\": \"quiz\",\n      \"title\": \"课堂练习\",\n      \"minutes\": \"10分钟\",\n      \"teachingPurpose\": \"检测理解\",\n      \"lessonPosition\": \"巩固\",\n      \"teacherAction\": \"组织抢答\",\n      \"studentAction\": \"独立作答\",\n      \"materials\": [\"练习单\"],\n      \"assessmentFocus\": \"判断是否掌握分数表示\"\n    }\n  ]\n}\n```";
+
+        var draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(response);
+
+        Assert.NotNull(draft);
+        Assert.True(LearnSite.Common.AIActivityPlanDraftHelper.IsValidFullLessonDraft(draft));
+        Assert.Equal("v1.2-full-lesson", draft.SchemaVersion);
+        Assert.Equal(2, draft.Blocks.Count);
+        Assert.Equal("opening-1", draft.Blocks[0].BlockKey);
+        Assert.Equal(1, draft.Blocks[0].Sort);
+        Assert.Equal("mission", draft.Blocks[0].BlockType);
+        Assert.Equal("激活旧知", draft.Blocks[0].TeachingPurpose);
+        Assert.Equal("导入", draft.Blocks[0].LessonPosition);
+        Assert.Equal("5分钟", draft.Blocks[0].Minutes);
+    }
+
+    [Fact]
+    public void FullLessonSavedDraftHelper_BuildRecord_RoundTripsServerOwnedBlockShape()
+    {
+        var draft = BuildValidFullLessonDraft();
+
+        var record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildFullLessonRecord(12, 5, "认识分数", "五年级", "40分钟", "理解分数含义", "旧内容", draft);
+
+        Assert.NotNull(record);
+        Assert.Contains("\"draftType\":\"fullLesson\"", record.DraftJson, StringComparison.Ordinal);
+        Assert.Contains("\"fullLessonDraft\"", record.DraftJson, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"activitySteps\"", record.DraftJson, StringComparison.Ordinal);
+
+        var loaded = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseFullLessonRecord(record, 12, 5);
+
+        Assert.NotNull(loaded);
+        Assert.Equal("fullLesson", loaded.DraftType);
+        Assert.NotNull(loaded.FullLessonDraft);
+        Assert.Null(loaded.Draft);
+        Assert.Equal(2, loaded.FullLessonDraft.Blocks.Count);
+        Assert.Equal("opening-1", loaded.FullLessonDraft.Blocks[0].BlockKey);
+        Assert.Equal("导入", loaded.FullLessonDraft.Blocks[0].LessonPosition);
+    }
+
+    [Fact]
     public void ActivityPlanDraftMigration_Source_IncludesDedicatedTableAndUniqueCourseIndex()
     {
         string source = ReadRepoFile("App_Code", "Utility", "UpdateGrade.cs");
@@ -1119,6 +1171,50 @@ public class CommonLogicTests : IDisposable
             Resources = new List<string> { "分数卡片" },
             Assessment = new List<string> { "观察学生是否能正确说出二分之一" },
             TeacherReminder = "注意让学生先说生活例子。"
+        };
+    }
+
+    private static LearnSite.Common.FullLessonDraft BuildValidFullLessonDraft()
+    {
+        return new LearnSite.Common.FullLessonDraft
+        {
+            SchemaVersion = "v1.2-full-lesson",
+            Topic = "认识分数",
+            LessonSummary = "围绕分数概念展开整课活动",
+            TotalMinutes = "40分钟",
+            Blocks = new List<LearnSite.Common.FullLessonDraftBlock>
+            {
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "opening-1",
+                    Sort = 1,
+                    BlockType = "mission",
+                    Title = "情境导入",
+                    Minutes = "5分钟",
+                    TeachingPurpose = "激活旧知",
+                    LessonPosition = "导入",
+                    TeacherAction = "展示生活图片",
+                    StudentAction = "观察并表达",
+                    Materials = new List<string> { "图片", "分数卡" },
+                    AssessmentFocus = "能否联系生活",
+                    Status = "draft"
+                },
+                new LearnSite.Common.FullLessonDraftBlock
+                {
+                    BlockKey = "practice-1",
+                    Sort = 2,
+                    BlockType = "quiz",
+                    Title = "课堂练习",
+                    Minutes = "10分钟",
+                    TeachingPurpose = "检测理解",
+                    LessonPosition = "巩固",
+                    TeacherAction = "组织抢答",
+                    StudentAction = "独立作答",
+                    Materials = new List<string> { "练习单" },
+                    AssessmentFocus = "判断是否掌握分数表示",
+                    Status = "draft"
+                }
+            }
         };
     }
 
