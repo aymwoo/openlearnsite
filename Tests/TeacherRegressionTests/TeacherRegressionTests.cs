@@ -810,6 +810,46 @@ public class TeacherRegressionTests
     }
 
     [Fact]
+    public void CourseEdit_FullLessonHandler_ShouldExposeParallelAuthorizedDraftActions()
+    {
+        var handler = File.ReadAllText(Path.Combine(TeacherRoot, "aiprovider_api.ashx"));
+
+        Assert.Contains("case \"fullLessonGenerate\":", handler, StringComparison.Ordinal);
+        Assert.Contains("case \"fullLessonRegenerateBlock\":", handler, StringComparison.Ordinal);
+        Assert.Contains("case \"fullLessonDraftStatus\":", handler, StringComparison.Ordinal);
+        Assert.Contains("case \"fullLessonSaveDraft\":", handler, StringComparison.Ordinal);
+        Assert.Contains("case \"fullLessonLoadDraft\":", handler, StringComparison.Ordinal);
+        Assert.Contains("case \"fullLessonDeleteDraft\":", handler, StringComparison.Ordinal);
+        Assert.Contains("TryGetAuthorizedCourse", handler, StringComparison.Ordinal);
+        Assert.Contains("AIActivityPlanDraftHelper.ParseFullLessonDraft", handler, StringComparison.Ordinal);
+        Assert.Contains("AIActivityPlanSavedDraftHelper.BuildFullLessonRecord", handler, StringComparison.Ordinal);
+        Assert.Contains("AIActivityPlanSavedDraftHelper.ParseFullLessonRecord", handler, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CourseEdit_FullLessonHandler_ShouldKeepActivityPlanPublishPathUntouched()
+    {
+        var handler = File.ReadAllText(Path.Combine(TeacherRoot, "aiprovider_api.ashx"));
+
+        Assert.Contains("case \"activityPlanPublish\":", handler, StringComparison.Ordinal);
+        Assert.Contains("AIActivityPlanPublisher", handler, StringComparison.Ordinal);
+        Assert.Contains("updatedCourseContent", handler, StringComparison.Ordinal);
+        Assert.DoesNotContain("fullLessonPublish", handler, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void CourseEdit_FullLessonDraftPersistence_ShouldReuseSingleCurrentDraftRecord()
+    {
+        var dal = File.ReadAllText(Path.Combine(RepoRoot, "App_Code", "Dal", "CourseActivityPlanDraft.cs"));
+        var model = File.ReadAllText(Path.Combine(RepoRoot, "App_Code", "Model", "CourseActivityPlanDraft.cs"));
+
+        Assert.Contains("where Cid=@Cid and Hid=@Hid", dal, StringComparison.Ordinal);
+        Assert.Contains("delete from CourseActivityPlanDraft where Cid=@Cid and Hid=@Hid", dal, StringComparison.Ordinal);
+        Assert.Contains("public string DraftJson", model, StringComparison.Ordinal);
+        Assert.DoesNotContain("FullLessonDraftJson", model, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ActivityPlanStudentEntry_Publisher_ShouldKeepMissionMenuContract()
     {
         var publisher = File.ReadAllText(Path.Combine(RepoRoot, "App_Code", "Dal", "AIActivityPlanPublisher.cs"));

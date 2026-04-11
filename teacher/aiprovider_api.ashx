@@ -70,6 +70,24 @@ public class aiprovider_api : IHttpHandler {
                 case "activityPlanPublish":
                     ActivityPlanPublish(context);
                     break;
+                case "fullLessonGenerate":
+                    FullLessonGenerate(context);
+                    break;
+                case "fullLessonRegenerateBlock":
+                    FullLessonRegenerateBlock(context);
+                    break;
+                case "fullLessonDraftStatus":
+                    FullLessonDraftStatus(context);
+                    break;
+                case "fullLessonSaveDraft":
+                    FullLessonSaveDraft(context);
+                    break;
+                case "fullLessonLoadDraft":
+                    FullLessonLoadDraft(context);
+                    break;
+                case "fullLessonDeleteDraft":
+                    FullLessonDeleteDraft(context);
+                    break;
                 case "listSkills":
                     GetSkillList(context);
                     break;
@@ -744,6 +762,223 @@ public class aiprovider_api : IHttpHandler {
                 publishedToStudents = result.PublishedToStudents,
                 updatedCourseContent = result.UpdatedCourseContent
             }
+        }));
+    }
+
+    private void FullLessonGenerate(HttpContext context)
+    {
+        int cid;
+        LearnSite.Model.Courses course;
+        if (!TryGetAuthorizedCourse(context, out cid, out course))
+        {
+            return;
+        }
+
+        string topic = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["topic"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength);
+        if (string.IsNullOrEmpty(topic))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Topic is required." }));
+            return;
+        }
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = false,
+            msg = "Full lesson generation is not available until the Phase 8 preview orchestration layer is wired."
+        }));
+    }
+
+    private void FullLessonRegenerateBlock(HttpContext context)
+    {
+        int cid;
+        if (!TryGetAuthorizedCourse(context, out cid, out _))
+        {
+            return;
+        }
+
+        string topic = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["topic"], LearnSite.Common.AIActivityPlanPromptBuilder.MaxTopicLength);
+        if (string.IsNullOrEmpty(topic))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Topic is required." }));
+            return;
+        }
+
+        string blockKey = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(context.Request["blockKey"], 100);
+        if (string.IsNullOrEmpty(blockKey))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Block key is required." }));
+            return;
+        }
+
+        LearnSite.Common.FullLessonDraft currentDraft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(context.Request["currentDraft"]);
+        if (!LearnSite.Common.AIActivityPlanDraftHelper.IsValidFullLessonDraft(currentDraft))
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Current full lesson draft is invalid." }));
+            return;
+        }
+
+        bool blockExists = currentDraft.Blocks.Any(block => string.Equals(block.BlockKey, blockKey, StringComparison.OrdinalIgnoreCase));
+        if (!blockExists)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Block key is invalid." }));
+            return;
+        }
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = false,
+            msg = "Full lesson block regeneration is not available until the Phase 8 preview orchestration layer is wired."
+        }));
+    }
+
+    private void FullLessonDraftStatus(HttpContext context)
+    {
+        int cid;
+        if (!TryGetAuthorizedCourse(context, out cid, out _))
+        {
+            return;
+        }
+
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.Model.CourseActivityPlanDraft record = draftBll.GetCurrentByCourse(cid, tcook.Hid);
+        LearnSite.Common.ActivityPlanSavedDraftPayload payload = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseFullLessonRecord(record, cid, tcook.Hid);
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                hasDraft = payload != null,
+                updatedAt = payload == null ? string.Empty : payload.UpdatedAt.ToString("s")
+            }
+        }));
+    }
+
+    private void FullLessonSaveDraft(HttpContext context)
+    {
+        int cid;
+        LearnSite.Model.Courses course;
+        if (!TryGetAuthorizedCourse(context, out cid, out course))
+        {
+            return;
+        }
+
+        LearnSite.Common.FullLessonDraft draft = LearnSite.Common.AIActivityPlanDraftHelper.ParseFullLessonDraft(context.Request["currentDraft"]);
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.Model.CourseActivityPlanDraft record = LearnSite.Common.AIActivityPlanSavedDraftHelper.BuildFullLessonRecord(
+            cid,
+            tcook.Hid,
+            context.Request["topic"],
+            context.Request["grade"],
+            context.Request["duration"],
+            context.Request["teachingGoals"],
+            context.Request["existingCourseContent"],
+            draft);
+
+        if (record == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Saved full lesson draft is invalid." }));
+            return;
+        }
+
+        record.ExistingCourseContentSnapshot = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(record.ExistingCourseContentSnapshot, 4000);
+        if (course != null && string.IsNullOrEmpty(record.ExistingCourseContentSnapshot))
+        {
+            record.ExistingCourseContentSnapshot = LearnSite.Common.AIActivityPlanPromptBuilder.BoundText(course.Ccontent, 4000);
+        }
+
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        bool saved = draftBll.UpsertCurrent(record);
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = saved,
+            msg = saved ? "Saved full lesson draft updated." : "Failed to save full lesson draft."
+        }));
+    }
+
+    private void FullLessonLoadDraft(HttpContext context)
+    {
+        int cid;
+        if (!TryGetAuthorizedCourse(context, out cid, out _))
+        {
+            return;
+        }
+
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        LearnSite.Model.CourseActivityPlanDraft record = draftBll.GetCurrentByCourse(cid, tcook.Hid);
+        LearnSite.Common.ActivityPlanSavedDraftPayload payload = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseFullLessonRecord(record, cid, tcook.Hid);
+        if (payload == null || payload.FullLessonDraft == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new { success = false, msg = "Saved full lesson draft is invalid." }));
+            return;
+        }
+
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = true,
+            data = new
+            {
+                topic = payload.Topic,
+                grade = payload.Grade,
+                duration = payload.Duration,
+                teachingGoals = payload.TeachingGoals,
+                existingCourseContent = payload.ExistingCourseContent,
+                updatedAt = payload.UpdatedAt.ToString("s"),
+                draft = new
+                {
+                    schemaVersion = payload.FullLessonDraft.SchemaVersion,
+                    topic = payload.FullLessonDraft.Topic,
+                    lessonSummary = payload.FullLessonDraft.LessonSummary,
+                    totalMinutes = payload.FullLessonDraft.TotalMinutes,
+                    blocks = payload.FullLessonDraft.Blocks.Select(block => new
+                    {
+                        blockKey = block.BlockKey,
+                        sort = block.Sort,
+                        blockType = block.BlockType,
+                        title = block.Title,
+                        minutes = block.Minutes,
+                        teachingPurpose = block.TeachingPurpose,
+                        lessonPosition = block.LessonPosition,
+                        teacherAction = block.TeacherAction,
+                        studentAction = block.StudentAction,
+                        materials = block.Materials,
+                        assessmentFocus = block.AssessmentFocus,
+                        status = block.Status
+                    }).ToList()
+                }
+            }
+        }));
+    }
+
+    private void FullLessonDeleteDraft(HttpContext context)
+    {
+        int cid;
+        if (!TryGetAuthorizedCourse(context, out cid, out _))
+        {
+            return;
+        }
+
+        LearnSite.Model.TeaCook tcook = new LearnSite.Model.TeaCook();
+        LearnSite.BLL.CourseActivityPlanDraft draftBll = new LearnSite.BLL.CourseActivityPlanDraft();
+        LearnSite.Model.CourseActivityPlanDraft record = draftBll.GetCurrentByCourse(cid, tcook.Hid);
+        LearnSite.Common.ActivityPlanSavedDraftPayload payload = LearnSite.Common.AIActivityPlanSavedDraftHelper.ParseFullLessonRecord(record, cid, tcook.Hid);
+        if (payload == null)
+        {
+            context.Response.Write(JsonConvert.SerializeObject(new
+            {
+                success = false,
+                msg = "Saved full lesson draft not found."
+            }));
+            return;
+        }
+
+        bool deleted = draftBll.DeleteCurrent(cid, tcook.Hid);
+        context.Response.Write(JsonConvert.SerializeObject(new
+        {
+            success = deleted,
+            msg = deleted ? "Saved full lesson draft deleted." : "Saved full lesson draft not found."
         }));
     }
 
