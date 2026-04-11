@@ -1,283 +1,160 @@
 # Project Research Summary
 
 **Project:** OpenLearnSite teaching skills enhancement
-**Domain:** AI-assisted teacher lesson-planning inside an existing ASP.NET Web
-Forms authoring system
-**Researched:** April 10, 2026
-**Confidence:** MEDIUM
+**Domain:** Brownfield AI-generated classroom activity authoring and delivery
+**Researched:** 2026-04-11
+**Confidence:** HIGH
 
-## Executive Summary
+## Executive summary
 
-This is not a greenfield AI copilot product. It is a brownfield teaching-skill
-upgrade inside OpenLearnSite's existing teacher editing workflow. Across the
-research, the strongest pattern is consistent: experts embed lesson planning in
-the page teachers already use, collect a small amount of structured context,
-generate a typed lesson-plan draft, validate it on the server, and require the
-teacher to review and selectively apply it before saving. The winning product
-shape is an in-workflow drafting assistant, not a generic chatbot and not a
-standalone planning app.
+The next milestone fits the existing platform architecture. The current repo
+already has the key building blocks for classroom delivery: teacher-side course
+editing, AI generation routed through the server, lesson activity identity via
+`Mission`, student navigation via `ListMenu`, and student submission and status
+primitives via `Works`, `MenuWorks`, and related status hooks. The recommended
+approach is to extend those existing paths rather than introduce a parallel
+activity subsystem.
 
-The recommended approach is to add a dedicated lesson-planning service on top of
-the current provider and custom-skill infrastructure, keep prompt pedagogy
-configurable, keep the output contract in code, store AI output as a structured
-draft, and map approved sections back into existing lesson fields. Build the
-MVP around one narrow job: topic or knowledge point in, editable classroom
-activity plan out. That MVP must include section-level review and regeneration,
-basic alignment cues, fallback behavior, and teacher-in-the-loop controls.
+Research indicates that the milestone should be treated as an AI-to-execution
+bridge, not as a broad learning-platform redesign. The essential scope is: the
+teacher confirms AI-generated activity output, the system creates or updates a
+real classroom activity and publish state, the student can enter it from the
+existing class menu, and the submission path records completion in a way the
+current platform can understand.
 
-The main risks are not model access. They are weak instructional alignment,
-privacy leakage, unsafe or low-trust suggestions, and workflow mismatch inside
-legacy pages. Mitigate them early with Phase 0 governance, Phase 1 schema and
-validation, draft-first architecture, explicit teacher review, bounded context
-inputs, and telemetry that measures edits, regeneration, and acceptance quality
-instead of raw generation volume.
+The biggest risk is split-brain state between teacher-side generated content and
+student-side published activity records. The roadmap should therefore begin with
+one server-owned publish orchestration phase before expanding the student
+experience and tracking rules.
 
-## Key Findings
+## Key findings
 
 ### Recommended stack
 
-The stack research points to a conservative architecture choice: stay in the
-existing ASP.NET Web Forms monolith and extend the current AI provider layer
-instead of introducing a new AI framework or separate app. The right technical
-move is a bounded `AILessonPlanner`-style service that assembles context, calls
-an OpenAI-compatible provider using structured outputs, validates the returned
-JSON, and renders a teacher-editable preview. Keep `Newtonsoft.Json` in the
-legacy app, add schema validation with `NJsonSchema`, and add resilience and
-observability only where they reduce concrete delivery risk.
+No new major stack additions are recommended for v1.1. Reuse ASP.NET Web Forms,
+SQL Server, the existing AI provider route, and the current activity data model
+as far as possible.
 
 **Core technologies:**
-- **ASP.NET Web Forms (.NET Framework 4.8):** host the feature in the current
-  teacher editing flow — lowest-risk brownfield path.
-- **Dedicated planner service in `App_Code/Bll`:** orchestrate prompt assembly,
-  provider calls, validation, fallback, and shaping — matches existing gauge
-  and exam patterns.
-- **OpenAI-compatible structured-output provider path:** return typed JSON, not
-  prose — makes preview and insertion deterministic.
-- **`Newtonsoft.Json` 13.0.3:** serialize legacy web-layer payloads — already
-  standard in the repo.
-- **`NJsonSchema` 11.5.2:** validate the `TeachingActivityPlan` contract on the
-  server — practical fit for a Newtonsoft-heavy .NET Framework app.
-
-Critical version guidance is narrow but important: keep the Web Forms runtime on
-`.NET Framework 4.8`, use `NJsonSchema` `11.5.2` for contract validation, and
-only introduce `Polly` `8.6.6`, `HtmlSanitizer` `9.0.892`, or OpenTelemetry
-`1.15.1` where the integration actually needs resilience, sanitization, or
-traceability.
+- ASP.NET Web Forms: teacher and student page flow, auth, and postback model
+- SQL Server: lesson activity, publish, submission, and completion persistence
+- Existing AI provider route: server-side structured generation from teacher
+  input
 
 ### Expected features
 
-Feature research is clear that the MVP must feel like a teaching tool, not a
-text generator. Teachers now expect a structured plan with goals, activity flow,
-timing, resources, and assessment, plus lightweight context controls and the
-ability to keep good sections while regenerating weak ones. Competitive upside
-comes later from differentiated variants, artifact generation, and curriculum
-grounding, but those only matter after the base structured-plan loop is trusted.
-
 **Must have (table stakes):**
-- **Structured activity plan generation:** turn a topic into goals, steps,
-  timing, interaction mode, resources, and assessment.
-- **In-workflow integration:** run inside the existing lesson or course editor.
-- **Teacher context controls:** support topic plus optional grade, subject,
-  duration, objective, and class context.
-- **Section-level edit and regenerate:** let teachers keep strong sections and
-  repair weak ones.
-- **Human review before save:** require review, edit, and selective insert.
+- Teacher can convert AI output into a real lesson activity
+- Teacher controls publish state before students see it
+- Student can enter the published activity from the existing class menu
+- Student can view activity guidance, submit a result, and have completion
+  recorded
 
 **Should have (competitive):**
-- **Basic standards or alignment notes:** enough to show the plan is not generic.
-- **Differentiated variants:** support, on-level, and extension paths built from
-  the structured plan.
-- **Artifact generation from approved plans:** exit tickets, rubrics,
-  worksheets, or slides.
-- **Reusable templates and remixing:** discussion, experiment, review game, and
-  similar proven activity shapes.
+- One generation flow fills both lesson content and student activity entry
+- Step-by-step student guidance derived from structured AI output
 
 **Defer (v2+):**
-- **Curriculum-grounded generation from district materials:** valuable, but it
-  needs ingestion, governance, and retrieval design first.
-- **Data-informed suggestions from student performance:** high value, but only
-  after data quality and permissions are reliable.
-- **Cross-lesson or unit sequencing:** defer until single-lesson quality is
-  proven.
+- Autonomous publish
+- Broad collaboration or live orchestration features
+- Full analytics redesign
 
 ### Architecture approach
 
-Architecture research strongly supports a draft-first embedded workflow. The
-teacher editor remains the source of truth. A planning panel collects topic and
-options, a dedicated handler calls a planner service, the response is validated
-against a structured schema, the plan is saved as a draft, and the teacher then
-accepts all or selected sections into existing lesson fields. Reuse the current
-AI provider and scoped-skill infrastructure; do not bypass it with ad hoc page
-logic.
+The milestone should keep one continuous flow: `teacher/courseedit.aspx` and the
+existing AI route produce approved output, a server-side publish orchestrator
+maps that output into `Mission` and `ListMenu` records plus lesson content, and
+the student enters via the existing menu and submission path.
 
 **Major components:**
-1. **Editor host and AI plan panel** — collect context, show generation status,
-   preview structured sections, and drive selective apply.
-2. **Planning handler and orchestration service** — validate requests, build the
-   context sandwich, call the provider, normalize fallback output, and persist
-   drafts.
-3. **Draft repository and apply mapper** — store structured plans before publish
-   and map approved sections into `Mission`, `Courses`, or related lesson data.
-4. **Skill template and schema layer** — keep pedagogical prompts configurable
-   while keeping the data contract fixed in code.
-5. **Audit and feedback loop** — track provider, prompt version, fallback,
-   acceptance, edits, and failures for later quality tuning.
-
-Key patterns to preserve are draft-first generation, structured-output contracts
-instead of prose blobs, and context-sandwich orchestration that combines fixed
-pedagogy, editor context, and teacher intent.
+1. Teacher generation and publish surface — captures and confirms AI activity
+2. Publish orchestrator — creates or updates lesson content, mission state, and
+   menu visibility together
+3. Student activity and submission surface — renders guidance and records the
+   classroom result
 
 ### Critical pitfalls
 
-The pitfall research makes the roadmap constraints unusually clear: success will
-fail faster on pedagogy, trust, privacy, and workflow than on infrastructure.
+1. **Planning output not publishable** — ensure teacher confirmation creates a
+   real classroom activity identity
+2. **Teacher and student publish-state drift** — update mission, menu, and
+   content in one server-side path
+3. **Structured guidance lost on student page** — define the minimum student
+   activity render contract early
+4. **Completion semantics unclear** — decide what qualifies as completion before
+   wiring submission
 
-1. **Generating plans before locking instructional intent** — require a minimal
-   planning frame, show assumptions, and validate timing/objective fit.
-2. **Treating AI as a substitute for pedagogical judgment** — keep teacher-owned
-   editing, selective insert, and review prompts prominent.
-3. **Weak curriculum and assessment alignment** — require objective, evidence of
-   learning, and assessment sections in the schema.
-4. **Leaking student or sensitive classroom data into prompts** — add provider
-   controls, redaction, bounded inputs, and privacy review before pilot.
-5. **Bolting the feature onto workflow without adoption design** — bind output to
-   native lesson fields and avoid copy-paste or dual sources of truth.
+## Implications for roadmap
 
-## Implications for Roadmap
+### Phase 1: Teacher publish foundation
+**Rationale:** Publish orchestration is the dependency for all student-facing
+work.
+**Delivers:** AI-to-activity mapping, mission or menu record creation or update,
+and explicit teacher publish control.
+**Addresses:** Teacher authoring and classroom publish bridge.
+**Avoids:** Planning-only output and publish-state drift.
 
-Based on the combined research, the roadmap should be phase-gated around trust,
-structure, and integration, in that order.
+### Phase 2: Student activity experience
+**Rationale:** Once real activity identity exists, the student needs a clear
+entry and guided activity page.
+**Delivers:** Student menu entry, activity rendering, and visible step guidance.
+**Uses:** Existing menu and student activity pages where possible.
+**Implements:** Structured student-facing activity contract.
 
-### Phase 0: Governance and MVP guardrails
-**Rationale:** Privacy, provider approval, and scope control must exist before
-teacher pilot usage. The research is explicit that existing provider routing is
-not enough on its own.
-**Delivers:** Provider allowlist review, prompt redaction rules, logging policy,
-success metrics, and a hard MVP boundary around single-lesson planning.
-**Addresses:** Human review, in-workflow use, narrow v1 scope.
-**Avoids:** Sensitive-data leakage, autopublish creep, and misleading success
-metrics.
-
-### Phase 1: Structured planning foundation
-**Rationale:** Every later feature depends on a stable contract, draft model,
-and planner service. This is the architectural dependency root.
-**Delivers:** `TeachingActivityPlan` schema, draft persistence,
-`AILessonPlanner`, dedicated generation endpoint, validation, fallback, and
-lightweight teacher context capture.
-**Addresses:** Structured plan generation, teacher context controls, basic
-alignment scaffolding.
-**Uses:** Web Forms host, `Newtonsoft.Json`, `NJsonSchema`, existing provider and
-skill infrastructure.
-**Avoids:** Free-form prose persistence, weak instructional intent, unsafe output
-shape, and generic chat misuse.
-
-### Phase 2: Embedded review and selective apply UX
-**Rationale:** The product only becomes useful when the draft can be reviewed,
-edited, regenerated by section, and inserted into native lesson fields without
-copy-paste.
-**Delivers:** AI plan panel in existing editors, preview UI, section-level
-regenerate, selective apply, and mapper logic into lesson/activity records.
-**Addresses:** In-workflow integration, section-level edit/regenerate, human
-review before save.
-**Implements:** Editor host, review panel, apply handler, and merge mapper.
-**Avoids:** Workflow mismatch, dual sources of truth, and destructive overwrite.
-
-### Phase 3: Trust, assessment linkage, and adoption telemetry
-**Rationale:** After the core loop works, the next leverage comes from proving
-quality and connecting planning output to adjacent teacher workflows.
-**Delivers:** Assessment/rubric handoff, prompt/version audit logging, feedback
-signals, apply/edit/regenerate analytics, and quality review queues.
-**Addresses:** Resource and assessment suggestions, measurable classroom fit, and
-continuous tuning.
-**Uses:** Existing gauge flow, audit metadata, and optional observability.
-**Avoids:** Flying blind on quality, hallucinated assessments, and roadmap drift
-toward breadth before reliability.
-
-### Phase 4: Post-validation enhancements
-**Rationale:** Differentiation, artifact generation, and curriculum grounding are
-valuable only after the structured-planning core is trusted and measurable.
-**Delivers:** Differentiated variants, artifact bundle generation, reusable
-activity templates, and later curriculum-grounded planning.
-**Addresses:** Competitive differentiation and stronger teacher time savings.
-**Avoids:** Premature complexity, data-governance debt, and overbuilding before
-adoption proof.
+### Phase 3: Submission and completion tracking
+**Rationale:** The user-defined minimum scope includes submission and recorded
+completion.
+**Delivers:** Student submission path and reliable completion semantics.
+**Uses:** Existing `Works`, `MenuWorks`, and classroom tracking hooks.
 
 ### Phase ordering rationale
 
-- Start with governance because privacy and scope failures can block the pilot
-  before quality tuning matters.
-- Build schema, draft storage, and orchestration before UI work because the UI
-  depends on a stable contract and fallback behavior.
-- Add selective apply before advanced generation because teacher trust depends on
-  preserving edits and keeping the editor as source of truth.
-- Delay differentiation, artifact generation, and curriculum grounding until the
-  narrow planning job shows strong apply and reuse signals.
+- Publish identity must exist before student entry can be stable.
+- Student rendering must be defined before submission rules can be validated.
+- Completion tracking must reuse existing classroom records instead of becoming
+  a parallel system.
 
 ### Research flags
 
 Phases likely needing deeper research during planning:
-- **Phase 0:** Privacy, retention, and approved-provider policy need local legal
-  and institutional validation.
-- **Phase 3:** Assessment linkage may need targeted research on how the current
-  gauge workflow can consume lesson-plan output cleanly.
-- **Phase 4:** Curriculum grounding and data-informed suggestions need separate
-  retrieval, governance, and permissions research before implementation.
+- **Phase 1:** exact mapping from AI-generated structure into existing mission
+  schema or a linked side table
+- **Phase 3:** precise rule for completion if current submission models differ
+  by activity type
 
-Phases with standard patterns (skip research-phase):
-- **Phase 1:** Structured schema, draft-first generation, server validation, and
-  bounded provider orchestration are already well-supported by research.
-- **Phase 2:** Embedded preview, selective apply, and teacher-in-the-loop review
-  follow established patterns and the repo's current AI workflow direction.
+Phases with standard patterns:
+- **Phase 2:** menu entry, status messaging, and step rendering follow common
+  Web Forms and accessibility patterns
 
-## Confidence Assessment
+## Confidence assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Strongly grounded in local code patterns plus official .NET and provider guidance. |
-| Features | MEDIUM | Clear market pattern, but mostly based on product pages rather than deep implementation docs. |
-| Architecture | MEDIUM | Pattern is consistent across LMS examples and local code, but some source pages were verified indirectly. |
-| Pitfalls | HIGH | Supported by first-party project constraints plus official education and privacy guidance. |
+| Stack | HIGH | Existing repo already provides required baseline |
+| Features | HIGH | User-defined minimum scope is clear |
+| Architecture | HIGH | Strong existing integration points were found in code |
+| Pitfalls | HIGH | Main risks come from brownfield state drift, not unknown tech |
 
-**Overall confidence:** MEDIUM
+**Overall confidence:** HIGH
 
 ### Gaps to address
 
-- **Local data governance rules:** Confirm what prompt metadata, raw prompts, and
-  outputs can be retained before pilot rollout.
-- **Editor-field mapping details:** Validate how plan sections should map into
-  `Mission`, `Courses`, and `ListMenu` without creating awkward teacher edits.
-- **Section-level regeneration UX:** Decide whether regeneration is server-only,
-  diff-aware, or draft-versioned before implementation planning.
-- **Standards alignment depth for v1:** Choose whether alignment is a note,
-  tagged field, or validated constraint in the first release.
-- **Assessment handoff shape:** Define the minimal contract between lesson-plan
-  output and existing rubric/gauge generation.
+- Exact activity data contract for the student page: decide whether existing
+  mission content is sufficient or needs structured side data.
+- Exact completion rule: decide whether submission alone marks completion or
+  whether current status hooks require extra updates.
 
 ## Sources
 
-### Primary (HIGH confidence)
-- OpenLearnSite local project context: `.planning/PROJECT.md`.
-- OpenLearnSite local implementation references:
-  `teacher/aiprovider_api.ashx`, `App_Code/Bll/AIGaugeGenerator.cs`,
-  `App_Code/Bll/AIStudentExamGenerator.cs`, and
-  `App_Code/Model/AICustomSkill.cs`.
-- Microsoft documentation on serializer migration and .NET observability.
-- California Department of Education AI guidance.
-- UNESCO guidance for generative AI in education and research.
+### Primary (high confidence)
+- Repository code: teacher course editor, student course page, student menu,
+  lesson menu DAL and BLL
+- Microsoft Learn: ASP.NET Page Life Cycle Overview
+- W3C WCAG 2.1 Understanding 4.1.3 Status Messages
 
-### Secondary (MEDIUM confidence)
-- OpenAI structured outputs guidance and Anthropic structured tool/schema
-  patterns.
-- Official product and platform material from MagicSchool, Brisk, SchoolAI,
-  Google Classroom, Blackboard Learn Ultra, and Canvas IgniteAI.
-- U.S. Department of Education AI and student privacy guidance.
-
-### Tertiary (LOW confidence)
-- Search-result-assisted verification where official pages were discoverable but
-  direct fetches were incomplete or blocked.
-- Competitor positioning inferences drawn from public marketing pages rather
-  than technical implementation detail.
+### Secondary (medium confidence)
+- W3C multi-page forms tutorial for step and progress guidance patterns
 
 ---
-*Research completed: April 10, 2026*
+*Research completed: 2026-04-11*
 *Ready for roadmap: yes*
