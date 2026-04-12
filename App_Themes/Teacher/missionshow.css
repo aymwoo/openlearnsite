@@ -30,17 +30,27 @@
         }
 
         .mission-show-toggle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 0.9rem;
             margin-bottom: 1rem;
         }
 
         .mission-show-toggle-card {
-            border: 1px solid #dbe4f0;
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(99, 102, 241, 0.2);
             border-radius: 1rem;
-            background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
-            padding: 1rem 1.1rem;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #c7d2fe 100%);
+            padding: 1.1rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .mission-show-toggle-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
         }
 
         .mission-show-toggle-row {
@@ -55,24 +65,29 @@
         }
 
         .mission-show-toggle-title {
-            font-size: 0.92rem;
-            font-weight: 800;
-            color: #0f172a;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #312e81;
         }
 
         .mission-show-toggle-desc,
         .mission-show-toggle-status {
             font-size: 0.82rem;
-            color: #64748b;
+            color: #57534e;
         }
 
         .mission-show-toggle-desc {
-            margin-top: 0.3rem;
+            margin-top: 0.25rem;
             line-height: 1.55;
         }
 
         .mission-show-toggle-status {
-            margin-top: 0.5rem;
+            margin-top: 0.6rem;
+            font-weight: 500;
+            padding: 0.3rem 0.6rem;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 0.4rem;
+            display: inline-block;
         }
 
         .mission-show-toggle-switch {
@@ -83,16 +98,17 @@
             height: 30px;
             border: none;
             border-radius: 999px;
-            background: #cbd5e1;
+            background: #e2e8f0;
             cursor: pointer;
-            transition: background 0.2s ease;
+            transition: all 0.25s ease;
             flex-shrink: 0;
             padding: 3px;
             box-sizing: border-box;
         }
 
         .mission-show-toggle-switch.is-on {
-            background: #0f766e;
+            background: #4f46e5;
+            box-shadow: 0 0 12px rgba(79, 70, 229, 0.4);
         }
 
         .mission-show-toggle-knob {
