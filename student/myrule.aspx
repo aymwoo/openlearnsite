@@ -345,7 +345,7 @@
             </section>
 
             <div class="rule-actions">
-                <asp:Button ID="Btnreturn" runat="server" Text="关闭" BorderStyle="None" CssClass="rule-btn" />
+                <a href="../index.aspx" class="rule-btn">返回首页</a>
             </div>
         </div>
     </div>
