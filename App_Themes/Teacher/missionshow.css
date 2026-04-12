@@ -23,15 +23,47 @@
             align-items: center;
         }
 
+        .mission-show-actions > * {
+            flex: 0 0 auto;
+        }
+
         .mission-show-actions .content-add-checks {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             white-space: nowrap;
             background: transparent;
             border: none;
-            padding: 0;
-            min-height: 0;
-            border-radius: 0;
+            padding: 0.45rem 0.8rem;
+            min-height: auto;
+            border-radius: 999px;
+            box-sizing: border-box;
+            width: auto;
+            max-width: 100%;
+            color: #475569;
+            background: rgba(15, 118, 110, 0.06);
+            border: 1px solid rgba(15, 118, 110, 0.14);
+            gap: 0;
+        }
+
+        .mission-show-actions .content-add-checks input {
+            margin-right: 0.4rem;
+            flex: 0 0 auto;
+        }
+
+        .mission-show-actions .admin-form-link {
+            flex: 0 0 auto;
+        }
+
+        @media (max-width: 640px) {
+            .mission-show-actions {
+                gap: 0.65rem 0.75rem;
+            }
+
+            .mission-show-actions .content-add-checks,
+            .mission-show-actions .admin-form-link {
+                min-height: 2.5rem;
+            }
         }
 
         .mission-show-toggle-grid {

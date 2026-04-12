@@ -3,6 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
     <link href="../App_Themes/Teacher/admin-form.css" rel="stylesheet" />
     <link href="../App_Themes/Teacher/course-content-add.css" rel="stylesheet" />
+    <link href="../App_Themes/Teacher/missionshow.css" rel="stylesheet" />
     <link href="../App_Themes/Teacher/content-show-markdown.css" rel="stylesheet" />
     <link href="../kindeditor/plugins/code/prettify.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="../js/vendors/reveal/dist/reveal.css" />
