@@ -116,6 +116,7 @@
         .course-grid th:nth-child(7),
         .course-grid th:nth-child(8),
         .course-grid th:nth-child(9),
+        .course-grid th:nth-child(10),
         .course-grid th:nth-child(11),
         .course-grid td:nth-child(4),
         .course-grid td:nth-child(5),
@@ -123,6 +124,7 @@
         .course-grid td:nth-child(7),
         .course-grid td:nth-child(8),
         .course-grid td:nth-child(9),
+        .course-grid td:nth-child(10),
         .course-grid td:nth-child(11) {
             text-align: center;
         }

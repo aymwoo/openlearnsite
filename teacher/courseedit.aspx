@@ -2,6 +2,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
     <link rel="stylesheet" type="text/css" href="/App_Themes/Teacher/courseshow.css" />
+    <link rel="stylesheet" type="text/css" href="/App_Themes/Teacher/courseedit.css" />
     <style type="text/css">
         .activity-plan-draft {
             display: flex;
