@@ -1,5 +1,21 @@
 # 更新日志 (CHANGELOG)
 
+## 2026-04-12
+
+### 问题修复
+- **学案列表日期列恢复居中显示**：`teacher/course.aspx` 相关样式补齐日期列的居中规则，避免课程管理页中“日期”列与其他操作列视觉错位。
+- **课堂守则页返回入口修正**：`student/myrule.aspx` 将原“关闭”按钮改为“返回首页”，避免学生在普通浏览场景下点击后直接关闭窗口。
+- **考试管理标题可读性修复**：`exam/examlist.aspx` 为 `exam-hero` 补充深色渐变背景并同步调整标题文字颜色，解决标题与浅背景对比不足的问题。
+- **活动预览页选项区横向排布修复**：`teacher/missionshow.aspx` 补齐 `missionshow.css` 引用，并对“是否提交、上次作品、是否发布、小组合作”四个选项做局部样式覆盖，修复其错误继承编辑页整块样式后占满整行的问题。
+
+### 升级增强
+- **学案管理页顶部操作区整合**：`teacher/course.aspx` 将“导入学案”“学案仓库”移动到“添加学案”右侧，并补充按钮间距，减少页面底部重复操作区，提高教师端常用操作集中度。
+- **活动预览页渲染开关视觉升级**：`teacher/missionshow.aspx` 的 Markdown 与 Reveal 渲染开关改为更清晰的紫蓝渐变风格，增加状态文案、焦点态与层次阴影，提升可辨识性与交互质感。
+
+### 涉及文件
+- 教师端学案与活动页：`teacher/course.aspx`、`App_Themes/Teacher/course.css`、`teacher/missionshow.aspx`、`App_Themes/Teacher/missionshow.css`
+- 学生与考试页面：`student/myrule.aspx`、`exam/examlist.aspx`
+
 ## 2026-04-10
 
 ### 新功能
