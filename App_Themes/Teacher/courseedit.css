@@ -180,17 +180,23 @@
         .course-edit-editor-stage textarea {
             max-width: 100%; width: 100% !important;
         }
-        .course-edit-ai-layout {
+        /* Override missionadd.css .editor-ai-layout flex rules —
+           use higher-specificity selector so the grid layout wins
+           even at <1100px where missionadd sets flex-direction:column */
+        .course-edit-editor-panel .course-edit-ai-layout {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(320px, 360px);
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
             gap: 1.25rem;
             align-items: start;
+            flex-direction: unset;  /* neutralize missionadd @media override */
         }
         .course-edit-main-editor { min-width: 0; }
-        .courseedit-plan-panel {
+        .course-edit-editor-panel .courseedit-plan-panel {
             width: 100%;
-            max-width: 360px;
-            justify-self: end;
+            max-width: none;
+            justify-self: stretch;
+            position: sticky;
+            top: 1rem;
         }
         .course-edit-msg { display: block; font-size: 14px; font-weight: 600; color: #0f172a; line-height: 1.7; }
         .course-edit-msg:empty { display: none; }
@@ -272,13 +278,13 @@
                 grid-template-columns: 1fr;
             }
 
-            .course-edit-ai-layout {
+            .course-edit-editor-panel .course-edit-ai-layout {
                 grid-template-columns: 1fr;
             }
 
-            .courseedit-plan-panel {
-                max-width: none;
-                justify-self: stretch;
+            .course-edit-editor-panel .courseedit-plan-panel {
+                position: static;
+                top: auto;
             }
         }
 
