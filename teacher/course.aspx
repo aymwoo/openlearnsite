@@ -15,6 +15,8 @@
                     </div>
                     <div class="course-hero-action">
                         <asp:Button ID="Btnadd" runat="server" Text="添加学案" onclick="Btnadd_Click" CssClass="course-primary-btn" />
+                        <asp:Button ID="Btnimport" runat="server" Text="导入学案" onclick="Btnimport_Click" CssClass="course-secondary-btn" />
+                        <asp:Button ID="Btnold" runat="server" Text="学案仓库" onclick="Btnold_Click" CssClass="course-secondary-btn" />
                     </div>
                 </div>
             </section>
@@ -163,10 +165,7 @@
                 </div>
             </section>
 
-            <section class="course-footer">
-                <asp:Button ID="Btnimport" runat="server" Text="导入学案" onclick="Btnimport_Click" CssClass="course-secondary-btn" />
-                <asp:Button ID="Btnold" runat="server" Text="学案仓库" onclick="Btnold_Click" CssClass="course-secondary-btn" />
-            </section>
+            
         </div>
 
         
