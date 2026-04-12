@@ -21,15 +21,16 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 1rem;
-            padding: 1.5rem;
+            padding: 1.8rem;
             border: 1px solid rgba(148, 163, 184, 0.18);
             border-radius: 1.25rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            background: linear-gradient(135deg, #312e81 0%, #4338ca 55%, #6366f1 100%);
+            color: #ffffff;
             box-shadow: 0 12px 32px -24px rgba(15, 23, 42, 0.3);
         }
         .exam-hero-title {
             margin: 0;
-            color: #0f172a;
+            color: #ffffff;
             font-size: 1.625rem;
             font-weight: 700;
             line-height: 1.2;
@@ -39,7 +40,7 @@
         }
         .exam-hero-subtitle {
             margin: 0.75rem 0 0;
-            color: #475569;
+            color: rgba(255, 255, 255, 0.85);
             font-size: 0.95rem;
             line-height: 1.7;
         }
