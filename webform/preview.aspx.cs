@@ -42,18 +42,31 @@ public partial class webform_preview : System.Web.UI.Page
                 emodel = ebll.GetModel(Eid);
                 Examjson = emodel.Edata;
 
-                LearnSite.BLL.Answers abll=new LearnSite.BLL.Answers();
-                LearnSite.Model.Answers amodel =new LearnSite.Model.Answers();
-                amodel = abll.GetModelme(Eid,cook.Sid);
-                if(amodel!=null){
-                    Done =1;
+                LearnSite.BLL.Answers abll = new LearnSite.BLL.Answers();
+                LearnSite.Model.Answers amodel = new LearnSite.Model.Answers();
+                amodel = abll.GetModelme(Eid, cook.Sid);
+                
+                bool isSimulatedStudent = cook.IsSimiStu();
+                
+                if (amodel != null)
+                {
+                    Done = 1;
                     Score = amodel.Ascore.ToString();
                     HyperLinkAnalysis.Visible = true;
                     HyperLinkAnalysis.NavigateUrl = "Analysis.aspx?eid=" + Eid.ToString();
                 }
-                else{
-                    Done =0;
-                    HyperLinkAnalysis.Visible = false;
+                else
+                {
+                    Done = 0;
+                    if (isSimulatedStudent)
+                    {
+                        HyperLinkAnalysis.Visible = true;
+                        HyperLinkAnalysis.NavigateUrl = "Analysis.aspx?eid=" + Eid.ToString();
+                    }
+                    else
+                    {
+                        HyperLinkAnalysis.Visible = false;
+                    }
                 }
             }
         }
