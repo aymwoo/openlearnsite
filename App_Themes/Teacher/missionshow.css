@@ -27,6 +27,11 @@
             display: inline-flex;
             align-items: center;
             white-space: nowrap;
+            background: transparent;
+            border: none;
+            padding: 0;
+            min-height: 0;
+            border-radius: 0;
         }
 
         .mission-show-toggle-grid {
