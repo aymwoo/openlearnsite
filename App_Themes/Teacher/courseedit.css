@@ -180,23 +180,280 @@
         .course-edit-editor-stage textarea {
             max-width: 100%; width: 100% !important;
         }
-        /* Override missionadd.css .editor-ai-layout flex rules —
-           use higher-specificity selector so the grid layout wins
-           even at <1100px where missionadd sets flex-direction:column */
+        /* ── Two-column AI layout: editor (left) + plan panel (right) ── */
         .course-edit-editor-panel .course-edit-ai-layout {
             display: grid;
             grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
             gap: 1.25rem;
             align-items: start;
-            flex-direction: unset;  /* neutralize missionadd @media override */
         }
         .course-edit-main-editor { min-width: 0; }
+
+        /* ── Activity-plan assistant panel (self-contained styles) ── */
         .course-edit-editor-panel .courseedit-plan-panel {
             width: 100%;
             max-width: none;
             justify-self: stretch;
             position: sticky;
             top: 1rem;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(99, 102, 241, 0.14);
+            border-radius: 1.15rem;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 6px 24px -8px rgba(79, 70, 229, 0.22),
+                        0 0 0 1px rgba(99, 102, 241, 0.04);
+            overflow: hidden;
+        }
+        .course-edit-editor-panel .courseedit-plan-panel::before {
+            content: "";
+            display: block;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #3b82f6 100%);
+        }
+
+        /* Panel header */
+        .courseedit-plan-panel .ai-panel-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem 1.1rem 0.85rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.07);
+            background: linear-gradient(180deg, #f5f3ff 0%, #ffffff 100%);
+        }
+        .courseedit-plan-panel .ai-panel-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
+            box-shadow: 0 6px 14px -8px rgba(99, 102, 241, 0.65);
+            flex: 0 0 auto;
+        }
+        .courseedit-plan-panel .ai-panel-title {
+            margin: 0;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #1e1b4b;
+            letter-spacing: -0.01em;
+        }
+        .courseedit-plan-panel .ai-panel-desc {
+            margin: 0.2rem 0 0;
+            font-size: 0.78rem;
+            line-height: 1.55;
+            color: #64748b;
+        }
+
+        /* Panel body */
+        .courseedit-plan-panel .ai-panel-body {
+            padding: 1rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Tip box */
+        .courseedit-plan-panel .ai-panel-tip {
+            border-radius: 0.75rem;
+            padding: 0.65rem 0.8rem;
+            background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+            border: 1px solid rgba(99, 102, 241, 0.08);
+        }
+        .courseedit-plan-panel .ai-panel-tip-badge {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.12);
+            color: #4338ca;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+        .courseedit-plan-panel .ai-panel-tip-text {
+            font-size: 0.78rem;
+            line-height: 1.6;
+            color: #475569;
+            margin: 0;
+        }
+
+        /* Form groups */
+        .courseedit-plan-panel .ai-panel-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .courseedit-plan-panel .ai-panel-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #4338ca;
+            letter-spacing: 0.01em;
+        }
+
+        /* Text inputs inside panel */
+        .courseedit-plan-panel .ai-prompt-input {
+            width: 100%;
+            min-height: 3rem;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #e0e7ff;
+            border-radius: 0.7rem;
+            background: #fafbff;
+            color: #1e293b;
+            font-size: 0.82rem;
+            line-height: 1.55;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .courseedit-plan-panel .ai-prompt-input:hover {
+            border-color: #c7d2fe;
+        }
+        .courseedit-plan-panel .ai-prompt-input:focus {
+            border-color: #818cf8;
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.14);
+        }
+        .courseedit-plan-panel .ai-prompt-input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Generate button */
+        .courseedit-plan-panel .ai-generate-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            width: 100%;
+            min-height: 2.6rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            box-shadow: 0 6px 18px -6px rgba(79, 70, 229, 0.5);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .courseedit-plan-panel .ai-generate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px -6px rgba(79, 70, 229, 0.6);
+        }
+        .courseedit-plan-panel .ai-generate-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Result preview area */
+        .courseedit-plan-panel .ai-result-area {
+            min-height: 3rem;
+            padding: 0.8rem;
+            border: 1px solid #e8edf5;
+            border-radius: 0.75rem;
+            background: #fff;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: #334155;
+            overflow-y: auto;
+            max-height: 420px;
+        }
+        .courseedit-plan-panel .ai-result-area:empty::before {
+            content: "生成结果将显示在此处";
+            color: #cbd5e1;
+            font-style: italic;
+        }
+
+        /* Progress bar */
+        .courseedit-plan-panel .ai-progress-wrap {
+            padding: 0.65rem 0.8rem;
+            border-radius: 0.75rem;
+            background: #f8fafc;
+            border: 1px solid #e8edf5;
+        }
+        .courseedit-plan-panel .ai-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.45rem;
+        }
+        .courseedit-plan-panel .ai-progress-text {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #475569;
+        }
+        .courseedit-plan-panel .ai-progress-percent {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #4338ca;
+        }
+        .courseedit-plan-panel .ai-progress-track {
+            height: 5px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+        .courseedit-plan-panel .ai-progress-bar {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            transition: width 0.4s ease;
+        }
+        .courseedit-plan-panel .ai-progress-note {
+            margin-top: 0.35rem;
+            font-size: 0.72rem;
+            line-height: 1.5;
+            color: #94a3b8;
+        }
+
+        /* Panel footer */
+        .courseedit-plan-panel .ai-panel-footer {
+            padding: 0.85rem 1.1rem;
+            border-top: 1px solid rgba(99, 102, 241, 0.07);
+            background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        /* Action buttons */
+        .courseedit-plan-panel .ai-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            min-height: 2rem;
+            padding: 0 0.75rem;
+            border: 1px solid #e0e7ff;
+            border-radius: 0.6rem;
+            background: #fff;
+            color: #4338ca;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+        .courseedit-plan-panel .ai-action-btn:hover {
+            background: #eef2ff;
+            border-color: #c7d2fe;
+            color: #3730a3;
+        }
+
+        /* Loading spinner */
+        .courseedit-plan-panel .ai-loading-spinner {
+            display: none;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: courseedit-spin 0.65s linear infinite;
+        }
+        @keyframes courseedit-spin {
+            to { transform: rotate(360deg); }
         }
         .course-edit-msg { display: block; font-size: 14px; font-weight: 600; color: #0f172a; line-height: 1.7; }
         .course-edit-msg:empty { display: none; }
@@ -285,6 +542,11 @@
             .course-edit-editor-panel .courseedit-plan-panel {
                 position: static;
                 top: auto;
+                border-radius: 1rem;
+            }
+
+            .courseedit-plan-panel .ai-action-btn {
+                width: 100%;
             }
         }
 

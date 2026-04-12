@@ -79,13 +79,13 @@
             height: 550px;
         }
         
-        .editor-ai-layout {
+        .mission-add-page .editor-ai-layout {
             display: flex;
             gap: 1.5rem;
             align-items: flex-start;
         }
         
-        .editor-container {
+        .mission-add-page .editor-container {
             flex: 1;
             min-width: 0;
         }
@@ -166,7 +166,7 @@
             background: #e0e7ff;
         }
         
-        .ai-assistant-panel {
+        .mission-add-page .ai-assistant-panel {
             width: min(360px, 100%);
             flex-shrink: 0;
             border: 1px solid rgba(99, 102, 241, 0.15);
@@ -535,11 +535,11 @@
                 justify-content: flex-start;
             }
 
-            .editor-ai-layout {
+            .mission-add-page .editor-ai-layout {
                 flex-direction: column;
             }
 
-            .ai-assistant-panel {
+            .mission-add-page .ai-assistant-panel {
                 width: 100%;
                 position: static;
                 top: auto;
