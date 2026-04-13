@@ -4,8 +4,8 @@ milestone: v1.2
 milestone_name: AI 整课编排与活动组合
 status: completed
 stopped_at: Completed Phase 11 Plan 02 execution
-last_updated: "2026-04-11T23:45:00+00:00"
-last_activity: 2026-04-11
+last_updated: "2026-04-12T00:00:00+00:00"
+last_activity: 2026-04-12
 progress:
   total_phases: 4
   completed_phases: 4
@@ -29,7 +29,7 @@ Milestone: v1.2 (AI 整课编排与活动组合)
 Phase: 11 (composed-runtime-and-progress-visibility)
 Plan: 11-02-PLAN.md completed
 Status: Phase 11 Plan 02 completed — composed runtime and progress visibility wired into student and teacher surfaces
-Last activity: 2026-04-11 - Completed quick task 260412-ahe: 美化 teacher/courseedit.aspx 中的活动计划助手区域：移动到内容编辑器右侧；美化学案名称、学案分类、授课年级区块并调整 select/input 尺寸；切换到 vditor 时自动进入分屏预览状态
+Last activity: 2026-04-12 - Completed quick task 260412-mst: 美化 teacher/missionshow.aspx 中 Markdown 渲染和 Reveal 演示文稿卡片右侧的开关按钮
 
 Progress: [██████████] 100%
 
@@ -63,6 +63,7 @@ Progress: [██████████] 100%
 - [v1.2 Roadmap]: Reuse existing quiz, resource-study, and web courseware activity types before expanding to broader legacy coverage.
 - [v1.2 Roadmap]: Treat guided inquiry as the fallback block when existing activity types do not fit the lesson goal.
 - [v1.2 Roadmap]: Publish one confirmed composed draft as a combined teacher action, then rely on existing student runtime flows for execution and tracking.
+- [quick 260412-mst]: Keep `teacher/missionshow.aspx` toggle markup unchanged and polish the switch purely through theme CSS so the control fits the existing purple-blue card style.
 - [quick 260412-ahe]: Keep the activity-plan assistant as a secondary panel on the editor's right side and make the top metadata controls denser for future horizontal expansion.
 
 ### Pending Todos
@@ -77,10 +78,11 @@ Progress: [██████████] 100%
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
+| 260412-mst | 美化 teacher/missionshow.aspx 中 Markdown 渲染和 Reveal 演示文稿卡片右侧的开关按钮 | 2026-04-12 | - | [260412-mst-missionshow-toggle-polish](./quick/260412-mst-missionshow-toggle-polish/) |
 | 260412-ahe | 美化 teacher/courseedit.aspx 中的活动计划助手区域：移动到内容编辑器右侧；美化学案名称、学案分类、授课年级区块并调整 select/input 尺寸；切换到 vditor 时自动进入分屏预览状态 | 2026-04-11 | fd9a3bc | [260412-ahe-teacher-courseedit-aspx-select-input-vdi](./quick/260412-ahe-teacher-courseedit-aspx-select-input-vdi/) |
 
 ## Session Continuity
 
-Last session: 2026-04-11
-Stopped at: Completed quick task 260412-ahe implementation and basic verification
-Resume file: .planning/quick/260412-ahe-teacher-courseedit-aspx-select-input-vdi/260412-ahe-SUMMARY.md
+Last session: 2026-04-12
+Stopped at: Completed quick task 260412-mst implementation and CSS diff verification
+Resume file: .planning/quick/260412-mst-missionshow-toggle-polish/260412-mst-SUMMARY.md
