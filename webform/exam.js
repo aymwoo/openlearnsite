@@ -3395,9 +3395,316 @@ function deleteTableColumn(questionId, colIndex) {
     }
 }
 
+// ==================== 题库导入功能 ====================
+
+let bankState = {
+    banks: [],
+    questions: [],
+    selectedQuestions: new Set(),
+    pageIndex: 1,
+    pageSize: 10,
+    totalPages: 0,
+    total: 0
+};
+
+function initBankImport() {
+    console.log('initBankImport called');
+    const importFromBankBtn = document.getElementById('importFromBankBtn');
+    console.log('importFromBankBtn:', importFromBankBtn);
+    if (importFromBankBtn) {
+        importFromBankBtn.addEventListener('click', function() {
+            console.log('Button clicked');
+            openBankModal();
+        });
+    } else {
+        console.log('Button not found');
+    }
+}
+
+function openBankModal() {
+    console.log('openBankModal called');
+    const modal = document.getElementById('bankModal');
+    console.log('Modal element:', modal);
+    if (modal) {
+        modal.classList.add('show');
+        loadBanks();
+        loadBankQuestions();
+    } else {
+        console.log('Modal not found');
+        alert('弹窗元素未找到');
+    }
+}
+
+function closeBankModal() {
+    document.getElementById('bankModal').classList.remove('show');
+    bankState.selectedQuestions.clear();
+    updateSelectedCount();
+}
+
+function loadBanks() {
+    fetch('QuestionBankApi.ashx?action=getBanks')
+        .then(response => response.json())
+        .then(function(data) {
+            if (data.needUpgrade) {
+                document.getElementById('bankQuestionList').innerHTML = 
+                    '<div class="bank-empty"><div class="bank-empty-icon">⚠️</div><p>题库表尚未创建</p><p style="font-size:0.875rem;">请先访问 <a href="../manager/dbupgrade.aspx" target="_blank" style="color:#3b82f6;">数据库升级页面</a> 创建题库表</p></div>';
+                return;
+            }
+            if (data.success) {
+                bankState.banks = data.data;
+                var select = document.getElementById('bankSelect');
+                select.innerHTML = '<option value="0">全部题库</option>';
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(function(bank) {
+                        select.innerHTML += '<option value="' + bank.bankId + '">' + bank.bankName + ' (' + bank.questionCount + '题)</option>';
+                    });
+                } else {
+                    select.innerHTML = '<option value="0">暂无题库</option>';
+                }
+            }
+        })
+        .catch(function(err) {
+            console.error('加载题库列表失败:', err);
+            document.getElementById('bankQuestionList').innerHTML = '<div class="bank-empty"><div class="bank-empty-icon">❌</div><p>加载失败，请刷新重试</p></div>';
+        });
+}
+
+function loadBankQuestions(page) {
+    page = page || 1;
+    bankState.pageIndex = page;
+    var bankId = document.getElementById('bankSelect').value;
+    var questionType = document.getElementById('questionTypeFilter').value;
+    var difficulty = document.getElementById('difficultyFilter').value;
+    var keyword = document.getElementById('keywordFilter').value;
+    
+    var url = 'QuestionBankApi.ashx?action=getQuestions&bankId=' + bankId + '&pageIndex=' + page + '&pageSize=' + bankState.pageSize;
+    if (questionType && questionType !== '0') url += '&questionType=' + questionType;
+    if (difficulty && difficulty !== '0') url += '&difficulty=' + difficulty;
+    if (keyword) url += '&keyword=' + encodeURIComponent(keyword);
+    
+    document.getElementById('bankQuestionList').innerHTML = '<div class="bank-loading">加载中...</div>';
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(function(data) {
+            if (data.needUpgrade) {
+                document.getElementById('bankQuestionList').innerHTML = 
+                    '<div class="bank-empty"><div class="bank-empty-icon">⚠️</div><p>题库表尚未创建</p><p style="font-size:0.875rem;">请先访问 <a href="../manager/dbupgrade.aspx" target="_blank" style="color:#3b82f6;">数据库升级页面</a> 创建题库表</p></div>';
+                return;
+            }
+            if (data.success) {
+                bankState.questions = data.data;
+                bankState.total = data.total;
+                bankState.totalPages = data.totalPages;
+                renderQuestionList();
+                renderPagination();
+            } else {
+                document.getElementById('bankQuestionList').innerHTML = '<div class="bank-empty"><div class="bank-empty-icon">📭</div><p>' + (data.message || '加载失败') + '</p></div>';
+            }
+        })
+        .catch(function(err) {
+            console.error('加载题目列表失败:', err);
+            document.getElementById('bankQuestionList').innerHTML = '<div class="bank-empty"><div class="bank-empty-icon">❌</div><p>加载失败，请刷新重试</p></div>';
+        });
+}
+
+function renderQuestionList() {
+    var container = document.getElementById('bankQuestionList');
+    
+    if (bankState.questions.length === 0) {
+        container.innerHTML = '<div class="bank-empty"><div class="bank-empty-icon">📭</div><p>暂无题目</p></div>';
+        return;
+    }
+    
+    var html = '';
+    bankState.questions.forEach(function(q) {
+        var isSelected = bankState.selectedQuestions.has(q.questionId);
+        var diffClass = q.difficulty === 1 ? 'easy' : (q.difficulty === 2 ? 'medium' : 'hard');
+        
+        html += '<div class="bank-question-item ' + (isSelected ? 'selected' : '') + '" onclick="toggleQuestion(' + q.questionId + ')">';
+        html += '<div class="bank-question-checkbox">';
+        html += '<input type="checkbox" ' + (isSelected ? 'checked' : '') + ' onclick="event.stopPropagation(); toggleQuestion(' + q.questionId + ')">';
+        html += '</div>';
+        html += '<div class="bank-question-content">';
+        html += '<div class="bank-question-meta">';
+        html += '<span class="bank-question-type">' + q.questionTypeName + '</span>';
+        html += '<span class="bank-question-difficulty ' + diffClass + '">' + q.difficultyName + '</span>';
+        html += '</div>';
+        html += '<div class="bank-question-text">' + stripHtml(q.questionText || q.questionContent || '') + '</div>';
+        html += '</div></div>';
+    });
+    
+    container.innerHTML = html;
+}
+
+function renderPagination() {
+    var container = document.getElementById('bankPagination');
+    
+    if (bankState.totalPages <= 1) {
+        container.innerHTML = '<span>共 ' + bankState.total + ' 题</span>';
+        return;
+    }
+    
+    var html = '<button onclick="loadBankQuestions(' + (bankState.pageIndex - 1) + ')" ' + (bankState.pageIndex <= 1 ? 'disabled' : '') + '>上一页</button>';
+    
+    var startPage = Math.max(1, bankState.pageIndex - 2);
+    var endPage = Math.min(bankState.totalPages, bankState.pageIndex + 2);
+    
+    for (var i = startPage; i <= endPage; i++) {
+        html += '<button onclick="loadBankQuestions(' + i + ')" class="' + (i === bankState.pageIndex ? 'active' : '') + '">' + i + '</button>';
+    }
+    
+    html += '<button onclick="loadBankQuestions(' + (bankState.pageIndex + 1) + ')" ' + (bankState.pageIndex >= bankState.totalPages ? 'disabled' : '') + '>下一页</button>';
+    html += '<span>共 ' + bankState.total + ' 题</span>';
+    
+    container.innerHTML = html;
+}
+
+function toggleQuestion(questionId) {
+    if (bankState.selectedQuestions.has(questionId)) {
+        bankState.selectedQuestions.delete(questionId);
+    } else {
+        bankState.selectedQuestions.add(questionId);
+    }
+    updateSelectedCount();
+    renderQuestionList();
+}
+
+function toggleSelectAll() {
+    var selectAll = document.getElementById('selectAllQuestions');
+    if (selectAll.checked) {
+        bankState.questions.forEach(function(q) { bankState.selectedQuestions.add(q.questionId); });
+    } else {
+        bankState.questions.forEach(function(q) { bankState.selectedQuestions.delete(q.questionId); });
+    }
+    updateSelectedCount();
+    renderQuestionList();
+}
+
+function updateSelectedCount() {
+    document.getElementById('selectedCount').textContent = bankState.selectedQuestions.size;
+}
+
+function searchQuestions(event) {
+    if (event.key === 'Enter') {
+        loadBankQuestions(1);
+    }
+}
+
+function importSelectedQuestions() {
+    if (bankState.selectedQuestions.size === 0) {
+        alert('请先选择要导入的题目');
+        return;
+    }
+    
+    var questionIds = Array.from(bankState.selectedQuestions).join(',');
+    
+    fetch('QuestionBankApi.ashx?action=importQuestions&questionIds=' + questionIds)
+        .then(response => response.json())
+        .then(function(data) {
+            if (data.success && data.data) {
+                data.data.forEach(function(q) {
+                    var newQuestion = convertToExamQuestion(q);
+                    examData.questions.push(newQuestion);
+                });
+                saveExamData();
+                renderQuestions();
+                closeBankModal();
+                alert('成功导入 ' + data.data.length + ' 道题目');
+            } else {
+                alert('导入失败：' + (data.message || '未知错误'));
+            }
+        })
+        .catch(function(err) {
+            console.error('导入题目失败:', err);
+            alert('导入失败，请重试');
+        });
+}
+
+function convertToExamQuestion(dbQuestion) {
+    var questionId = 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    var newQuestion = {
+        id: questionId,
+        type: dbQuestion.questionType,
+        title: dbQuestion.questionTitle || '',
+        score: dbQuestion.score || 5
+    };
+    
+    switch(dbQuestion.questionType) {
+        case 'single_choice':
+            newQuestion.options = dbQuestion.options || ['', '', '', ''];
+            newQuestion.answer = 0;
+            if (Array.isArray(dbQuestion.options)) {
+                newQuestion.options = dbQuestion.options.map(function(opt) { return opt.content || opt.label || opt; });
+                var correctIdx = dbQuestion.options.findIndex(function(opt) { return opt.isCorrect; });
+                if (correctIdx >= 0) newQuestion.answer = correctIdx;
+            }
+            break;
+        case 'multiple_choice':
+            newQuestion.options = dbQuestion.options || ['', '', '', ''];
+            newQuestion.answer = [];
+            if (Array.isArray(dbQuestion.options)) {
+                newQuestion.options = dbQuestion.options.map(function(opt) { return opt.content || opt.label || opt; });
+                newQuestion.answer = dbQuestion.options
+                    .map(function(opt, idx) { return opt.isCorrect ? idx : -1; })
+                    .filter(function(idx) { return idx >= 0; });
+            }
+            break;
+        case 'true_false':
+            newQuestion.answer = dbQuestion.answer === '对' || dbQuestion.answer === true;
+            break;
+        case 'fill_blank':
+            newQuestion.blanks = [];
+            if (Array.isArray(dbQuestion.answer)) {
+                dbQuestion.answer.forEach(function(ans) {
+                    newQuestion.blanks.push({ answer: ans });
+                });
+            } else if (typeof dbQuestion.answer === 'string') {
+                dbQuestion.answer.split('|').forEach(function(ans) {
+                    newQuestion.blanks.push({ answer: ans.trim() });
+                });
+            }
+            if (newQuestion.blanks.length === 0) {
+                newQuestion.blanks = [{ answer: '' }];
+            }
+            break;
+        case 'short_answer':
+            newQuestion.answer = dbQuestion.answer || '';
+            newQuestion.keywords = [];
+            newQuestion.keywordThreshold = 60;
+            break;
+        case 'matching':
+            newQuestion.leftItems = [];
+            newQuestion.rightItems = [];
+            newQuestion.answer = {};
+            break;
+        case 'sort_question':
+            newQuestion.items = [];
+            newQuestion.answer = [];
+            break;
+        default:
+            newQuestion.answer = dbQuestion.answer || '';
+    }
+    
+    return newQuestion;
+}
+
+function stripHtml(html) {
+    if (!html) return '';
+    var result = html.replace(/<[^>]*>/g, '');
+    result = result.replace(/&nbsp;/g, ' ');
+    result = result.replace(/&lt;/g, '<');
+    result = result.replace(/&gt;/g, '>');
+    result = result.replace(/&amp;/g, '&');
+    if (result.length > 100) result = result.substring(0, 100) + '...';
+    return result;
+}
+
 // 初始化应用
 window.onload = function() {
     init();
+    initBankImport();
     
     // 初始化代码高亮（如果 highlight.js 已加载）
     if (typeof hljs !== 'undefined') {

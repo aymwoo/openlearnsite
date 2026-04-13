@@ -1,9 +1,10 @@
 <%@ Page Language="C#" AutoEventWireup="true" CodeFile="questionadd.aspx.cs" Inherits="exam_question_questionadd" MasterPageFile="~/teacher/Teach.master" %><asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <!-- 使用绝对路径重新引用JS文件，覆盖Master中的相对路径 -->
-    <script src="/js/MenuCookie.js" type="text/javascript"></script>
-    <script src="/js/jquery-1.8.2.min.js" type="text/javascript"></script>
-    <script src="/kindeditor/plugins/code/prettify.js" type="text/javascript"></script>
-    <script src="/js/ruffle.js" type="text/javascript"></script>
+    <script src="/webform/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script src="/webform/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <link href="/webform/summernote-bs5.min.css" rel="stylesheet" />
+    <link href="/webform/paper.css" rel="stylesheet" />
+    <script src="/webform/summernote-bs5.min.js"></script>
+    <script src="/webform/summernote-zh-CN.min.js"></script>
 </asp:Content><asp:Content ID="Content2" ContentPlaceHolderID="Content" runat="server">
     <style>
         .question-form-page { min-height: calc(100vh - 8rem); padding: 1.5rem; background: #f8fafc; }
@@ -24,19 +25,99 @@
         .form-group label span.required { color: #dc2626; }
         .form-row { display: flex; gap: 1rem; }
         .form-row .form-group { flex: 1; }
-        .form-control, .option-item input[type="text"] { width: 100%; min-height: 2.75rem; padding: 0.7rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.9rem; box-sizing: border-box; background: #f8fafc; color: #0f172a; }
-        .form-control:focus, .option-item input[type="text"]:focus { outline: none; border-color: #93c5fd; background: #ffffff; box-shadow: 0 0 0 4px rgba(191, 219, 254, 0.6); }
+        .form-control { width: 100%; min-height: 2.75rem; padding: 0.7rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 0.9rem; box-sizing: border-box; background: #f8fafc; color: #0f172a; }
+        .form-control:focus { outline: none; border-color: #93c5fd; background: #ffffff; box-shadow: 0 0 0 4px rgba(191, 219, 254, 0.6); }
         textarea.form-control { min-height: 7rem; resize: vertical; }
         .help-text { font-size: 0.78rem; color: #94a3b8; margin-top: 0.45rem; line-height: 1.6; }
         .options-container { border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; background: #f8fafc; margin-top: 0.75rem; }
-        .option-item { display: flex; align-items: center; margin-bottom: 0.75rem; gap: 0.75rem; }
-        .option-item .label { width: 2rem; font-weight: 700; color: #475569; }
-        .option-item input[type="checkbox"], .option-item input[type="radio"] { margin-right: 0.2rem; }
+        .option-item-wrapper { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; padding: 0.5rem; background: #fff; border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+        .option-item-wrapper:hover { border-color: #3b82f6; }
+        .option-item-wrapper .option-label { width: 2rem; font-weight: 700; color: #475569; flex-shrink: 0; }
+        .option-item-wrapper .option-input { flex: 1; min-height: 2.25rem; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: #fff; }
+        .option-item-wrapper .option-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .option-image-preview { max-width: 60px; max-height: 45px; border-radius: 4px; object-fit: cover; border: 1px solid #e2e8f0; margin-left: 0.5rem; }
+        .option-image-btn { background: #f1f5f9; border: 1px solid #cbd5e1; color: #3b82f6; padding: 0.35rem 0.5rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .option-image-btn:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+        .option-image-btn.delete-btn { color: #dc2626; }
+        .option-image-btn.delete-btn:hover { background: #dc2626; color: #fff; border-color: #dc2626; }
+        .option-controls { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
         .inline-choice { display: inline-flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
         .inline-choice label { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0; padding: 0.6rem 0.85rem; border: 1px solid #dbeafe; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-weight: 500; }
         .btn-sm { min-height: 2.25rem; padding: 0 0.85rem; }
         .btn-default { background: #ffffff; color: #475569; border: 1px solid #cbd5e1; }
         .form-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+        
+        .note-link-popover,
+        .note-image-popover,
+        .note-video-popover,
+        .note-help-popover {
+            display: none !important;
+        }
+        .note-modal {
+            display: none !important;
+        }
+        .modal-backdrop {
+            display: none !important;
+        }
+        
+        .note-editor {
+            width: 100% !important;
+            box-sizing: border-box !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.5rem !important;
+            overflow: hidden !important;
+        }
+        .note-editable {
+            min-height: 80px !important;
+            padding: 0.75rem !important;
+        }
+        .note-toolbar {
+            position: relative !important;
+            white-space: nowrap !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            flex-wrap: nowrap !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(4px) !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            transition: opacity 0.2s ease, transform 0.2s ease !important;
+            opacity: 0 !important;
+            transform: translateY(-10px) !important;
+        }
+        .note-editor:hover .note-toolbar,
+        .note-editor:focus-within .note-toolbar {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        .note-toolbar .note-btn-group {
+            display: inline-block !important;
+            float: none !important;
+            margin-right: 2px !important;
+        }
+        .note-toolbar .note-btn {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+            line-height: 1.3 !important;
+            background: transparent !important;
+            border: none !important;
+            color: #475569 !important;
+            border-radius: 4px !important;
+            transition: background 0.15s ease !important;
+        }
+        .note-toolbar .note-btn:hover {
+            background: rgba(59, 130, 246, 0.1) !important;
+            color: #2563eb !important;
+        }
+        .note-toolbar .note-btn.active {
+            background: rgba(59, 130, 246, 0.15) !important;
+            color: #2563eb !important;
+        }
+        .note-btn-group {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
         @media (max-width: 900px) { .question-form-page { padding: 1rem; } .form-hero, .form-row { flex-direction: column; } }
     </style>
 
@@ -91,7 +172,8 @@
 
         <div class="form-group">
             <label><span class="required">*</span> 题目内容</label>
-            <asp:TextBox ID="txtContent" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4" placeholder="请输入题目内容..."></asp:TextBox>
+            <div id="summernote-content-question"></div>
+            <asp:HiddenField ID="hfContent" runat="server" />
         </div>
         </section>
 
@@ -223,8 +305,9 @@
             </div>
         </div>
 
-        <!-- 隐藏字段，用于存储JavaScript收集的正确答案 -->
+        <!-- 隐藏字段，用于存储JavaScript收集的正确答案和选项图片 -->
         <asp:HiddenField ID="hfCorrectAnswers" runat="server" />
+        <asp:HiddenField ID="hfOptionImages" runat="server" />
 
         <div class="form-actions">
             <asp:Button ID="btnSave" runat="server" Text="保存" CssClass="page-btn page-btn-primary" OnClick="btnSave_Click" />
@@ -234,17 +317,117 @@
         </section>
 
         <script type="text/javascript">
-            // 在表单提交前收集正确答案
+            var optionImages = {};
+
+            function uploadImage(file, successCallback, errorCallback) {
+                var formData = new FormData();
+                formData.append('file', file);
+                
+                $.ajax({
+                    url: '/webform/imageupload.aspx',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response && response.url) {
+                            successCallback(response.url);
+                        } else if (typeof response === 'string') {
+                            successCallback(response);
+                        } else {
+                            if (errorCallback) {
+                                errorCallback('服务器返回格式错误');
+                            } else {
+                                alert('图片上传失败');
+                            }
+                        }
+                    },
+                    error: function() {
+                        if (errorCallback) {
+                            errorCallback('网络错误');
+                        } else {
+                            alert('图片上传失败');
+                        }
+                    }
+                });
+            }
+
+            function handleOptionImageUpload(label) {
+                var input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    var file = e.target.files[0];
+                    if (file) {
+                        uploadImage(file, function(imageUrl) {
+                            if (imageUrl) {
+                                optionImages[label] = imageUrl;
+                                updateOptionImagePreview(label, imageUrl);
+                            }
+                        });
+                    }
+                };
+                input.click();
+            }
+
+            function updateOptionImagePreview(label, imageUrl) {
+                var wrapper = document.querySelector('[data-label="' + label + '"]');
+                if (wrapper) {
+                    var preview = wrapper.querySelector('.option-image-preview');
+                    var deleteBtn = wrapper.querySelector('.option-image-btn.delete-btn');
+                    var uploadBtn = wrapper.querySelector('.option-image-btn:not(.delete-btn)');
+                    
+                    if (preview) {
+                        preview.src = imageUrl;
+                        preview.style.display = 'block';
+                    }
+                    if (deleteBtn) {
+                        deleteBtn.style.display = 'inline-block';
+                    }
+                    if (uploadBtn) {
+                        uploadBtn.textContent = '更换';
+                    }
+                }
+            }
+
+            function removeOptionImage(label) {
+                delete optionImages[label];
+                var wrapper = document.querySelector('[data-label="' + label + '"]');
+                if (wrapper) {
+                    var preview = wrapper.querySelector('.option-image-preview');
+                    var deleteBtn = wrapper.querySelector('.option-image-btn.delete-btn');
+                    var uploadBtn = wrapper.querySelector('.option-image-btn:not(.delete-btn)');
+                    
+                    if (preview) {
+                        preview.src = '';
+                        preview.style.display = 'none';
+                    }
+                    if (deleteBtn) {
+                        deleteBtn.style.display = 'none';
+                    }
+                    if (uploadBtn) {
+                        uploadBtn.textContent = '📷';
+                    }
+                }
+            }
+
             function collectCorrectAnswers() {
-                // 获取所有单选和多选按钮
+                var hfContent = document.getElementById('<%= hfContent.ClientID %>');
+                if (hfContent) {
+                    hfContent.value = $('#summernote-content-question').summernote('code');
+                }
+
+                var hfImages = document.getElementById('<%= hfOptionImages.ClientID %>');
+                if (hfImages) {
+                    hfImages.value = JSON.stringify(optionImages);
+                }
+
                 var allRadios = document.querySelectorAll('input[type="radio"]');
                 var allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
                 var correctAnswers = [];
 
-                // 检查所有单选按钮
                 allRadios.forEach(function(rb) {
                     if (rb.checked) {
-                        // 从ID中提取选项标签（格式：xxx$rb_A）
                         var match = rb.id.match(/rb_([A-H])$/);
                         if (match) {
                             correctAnswers.push(match[1]);
@@ -252,10 +435,8 @@
                     }
                 });
 
-                // 检查所有复选框
                 allCheckboxes.forEach(function(cb) {
                     if (cb.checked) {
-                        // 从ID中提取选项标签（格式：xxx$cb_A）
                         var match = cb.id.match(/cb_([A-H])$/);
                         if (match) {
                             correctAnswers.push(match[1]);
@@ -263,20 +444,106 @@
                     }
                 });
 
-                // 将正确答案存入隐藏字段
                 var hfCorrectAnswers = document.getElementById('<%= hfCorrectAnswers.ClientID %>');
                 if (hfCorrectAnswers) {
                     hfCorrectAnswers.value = correctAnswers.join(',');
-                } else {
-                    console.error('找不到隐藏字段 hfCorrectAnswers!');
                 }
 
-                console.log('=== 收集完成 ===');
                 return true;
             }
 
-            // 绑定到保存按钮的点击事件
-            document.addEventListener('DOMContentLoaded', function() {
+            $(document).ready(function() {
+                $('#summernote-content-question').summernote({
+                    placeholder: '点击此处编辑题目内容...',
+                    height: 120,
+                    minHeight: 80,
+                    maxHeight: 300,
+                    lang: 'zh-CN',
+                    disableDragAndDrop: false,
+                    fontSizes: ['10', '11', '12', '14', '16', '18', '20', '24'],
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'clear']],
+                        ['insert', ['customPicture', 'customVideo']],
+                        ['code', ['codeblock']],
+                        ['misc', ['pastetext']],
+                        ['misc', ['blank']],
+                        ['view', ['undo', 'redo']]
+                    ],
+                    buttons: {
+                        customPicture: function(context) {
+                            var ui = $.summernote.ui;
+                            var button = ui.button({
+                                contents: '<i class="note-icon-picture"></i>',
+                                tooltip: '插入图片',
+                                click: function() {
+                                    var fileInput = document.createElement('input');
+                                    fileInput.type = 'file';
+                                    fileInput.accept = 'image/*';
+                                    fileInput.style.display = 'none';
+                                    
+                                    fileInput.onchange = function() {
+                                        var file = this.files[0];
+                                        if (file) {
+                                            uploadImage(file, function(response) {
+                                                var imageHtml = '<img src="' + response + '" >';
+                                                context.invoke('editor.pasteHTML', imageHtml);
+                                            }, function(error) {
+                                                alert('图片上传失败：' + error);
+                                            });
+                                        }
+                                    };
+                                    
+                                    document.body.appendChild(fileInput);
+                                    fileInput.click();
+                                    setTimeout(function() { document.body.removeChild(fileInput); }, 1000);
+                                }
+                            });
+                            return button.render();
+                        },
+                        customVideo: function(context) {
+                            var ui = $.summernote.ui;
+                            var button = ui.button({
+                                contents: '<i class="note-icon-video"></i>',
+                                tooltip: '插入视频',
+                                click: function() {
+                                    var videoUrl = prompt('请输入视频地址（支持优酷、腾讯、YouTube等）：', 'http://');
+                                    if (videoUrl && videoUrl.trim()) {
+                                        var videoHtml = '<iframe src="' + videoUrl + '" width="100%" height="200" frameborder="0" allowfullscreen></iframe>';
+                                        context.invoke('editor.pasteHTML', videoHtml);
+                                    }
+                                }
+                            });
+                            return button.render();
+                        },
+                        blank: function(context) {
+                            var ui = $.summernote.ui;
+                            var button = ui.button({
+                                contents: '<i class="note-icon-pencil"></i>',
+                                tooltip: '插入填空符',
+                                click: function() {
+                                    context.invoke('editor.focus');
+                                    setTimeout(function() {
+                                        try {
+                                            context.invoke('editor.insertText', '___');
+                                        } catch (e) {
+                                            console.error('插入填空符失败:', e);
+                                        }
+                                    }, 0);
+                                }
+                            });
+                            return button.render();
+                        }
+                    },
+                    popover: {
+                        image: [],
+                        link: [],
+                        video: [],
+                        air: []
+                    },
+                    shortcuts: false,
+                    followingToolbar: false
+                });
+
                 var btnSave = document.getElementById('<%= btnSave.ClientID %>');
                 var btnSaveAdd = document.getElementById('<%= btnSaveAdd.ClientID %>');
 
@@ -290,31 +557,6 @@
                         collectCorrectAnswers();
                     });
                 }
-
-                // 页面加载完成后输出所有选项的信息
-                setTimeout(function() {
-                    var optionsContainer = document.querySelector('.options-container');
-
-                    if (optionsContainer) {
-                        var optionItems = optionsContainer.querySelectorAll('.option-item');
-
-                        optionItems.forEach(function(item, index) {
-                            var rb = item.querySelector('input[type="radio"]');
-                            var cb = item.querySelector('input[type="checkbox"]');
-                            var txt = item.querySelector('input[type="text"]');
-
-                            if (rb) {
-                                console.log('选项 ' + index + ': 单选按钮 id=' + rb.id + ', checked=' + rb.checked);
-                            }
-                            if (cb) {
-                                console.log('选项 ' + index + ': 复选框 id=' + cb.id + ', checked=' + cb.checked);
-                            }
-                            if (txt) {
-                                console.log('选项 ' + index + ': 文本框 id=' + txt.id + ', value=' + txt.value);
-                            }
-                        });
-                    }
-                }, 1000);
             });
         </script>
         </div>

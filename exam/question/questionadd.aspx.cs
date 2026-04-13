@@ -237,10 +237,16 @@ public partial class exam_question_questionadd : System.Web.UI.Page
         ddlType.SelectedValue = question.QuestionType.ToString();
         ddlDifficulty.SelectedValue = question.Difficulty.ToString();
         txtScore.Text = question.Score.ToString();
-        txtContent.Text = question.QuestionContent;
+        hfContent.Value = question.QuestionContent;
         txtAnalysis.Text = question.Analysis;
         txtKnowledge.Text = question.KnowledgePoint;
         txtTags.Text = question.Tags;
+
+        // 设置编辑器内容的脚本
+        string script = string.Format(@"$(document).ready(function() {{
+            $('#summernote-content-question').summernote('code', {0});
+        }});", JsonConvert.SerializeObject(question.QuestionContent));
+        ClientScript.RegisterStartupScript(this.GetType(), "SetEditorContent", script, true);
     }
 
     private void LoadOptions(string optionsJson, string answer)
@@ -278,8 +284,7 @@ public partial class exam_question_questionadd : System.Web.UI.Page
             foreach (var opt in options)
             {
                 bool isCorrect = correctAnswers.Contains(opt.Label);
-                // 直接使用重载方法，传递题型参数
-                AddOptionControlWithLabel(opt.Label, opt.Content, isCorrect, type);
+                AddOptionControlWithLabel(opt.Label, opt.Content, isCorrect, type, opt.Image);
             }
         }
         catch (Exception ex)
@@ -387,40 +392,82 @@ public partial class exam_question_questionadd : System.Web.UI.Page
 
     private void AddOptionControlWithLabel(string label, string content, bool isCorrect, int type)
     {
-        var div = new HtmlGenericControl("div");
-        div.Attributes["class"] = "option-item";
+        AddOptionControlWithLabel(label, content, isCorrect, type, null);
+    }
 
-        // 标签
-        var labelCtrl = new Label { Text = label + ".", CssClass = "label" };
+    private void AddOptionControlWithLabel(string label, string content, bool isCorrect, int type, string imageUrl)
+    {
+        var div = new HtmlGenericControl("div");
+        div.Attributes["class"] = "option-item-wrapper";
+        div.Attributes["data-label"] = label;
+
+        var labelCtrl = new Label { Text = label + ".", CssClass = "option-label" };
         div.Controls.Add(labelCtrl);
 
-        // 单选/多选
         if (type == 1)
         {
             var rb = new RadioButton { ID = "rb_" + label, GroupName = "correctAnswer", Checked = isCorrect };
-            rb.EnableViewState = false; // 关闭ViewState以避免问题
-            rb.Attributes["value"] = label; // 添加value属性
+            rb.EnableViewState = false;
+            rb.Attributes["value"] = label;
             div.Controls.Add(rb);
         }
         else if (type == 2)
         {
             var cb = new CheckBox { ID = "cb_" + label, Checked = isCorrect };
-            cb.EnableViewState = false; // 关闭ViewState以避免问题
-            cb.Attributes["value"] = label; // 添加value属性
+            cb.EnableViewState = false;
+            cb.Attributes["value"] = label;
             div.Controls.Add(cb);
         }
 
-        // 选项内容
-        var txt = new TextBox { ID = "txt_" + label, Text = content, CssClass = "form-control" };
-        txt.EnableViewState = false; // 关闭ViewState以避免问题
+        var txt = new TextBox { ID = "txt_" + label, Text = content, CssClass = "option-input" };
+        txt.EnableViewState = false;
         div.Controls.Add(txt);
 
-        // 删除按钮
+        var imgPreview = new HtmlImage { ID = "img_" + label };
+        imgPreview.Attributes["class"] = "option-image-preview";
+        imgPreview.Style["display"] = string.IsNullOrEmpty(imageUrl) ? "none" : "block";
+        if (!string.IsNullOrEmpty(imageUrl))
+        {
+            imgPreview.Src = GetImageUrl(imageUrl);
+        }
+        div.Controls.Add(imgPreview);
+
+        var controlsDiv = new HtmlGenericControl("div");
+        controlsDiv.Attributes["class"] = "option-controls";
+
+        var uploadBtn = new HtmlButton();
+        uploadBtn.Attributes["type"] = "button";
+        uploadBtn.Attributes["class"] = "option-image-btn";
+        uploadBtn.InnerText = string.IsNullOrEmpty(imageUrl) ? "📷" : "更换";
+        uploadBtn.Attributes["onclick"] = "handleOptionImageUpload('" + label + "')";
+        controlsDiv.Controls.Add(uploadBtn);
+
+        var deleteBtn = new HtmlButton();
+        deleteBtn.Attributes["type"] = "button";
+        deleteBtn.Attributes["class"] = "option-image-btn delete-btn";
+        deleteBtn.InnerText = "🗑️";
+        deleteBtn.Style["display"] = string.IsNullOrEmpty(imageUrl) ? "none" : "inline-block";
+        deleteBtn.Attributes["onclick"] = "removeOptionImage('" + label + "')";
+        controlsDiv.Controls.Add(deleteBtn);
+
+        div.Controls.Add(controlsDiv);
+
         var btn = new Button { Text = "×", CssClass = "btn btn-sm btn-default", CausesValidation = false };
         btn.Click += (s, e) => { div.Visible = false; };
         div.Controls.Add(btn);
 
         phOptions.Controls.Add(div);
+    }
+
+    private string GetImageUrl(string imagePath)
+    {
+        if (string.IsNullOrEmpty(imagePath))
+            return string.Empty;
+
+        if (imagePath.StartsWith("http://") || imagePath.StartsWith("https://"))
+            return imagePath;
+
+        return "/webform/uploads/" + imagePath;
     }
 
     protected void ddlType_SelectedIndexChanged(object sender, EventArgs e)
@@ -507,11 +554,15 @@ public partial class exam_question_questionadd : System.Web.UI.Page
     {
         SaveQuestion();
         // 清空表单继续添加
-        txtContent.Text = "";
+        hfContent.Value = "";
         txtAnalysis.Text = "";
         txtTags.Text = "";
         txtKnowledge.Text = "";
         CreateOptions(4);
+        
+        // 清空编辑器内容
+        string script = "$('#summernote-content-question').summernote('code', '');";
+        ClientScript.RegisterStartupScript(this.GetType(), "ClearEditor", script, true);
     }
 
     protected void btnCancel_Click(object sender, EventArgs e)
@@ -521,8 +572,8 @@ public partial class exam_question_questionadd : System.Web.UI.Page
 
     private void SaveQuestion()
     {
-        // 验证
-        if (string.IsNullOrEmpty(txtContent.Text.Trim()))
+        string content = hfContent.Value.Trim();
+        if (string.IsNullOrEmpty(content))
         {
             ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('请输入题目内容！');", true);
             return;
@@ -532,7 +583,16 @@ public partial class exam_question_questionadd : System.Web.UI.Page
         string answer = "";
         string optionsJson = "";
 
-                // 收集答案
+        Dictionary<string, string> optionImages = new Dictionary<string, string>();
+        if (!string.IsNullOrEmpty(hfOptionImages.Value))
+        {
+            try
+            {
+                optionImages = JsonConvert.DeserializeObject<Dictionary<string, string>>(hfOptionImages.Value);
+            }
+            catch { }
+        }
+
         switch (type)
         {
             case 1: // 单选
@@ -541,33 +601,28 @@ public partial class exam_question_questionadd : System.Web.UI.Page
                 var options = new List<QuestionOption>();
                 var correctAnswers = new List<string>();
 
-                // 优先使用JavaScript收集的正确答案
                 string jsCorrectAnswers = hfCorrectAnswers.Value;
 
-                // 如果JavaScript收集到了答案，直接使用
                 if (!string.IsNullOrEmpty(jsCorrectAnswers))
                 {
-                    // 将JavaScript答案转换为集合
                     var correctLabelSet = new HashSet<string>(jsCorrectAnswers.Split(','));
 
-                    // 收集所有选项（A-H），不管是否正确
                     for (char c = 'A'; c <= 'H'; c++)
                     {
                         string label = c.ToString();
                         string contentValue = FindFormValue("txt_" + label);
 
-                        // 如果选项内容不为空，添加到列表
                         if (!string.IsNullOrEmpty(contentValue))
                         {
                             bool isCorrect = correctLabelSet.Contains(label);
-                            options.Add(new QuestionOption { Label = label, Content = contentValue, IsCorrect = isCorrect });
+                            string imageUrl = optionImages.ContainsKey(label) ? optionImages[label] : null;
+                            options.Add(new QuestionOption { Label = label, Content = contentValue, IsCorrect = isCorrect, Image = imageUrl });
                             if (isCorrect) correctAnswers.Add(label);
                         }
                     }
                 }
                 else
                 {
-                    // 从 Request.Form 收集选项数据
                     for (char c = 'A'; c <= 'H'; c++)
                     {
                         string label = c.ToString();
@@ -578,22 +633,22 @@ public partial class exam_question_questionadd : System.Web.UI.Page
                         if (!string.IsNullOrEmpty(contentValue))
                         {
                             bool isCorrect = false;
-                            if (type == 1) // 单选
+                            if (type == 1)
                             {
                                 isCorrect = !string.IsNullOrEmpty(rbValue);
                             }
-                            else if (type == 2) // 多选
+                            else if (type == 2)
                             {
                                 isCorrect = !string.IsNullOrEmpty(cbValue);
                             }
 
-                            options.Add(new QuestionOption { Label = label, Content = contentValue, IsCorrect = isCorrect });
+                            string imageUrl = optionImages.ContainsKey(label) ? optionImages[label] : null;
+                            options.Add(new QuestionOption { Label = label, Content = contentValue, IsCorrect = isCorrect, Image = imageUrl });
                             if (isCorrect) correctAnswers.Add(label);
                         }
                     }
                 }
 
-                // 验证：单选和多选题至少需要2个选项
                 if (options.Count < 2)
                 {
                     ClientScript.RegisterStartupScript(this.GetType(), "alert",
@@ -601,7 +656,6 @@ public partial class exam_question_questionadd : System.Web.UI.Page
                     return;
                 }
 
-                // 验证：必须有正确答案
                 if (correctAnswers.Count == 0)
                 {
                     ClientScript.RegisterStartupScript(this.GetType(), "alert",
@@ -683,7 +737,7 @@ public partial class exam_question_questionadd : System.Web.UI.Page
         {
             BankId = BankId,
             QuestionType = type,
-            QuestionContent = txtContent.Text.Trim(),
+            QuestionContent = content,
             Options = optionsJson,
             Answer = answer,
             Analysis = txtAnalysis.Text.Trim(),
