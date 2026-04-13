@@ -1,4 +1,4 @@
-.mgr-page { --ls-bg: radial-gradient(circle at top left,#ecfeff 0%,#f6fbff 40%,#f8fafc 100%); --ls-border: #dbe6f5; --ls-text: #0f172a; --ls-muted: #64748b; padding: 28px; background: var(--ls-bg); min-height: calc(100vh - 8rem); box-sizing: border-box; width: 100%; }
+.mgr-page { padding: 28px; background: var(--ls-bg); min-height: calc(100vh - 8rem); box-sizing: border-box; width: 100%; }
 .mgr-page * { box-sizing: border-box; }
 .mgr-shell { display: flex; flex-direction: column; gap: 20px; }
 

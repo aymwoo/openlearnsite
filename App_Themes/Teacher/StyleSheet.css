@@ -1,3 +1,21 @@
+/* ==========================================================================
+   LearnSite Teacher Theme — Modern Design System
+   Updated: 2026-04
+   ========================================================================== */
+
+:root {
+    --ls-bg: linear-gradient(180deg, #f8fbff 0%, #f3f7ff 100%);
+    --ls-card: rgba(255, 255, 255, 0.96);
+    --ls-border: #dbe6f5;
+    --ls-border-strong: #bfdbfe;
+    --ls-text: #0f172a;
+    --ls-muted: #64748b;
+    --ls-primary: #2563eb;
+    --ls-primary-soft: #dbeafe;
+    --ls-success: #16a34a;
+    --ls-danger: #dc2626;
+}
+
 body
 {   
     margin: 0 auto;

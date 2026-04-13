@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="Content" Runat="Server">
     <link href="../js/fileupload.css" rel="stylesheet" />
     <style type="text/css">
-        .mgr-page { --ls-bg: linear-gradient(180deg,#f8fbff 0%,#f3f7ff 100%); --ls-border: #dbe6f5; --ls-text: #0f172a; padding: 28px; background: var(--ls-bg); min-height: calc(100vh - 8rem); box-sizing: border-box; width: 100%; }
+        .mgr-page { padding: 28px; background: var(--ls-bg); min-height: calc(100vh - 8rem); box-sizing: border-box; width: 100%; }
         .mgr-page * { box-sizing: border-box; }
         .mgr-shell { display: flex; flex-direction: column; gap: 20px; }
         .mgr-hero { border: 1px solid #bbf7d0; border-radius: 1rem; padding: 24px 28px; background: linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%); color: #14532d; box-shadow: 0 4px 16px rgba(5,150,105,.08); }
