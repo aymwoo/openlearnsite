@@ -26,9 +26,9 @@
         }
 
         .course-create-select {
-            height: 2.25rem !important;
+            height: 2.25rem;
             min-width: 140px;
-            width: 100% !important;
+            width: 100%;
         }
 
         .course-create-msg {
@@ -43,7 +43,11 @@
             gap: 16px;
             margin-top: 24px;
             padding-top: 24px;
+            background: transparent;
+            border: 0;
             border-top: 1px dashed #cbd5e1;
+            border-radius: 0;
+            box-shadow: none;
         }
 
         .course-create-primary-btn {
