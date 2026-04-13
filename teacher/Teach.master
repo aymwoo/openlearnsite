@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>信息科技教师网站</title>
     <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/StyleSheet.css") %>" />
-    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/course-workspace.css") %>" />
-    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/course-content-add.css") %>" />
+    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/course-workspace.css") %>" /> <!-- 课程工作区 -->
+    <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/App_Themes/Teacher/course-content-add.css") %>" /> <!-- 内容添加 -->
     <link rel="stylesheet" type="text/css" href="<%= ResolveUrl("~/js/css/tailwind-utilities-2.2.19.min.css") %>" />
     <asp:Literal ID="css1" runat="server" />
     <asp:Literal ID="css2" runat="server" />

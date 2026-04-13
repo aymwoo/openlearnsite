@@ -726,3 +726,8 @@ table {border-collapse:collapse;}
 #vditor-wrap .vditor-preview__action {
     text-align: left !important;
 }
+
+.menu, #showcontent, .leftmaster, .rightmaster, .formtext, .ccontent, .downcontent, .downcontentbd, .downfilebd, .topicleft, .topicright, .divscoreheight, .divscore, .quizscoreheight, .quizresult, .vcontent, .quizarea, .pfdiv { max-width: 100% !important; box-sizing: border-box !important; }
+
+/* Override old float layout inside topic discussions */
+.topichead::after { content: ''; display: table; clear: both; }
