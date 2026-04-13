@@ -3,6 +3,7 @@
    Updated: 2026-04
    ========================================================================== */
 
+
 /* --- CSS Custom Properties (Design Tokens) --- */
 :root {
     --color-primary: #4f46e5;
@@ -16,6 +17,10 @@
     --color-border: #e2e8f0;
     --color-text: #1e293b;
     --color-text-muted: #64748b;
+
+    --ls-bg: #f8fafc;
+    --ls-card: #ffffff;
+
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;

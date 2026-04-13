@@ -11,7 +11,8 @@
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; }
         body { font-family: ui-sans-serif, system-ui, sans-serif; background: #f8fafc; }
-        .mgr-header { background: linear-gradient(to right, #312e81, #4338ca); color: white; padding: 0 1.5rem; height: 4rem; display: flex; align-items: center; justify-content: space-between; }
+        .mgr-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #1d4ed8 100%); color: white; padding: 0 1.5rem; height: 4rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.08); transition: all 0.3s ease; border-bottom: 1px solid rgba(59, 130, 246, 0.2); }
+        .mgr-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.4), rgba(147, 197, 253, 0.5), rgba(96, 165, 250, 0.4), transparent); }
         .mgr-header-left { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
         .mgr-header-title { font-size: 1.25rem; font-weight: 700; }
         .mgr-header-right { display: flex; align-items: center; gap: 1rem; }
