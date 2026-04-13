@@ -1,3 +1,19 @@
+:root {
+    --ls-primary: #4f46e5;
+    --ls-primary-light: #e0e7ff;
+    --ls-primary-dark: #3730a3;
+    --ls-accent: #f59e0b;
+    --ls-success: #10b981;
+    --ls-danger: #ef4444;
+    --ls-surface: #ffffff;
+    --ls-surface-dim: #f8fafc;
+    --ls-border: #e2e8f0;
+    --ls-text: #1e293b;
+    --ls-text-muted: #64748b;
+    --ls-bg: #f8fafc;
+    --ls-card: #ffffff;
+}
+
 body
 {   
     margin: 0 auto;
