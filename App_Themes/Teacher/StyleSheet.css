@@ -742,9 +742,9 @@ table {border-collapse:collapse;}
     width: 100%;
     position: static;
     z-index: 100;
-    background: var(--color-surface-dim);
-    border-radius: var(--radius-2xl);
-    border: 1px solid var(--color-border);
+    background: var(--color-surface-dim, #f8fafc);
+    border-radius: var(--radius-2xl, 1rem);
+    border: 1px solid var(--color-border, #e2e8f0);
     padding: 1.25rem;
 }
 @media (min-width: 1024px) {
@@ -765,4 +765,7 @@ table {border-collapse:collapse;}
     box-sizing: border-box !important;
 }
 
+.startdiv {
+    min-width: 0 !important;
+}
 table { max-width: 100% !important; }
