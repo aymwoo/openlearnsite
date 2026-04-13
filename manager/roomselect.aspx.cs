@@ -56,8 +56,16 @@ public partial class Manager_roomselect : System.Web.UI.Page
 
     protected void Btnselect_Click(object sender, EventArgs e)
     {
+        int hid;
+        if (!Int32.TryParse(Request.QueryString["hid"], out hid))
+        {
+            LearnSite.Common.WordProcess.Alert("参数错误！", this.Page);
+            return;
+        }
+
         try
         {
+            LearnSite.BLL.Room rm = new LearnSite.BLL.Room();
             foreach (DataListItem item in this.DLroom.Items )
             {
                 int Rid =Int32.Parse( ((Label)item.FindControl("LabelRid")).Text);
@@ -68,9 +76,8 @@ public partial class Manager_roomselect : System.Web.UI.Page
                     int Rhid = 0;
                     if (Rcheck)
                     {
-                         Rhid = Int32.Parse(Request.QueryString["hid"].ToString());//该记录设为
+                         Rhid = hid;//该记录设为
                     }
-                    LearnSite.BLL.Room rm = new LearnSite.BLL.Room();
                     rm.UpdateRhid(Rid, Rhid);
                     System.Threading.Thread.Sleep(100);
                 }
@@ -79,8 +86,9 @@ public partial class Manager_roomselect : System.Web.UI.Page
             ShowRoom();
             LearnSite.Common.WordProcess.Alert("保存成功！", this.Page);
         }
-        catch
+        catch (Exception ex)
         {
+            LearnSite.Common.Log.Addlog("班级选择保存失败", ex.ToString());
             LearnSite.Common.WordProcess.Alert("保存失败！", this.Page);
         }
     }
