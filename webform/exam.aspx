@@ -11,8 +11,6 @@
     <script src="highlight.min.js"></script>    
     <link href="paper.css" rel="stylesheet">
 
-    
-
     <div class="container exam-editor-page">
         <div class="exam-editor-shell">
             <div class="exam-editor-main">
@@ -51,10 +49,18 @@
                             <span class="btn-icon">💾</span>
                             <span class="btn-text">保存作品</span>
                         </button>
+                        <button type="button" class="floating-btn floating-btn-bank" id="importFromBankBtn" title="从题库导入">
+                            <span class="btn-icon">📚</span>
+                            <span class="btn-text">题库导入</span>
+                        </button>
                         <button type="button" class="floating-btn floating-btn-import" id="importBtn" title="导入JSON文件">
                             <span class="btn-icon">📁</span>
-                            <span class="btn-text">导入题库</span>
+                            <span class="btn-text">导入文件</span>
                         </button>
+                        <a href="convertor.html" target="_blank" class="floating-btn floating-btn-convertor" title="题目格式转换工具" id="convertorBtn">
+                            <span class="btn-icon">✨</span>
+                            <span class="btn-text">格式转换</span>
+                        </a>
                         <button type="button" class="floating-btn floating-btn-clear" id="clearExamBtn" title="清空所有试题">
                             <span class="btn-icon">🗑️</span>
                             <span class="btn-text">清空题目</span>
@@ -75,7 +81,64 @@
         <div class="preview-content">
             <span class="close">&times;</span>
             <div id="previewArea">
-                <!-- 预览内容将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 题库导入模态框 -->
+    <div class="bank-modal" id="bankModal">
+        <div class="bank-modal-content">
+            <div class="bank-modal-header">
+                <h3>从题库导入题目</h3>
+                <button type="button" class="bank-modal-close" onclick="closeBankModal()">&times;</button>
+            </div>
+            <div class="bank-modal-body">
+                <div class="bank-sidebar">
+                    <div class="bank-filter">
+                        <select id="bankSelect" onchange="loadBankQuestions()">
+                            <option value="0">全部题库</option>
+                        </select>
+                    </div>
+                    <div class="bank-filter">
+                        <select id="questionTypeFilter" onchange="loadBankQuestions()">
+                            <option value="0">全部题型</option>
+                            <option value="1">单选题</option>
+                            <option value="2">多选题</option>
+                            <option value="3">判断题</option>
+                            <option value="4">填空题</option>
+                            <option value="5">简答题</option>
+                        </select>
+                    </div>
+                    <div class="bank-filter">
+                        <select id="difficultyFilter" onchange="loadBankQuestions()">
+                            <option value="0">全部难度</option>
+                            <option value="1">简单</option>
+                            <option value="2">中等</option>
+                            <option value="3">困难</option>
+                        </select>
+                    </div>
+                    <div class="bank-filter">
+                        <input type="text" id="keywordFilter" placeholder="搜索题目..." onkeyup="searchQuestions(event)">
+                    </div>
+                </div>
+                <div class="bank-main">
+                    <div class="bank-toolbar">
+                        <label class="bank-select-all">
+                            <input type="checkbox" id="selectAllQuestions" onchange="toggleSelectAll()">
+                            <span>全选</span>
+                        </label>
+                        <span class="bank-selected-count">已选 <strong id="selectedCount">0</strong> 题</span>
+                    </div>
+                    <div class="bank-question-list" id="bankQuestionList">
+                        <div class="bank-loading">加载中...</div>
+                    </div>
+                    <div class="bank-pagination" id="bankPagination">
+                    </div>
+                </div>
+            </div>
+            <div class="bank-modal-footer">
+                <button type="button" class="bank-btn bank-btn-secondary" onclick="closeBankModal()">取消</button>
+                <button type="button" class="bank-btn bank-btn-primary" onclick="importSelectedQuestions()">导入选中题目</button>
             </div>
         </div>
     </div>
@@ -84,7 +147,7 @@
     <input id="HiddenEid" type="hidden" value="<%=Eid %>" />
     <input id="HiddenExamjson" type="hidden" value="<%=Examjson %>" />
     
-    <!-- 引入外部JavaScript文件 -->
+    <link href="questionbank.css" rel="stylesheet">
     <script src="exam.js"></script> 
 
 </asp:Content>

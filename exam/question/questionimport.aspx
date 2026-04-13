@@ -1,4 +1,10 @@
 <%@ Page Language="C#" AutoEventWireup="true" CodeFile="questionimport.aspx.cs" Inherits="exam_question_questionimport" MasterPageFile="~/teacher/Teach.master" %><asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <script src="/webform/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script src="/webform/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <link href="/webform/summernote-bs5.min.css" rel="stylesheet" />
+    <link href="/webform/paper.css" rel="stylesheet" />
+    <script src="/webform/summernote-bs5.min.js"></script>
+    <script src="/webform/summernote-zh-CN.min.js"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="Content" runat="server">
     <style>
@@ -28,6 +34,19 @@
         .stats { margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.8); border-radius: 0.9rem; }
         .stats span { margin-right: 1.25rem; }
         .error-panel { margin-top: 1.25rem; }
+        
+        /* 图片上传相关样式 */
+        .image-upload-section { margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.9rem; border: 1px dashed #cbd5e1; }
+        .image-upload-section h5 { margin: 0 0 0.75rem; color: #334155; font-size: 0.9rem; }
+        .image-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+        .image-item { position: relative; width: 80px; height: 60px; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .image-item img { width: 100%; height: 100%; object-fit: cover; }
+        .image-item .remove-btn { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; background: rgba(220,38,38,0.9); color: #fff; border: none; border-radius: 50%; cursor: pointer; font-size: 10px; line-height: 18px; text-align: center; }
+        .image-item .image-name { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 8px; padding: 2px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .upload-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #3b82f6; color: #fff; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; }
+        .upload-btn:hover { background: #2563eb; }
+        .image-code { margin-top: 0.5rem; padding: 0.5rem; background: #fff; border-radius: 4px; font-family: monospace; font-size: 0.8rem; color: #475569; }
+        
         @media (max-width: 900px) { .import-page { padding: 1rem; } .import-hero { flex-direction: column; } }
     </style>
 
@@ -75,6 +94,27 @@
 9|Python中___是列表，___是字典，___是集合。|list|dict|set|Python基础数据类型|4|2|Python基础
 11|请对本次服务进行评分（1-5分）|1##2##3##4##5|4|满意度调查|5|1|客户服务
 14|您有多大可能向朋友推荐我们的产品？||8|NPS评分题|5|1|用户调研</pre>
+                <br/>
+                <p><strong>图片格式说明：</strong></p>
+                <p>选项中可以插入图片，格式为：<code>{img:图片代码}</code></p>
+                <p>例如：<code>A. 这是选项文字{img:img001}|B. 另一个选项</code></p>
+                <p>先上传图片获取代码，然后在选项中使用该代码</p>
+            </div>
+
+            <div class="image-upload-section">
+                <h5>📷 图片上传（用于选项图片）</h5>
+                <input type="file" id="imageUploadInput" accept="image/*" multiple style="display:none;">
+                <button type="button" class="upload-btn" onclick="document.getElementById('imageUploadInput').click();">
+                    📤 上传图片
+                </button>
+                <div class="image-list" id="uploadedImageList"></div>
+                <div class="image-code" id="imageCodeDisplay" style="display:none;">
+                    <strong>图片代码：</strong> <span id="currentImageCode"></span>
+                    <button type="button" onclick="copyImageCode();" style="margin-left:10px;padding:2px 8px;background:#3b82f6;color:#fff;border:none;border-radius:3px;cursor:pointer;">复制</button>
+                </div>
+                <div style="margin-top:0.5rem;font-size:0.8rem;color:#64748b;">
+                    上传图片后，复制图片代码粘贴到选项中使用。例如：A. 这是选项文字{img:img001}
+                </div>
             </div>
 
             <div class="import-form">
@@ -113,4 +153,123 @@
         </asp:Panel>
         </div>
     </div>
+
+    <script type="text/javascript">
+        var uploadedImages = {};
+        var imageCounter = 0;
+        
+        function getImageUrl(fileName) {
+            if (!fileName) return '';
+            if (fileName.indexOf('/') >= 0) return fileName;
+            return '../webform/uploads/' + fileName;
+        }
+        
+        function uploadImageFile(file, onSuccess, onError) {
+            if (!file || !file.type.startsWith('image/')) {
+                if (onError) onError('请选择有效的图片文件');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                if (onError) onError('图片大小不能超过5MB');
+                return;
+            }
+            
+            var formData = new FormData();
+            formData.append('file', file);
+            
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '../webform/upimg.ashx?action=image', true);
+            
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = xhr.responseText.trim();
+                    if (response && response.indexOf('ERROR') !== 0) {
+                        if (onSuccess) onSuccess(response);
+                    } else {
+                        if (onError) onError(response || '上传失败');
+                    }
+                } else {
+                    if (onError) onError('上传失败');
+                }
+            };
+            
+            xhr.onerror = function() {
+                if (onError) onError('网络错误');
+            };
+            
+            xhr.send(formData);
+        }
+        
+        function generateImageCode() {
+            imageCounter++;
+            return 'img' + String(imageCounter).padStart(3, '0');
+        }
+        
+        function addImageToList(code, fileName) {
+            var list = document.getElementById('uploadedImageList');
+            var item = document.createElement('div');
+            item.className = 'image-item';
+            item.id = 'image-item-' + code;
+            item.innerHTML = '<img src="' + getImageUrl(fileName) + '" alt="' + code + '">' +
+                '<button type="button" class="remove-btn" onclick="removeImage(\'' + code + '\')">×</button>' +
+                '<div class="image-name">' + code + '</div>';
+            list.appendChild(item);
+            
+            uploadedImages[code] = fileName;
+            showImageCode(code);
+        }
+        
+        function showImageCode(code) {
+            var display = document.getElementById('imageCodeDisplay');
+            var codeSpan = document.getElementById('currentImageCode');
+            display.style.display = 'block';
+            codeSpan.innerText = '{img:' + code + '}';
+        }
+        
+        function copyImageCode() {
+            var codeSpan = document.getElementById('currentImageCode');
+            var code = codeSpan.innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code).then(function() {
+                    alert('已复制: ' + code);
+                });
+            } else {
+                var input = document.createElement('input');
+                input.value = code;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                alert('已复制: ' + code);
+            }
+        }
+        
+        function removeImage(code) {
+            var item = document.getElementById('image-item-' + code);
+            if (item) item.remove();
+            delete uploadedImages[code];
+        }
+        
+        document.getElementById('imageUploadInput').addEventListener('change', function(e) {
+            var files = e.target.files;
+            if (!files || files.length === 0) return;
+            
+            for (var i = 0; i < files.length; i++) {
+                (function(file) {
+                    uploadImageFile(file, function(response) {
+                        var code = generateImageCode();
+                        addImageToList(code, response);
+                        console.log('图片上传成功:', code, response);
+                    }, function(error) {
+                        alert('图片上传失败：' + error);
+                        console.error('图片上传失败:', error);
+                    });
+                })(files[i]);
+            }
+            
+            e.target.value = '';
+        });
+        
+        console.log('questionimport.aspx 图片上传功能已加载');
+    </script>
 </asp:Content>

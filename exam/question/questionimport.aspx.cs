@@ -206,7 +206,6 @@ public partial class exam_question_questionimport : System.Web.UI.Page
     {
         if (string.IsNullOrEmpty(options))
         {
-            // 判断题、简答题、打分题、NPS可以没有选项
             if (questionType == 3 || questionType == 5 || questionType == 11 || questionType == 14)
             {
                 return "";
@@ -214,7 +213,6 @@ public partial class exam_question_questionimport : System.Web.UI.Page
             return "";
         }
 
-        // 打分题选项格式：1##2##3##4##5
         if (questionType == 11)
         {
             var scoreConfig = new LearnSite.Model.ScoreConfig();
@@ -228,14 +226,12 @@ public partial class exam_question_questionimport : System.Web.UI.Page
             return Newtonsoft.Json.JsonConvert.SerializeObject(scoreConfig);
         }
 
-        // NPS评分配置
         if (questionType == 14)
         {
             var npsConfig = new LearnSite.Model.NpsConfig();
             return Newtonsoft.Json.JsonConvert.SerializeObject(npsConfig);
         }
 
-        // 矩阵题选项格式：行1,行2##列1,列2
         if (questionType == 12 || questionType == 13)
         {
             var matrixConfig = new LearnSite.Model.MatrixConfig();
@@ -249,7 +245,6 @@ public partial class exam_question_questionimport : System.Web.UI.Page
             return Newtonsoft.Json.JsonConvert.SerializeObject(matrixConfig);
         }
 
-        // 多项填空：格式为 空1提示##空2提示##空3提示
         if (questionType == 9)
         {
             var blankConfig = new LearnSite.Model.MultipleBlankConfig
@@ -268,7 +263,6 @@ public partial class exam_question_questionimport : System.Web.UI.Page
             return Newtonsoft.Json.JsonConvert.SerializeObject(blankConfig);
         }
 
-        // 普通选择题选项
         var optionList = new List<QuestionOption>();
         var optParts = options.Split(new[] { "##" }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -277,18 +271,27 @@ public partial class exam_question_questionimport : System.Web.UI.Page
             string opt = optParts[i].Trim();
             string label = ((char)('A' + i)).ToString();
             string content = opt;
+            string image = null;
 
-            // 如果选项已经包含标签（如 "A. xxx"），则提取内容和标签
             if (opt.Length > 2 && (opt[1] == '.' || opt[1] == '、' || opt[1] == ':'))
             {
                 label = opt[0].ToString().ToUpper();
                 content = opt.Substring(2).Trim();
             }
 
+            var imageMatch = System.Text.RegularExpressions.Regex.Match(content, @"\{img:([^}]+)\}");
+            if (imageMatch.Success)
+            {
+                string imageCode = imageMatch.Groups[1].Value;
+                image = imageCode;
+                content = content.Replace(imageMatch.Value, "").Trim();
+            }
+
             optionList.Add(new QuestionOption
             {
                 Label = label,
                 Content = content,
+                Image = image,
                 IsCorrect = false
             });
         }

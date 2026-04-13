@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题目格式转换工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s, background-color 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        
+        .upload-area input[type="file"] {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-group {
+            margin-bottom: 20px;
+        }
+        
+        .result-section {
+            display: none;
+        }
+        
+        .result-section.show {
+            display: block;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .result-stats span {
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        
+        .result-stats span strong {
+            color: #667eea;
+        }
+        
+        .json-preview {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .json-preview::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .json-preview::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 4px;
+        }
+        
+        .json-preview::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+        
+        .json-preview::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+        
+        .format-help {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+        
+        .format-help h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .format-help ul {
+            color: #856404;
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .format-help code {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        
+        .conversion-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .option-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .option-item label {
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        
+        .type-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .type-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .type-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .type-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #667eea;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .format-rules {
+            margin-top: 15px;
+        }
+        
+        .rule-section {
+            margin-bottom: 20px;
+        }
+        
+        .rule-section h5 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .type-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .type-table th,
+        .type-table td {
+            border: 1px solid #eee;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .type-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .type-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .example-code {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .format-help {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+        
+        .format-help h4 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .format-help ul {
+            color: #856404;
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .format-help code {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 题目格式转换工具</h1>
+            <p>将文本或HTML文件转换为可导入的测验格式</p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">转换模式</div>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('text')">文本粘贴</button>
+                <button class="tab" onclick="switchTab('html')">HTML上传</button>
+            </div>
+
+            <div id="text-tab" class="tab-content active">
+                <div class="format-help">
+                    <h4>📋 文本格式说明</h4>
+                    <div class="format-rules">
+                        <div class="rule-section">
+                            <h5>基本格式要求</h5>
+                            <ul>
+                                <li><strong>题目开始</strong>：以数字+点号开头（如 <code>1.</code>、<code>2.</code>）</li>
+                                <li><strong>题型标识</strong>：紧跟题号后（如 <code>[单选]</code>、<code>[多选]</code>）</li>
+                                <li><strong>选项格式</strong>：大写字母+点号（如 <code>A.</code>、<code>B.</code>）</li>
+                                <li><strong>答案标识</strong>：<code>答案：</code> 或 <code>正确答案：</code></li>
+                                <li><strong>分值标识</strong>：<code>分值：</code> 或 <code>得分：</code></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="rule-section">
+                            <h5>支持的题型</h5>
+                            <table class="type-table">
+                                <tr><th>题型标识</th><th>说明</th><th>示例</th></tr>
+                                <tr><td><code>[单选]</code></td><td>单选题</td><td>只有一个正确答案</td></tr>
+                                <tr><td><code>[多选]</code></td><td>多选题</td><td>可多选答案（如 AB）</td></tr>
+                                <tr><td><code>[判断]</code></td><td>判断题</td><td>答案为 正确/错误 或 T/F</td></tr>
+                                <tr><td><code>[填空]</code></td><td>填空题</td><td>使用 <code>___</code> 标记空白</td></tr>
+                                <tr><td><code>[简答]</code></td><td>简答题</td><td>无需选项，直接回答</td></tr>
+                            </table>
+                        </div>
+                        
+                        <div class="rule-section">
+                            <h5>完整示例</h5>
+                            <pre class="example-code">1.[单选]下列哪个是正确答案？
+A.选项一的内容
+B.选项二的内容
+C.选项三的内容
+D.选项四的内容
+答案：B
+分值：5
+
+2.[多选]请选择所有正确的选项：
+A.第一个选项
+B.第二个选项
+C.第三个选项
+答案：AB
+分值：10
+
+3.[判断]地球是圆的。
+答案：正确
+分值：3
+
+4.[填空]中国的首都是___，人口约___亿。
+分值：5
+
+5.[简答]请简述什么是人工智能？
+分值：15</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-section">
+                    <label for="textInput">粘贴题目文本：</label>
+                    <textarea id="textInput" placeholder="请粘贴题目文本，格式参考上方说明..."></textarea>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="formatText()">
+                        <span>✨</span> 自动整理格式
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadExample()">
+                        <span>📋</span> 加载示例
+                    </button>
+                </div>
+            </div>
+
+            <div id="html-tab" class="tab-content">
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="htmlFileInput" accept=".html,.htm">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">点击或拖拽HTML文件到此处上传</div>
+                    <div class="upload-hint">支持 .html 和 .htm 格式文件</div>
+                </div>
+                
+                <div id="fileInfo" style="display: none; padding: 15px; background: #e8f5e9; border-radius: 8px; margin-bottom: 20px;">
+                    <strong>已选择文件：</strong> <span id="fileName"></span>
+                </div>
+            </div>
+
+            <div class="conversion-options">
+                <div class="option-item">
+                    <input type="checkbox" id="autoDetectType" checked>
+                    <label for="autoDetectType">自动检测题型</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="addBlankLines" checked>
+                    <label for="addBlankLines">添加空行分隔题目</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="normalizeWhitespace">
+                    <label for="normalizeWhitespace">标准化空白字符</label>
+                </div>
+            </div>
+
+            <div class="type-selector">
+                <button class="type-btn active" data-type="auto">自动检测</button>
+                <button class="type-btn" data-type="single_choice">单选题</button>
+                <button class="type-btn" data-type="multiple_choice">多选题</button>
+                <button class="type-btn" data-type="true_false">判断题</button>
+                <button class="type-btn" data-type="fill_blank">填空题</button>
+                <button class="type-btn" data-type="short_answer">简答题</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="convertQuestions()">
+                    <span>🔄</span> 开始转换
+                </button>
+                <button class="btn btn-secondary" onclick="clearAll()">
+                    <span>🗑️</span> 清空
+                </button>
+            </div>
+        </div>
+
+        <div class="card result-section" id="resultSection">
+            <div class="card-title">转换结果</div>
+            
+            <div class="result-header">
+                <div class="result-stats">
+                    <span>转换题目数：<strong id="questionCount">0</strong> 道</span>
+                    <span>文件大小：<strong id="fileSize">0</strong> KB</span>
+                </div>
+                <button class="btn btn-primary" onclick="downloadJson()">
+                    <span>📥</span> 下载JSON文件
+                </button>
+            </div>
+
+            <div class="json-preview" id="jsonPreview"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'text';
+        let selectedType = 'auto';
+        let convertedData = null;
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            document.getElementById('resultSection').classList.remove('show');
+        }
+
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedType = btn.dataset.type;
+            });
+        });
+
+        document.getElementById('uploadArea').addEventListener('click', () => {
+            document.getElementById('htmlFileInput').click();
+        });
+
+        document.getElementById('uploadArea').addEventListener('dragover', (e) => {
+            e.preventDefault();
+            document.getElementById('uploadArea').classList.add('dragover');
+        });
+
+        document.getElementById('uploadArea').addEventListener('dragleave', () => {
+            document.getElementById('uploadArea').classList.remove('dragover');
+        });
+
+        document.getElementById('uploadArea').addEventListener('drop', (e) => {
+            e.preventDefault();
+            document.getElementById('uploadArea').classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        document.getElementById('htmlFileInput').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            const fileName = file.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+            
+            if (fileExtension !== 'html' && fileExtension !== 'htm') {
+                alert('请上传HTML文件（.html 或 .htm 格式）');
+                return;
+            }
+
+            document.getElementById('fileName').textContent = fileName;
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('resultSection').classList.remove('show');
+        }
+
+        function convertQuestions() {
+            let inputText = '';
+            
+            if (currentTab === 'text') {
+                inputText = document.getElementById('textInput').value.trim();
+                if (!inputText) {
+                    alert('请先输入题目文本');
+                    return;
+                }
+            } else {
+                const fileInput = document.getElementById('htmlFileInput');
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    alert('请先选择HTML文件');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    inputText = parseHtmlContent(e.target.result);
+                    processConversion(inputText);
+                };
+                reader.readAsText(fileInput.files[0], 'UTF-8');
+                return;
+            }
+            
+            processConversion(inputText);
+        }
+
+        function parseHtmlContent(html) {
+            if (!html || typeof html !== 'string') {
+                return '';
+            }
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            let text = '';
+            const elements = tempDiv.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, li, td');
+            
+            if (elements && elements.length > 0) {
+                elements.forEach(el => {
+                    const elText = el.textContent ? el.textContent.trim() : '';
+                    if (elText) {
+                        text += elText + '\n';
+                    }
+                });
+            } else {
+                text = tempDiv.textContent ? tempDiv.textContent.trim() : '';
+            }
+            
+            return text;
+        }
+
+        function processConversion(inputText) {
+            const questions = parseTextToQuestions(inputText);
+            
+            if (questions.length === 0) {
+                alert('未能解析到题目，请检查输入格式');
+                return;
+            }
+
+            convertedData = {
+                eid: '0',
+                cid: '0',
+                timestamp: Math.floor(Date.now() / 1000),
+                title: '转换生成的测验',
+                description: '通过题目格式转换工具生成',
+                enableAiAssessment: false,
+                questions: questions
+            };
+
+            const jsonStr = JSON.stringify(convertedData, null, 2);
+            const fileSizeKB = (jsonStr.length / 1024).toFixed(2);
+
+            document.getElementById('questionCount').textContent = questions.length;
+            document.getElementById('fileSize').textContent = fileSizeKB;
+            document.getElementById('jsonPreview').textContent = jsonStr;
+            document.getElementById('resultSection').classList.add('show');
+        }
+
+        function parseTextToQuestions(text) {
+            const questions = [];
+            if (!text || typeof text !== 'string') {
+                return questions;
+            }
+            
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            if (!lines || lines.length === 0) {
+                return questions;
+            }
+            
+            let currentQuestion = null;
+            let currentOptions = [];
+            let currentAnswer = '';
+            let currentScore = 5;
+            let currentType = 'single_choice';
+
+            const typePattern = /\[(.+?)\]/;
+            const scorePattern = /[\s，,；;]?分值[\uff1a:]?\s*\d+/i;
+            const answerPattern = /[\s，,；;]?答案[\uff1a:]?\s*[A-Za-z]+/i;
+            const questionNumberPattern = /^(\d+)[.\uff0e、]/;
+            const optionPattern = /^([A-Za-z])[.\uff0e、]/;
+
+            lines.forEach((line, index) => {
+                const typeMatch = line.match(typePattern);
+                const scoreMatch = line.match(scorePattern);
+                const answerMatch = line.match(answerPattern);
+                const qNumMatch = line.match(questionNumberPattern);
+                const optMatch = line.match(optionPattern);
+
+                if (qNumMatch && !currentQuestion) {
+                    let content = line.replace(questionNumberPattern, '').trim();
+                    
+                    if (typeMatch) {
+                        const typeStr = typeMatch[1].trim();
+                        currentType = mapType(typeStr);
+                        content = content.replace(typePattern, '').trim();
+                    } else if (selectedType !== 'auto') {
+                        currentType = selectedType;
+                    }
+
+                    if (scoreMatch) {
+                        const scoreValue = scoreMatch[0].match(/\d+/);
+                        currentScore = scoreValue ? parseInt(scoreValue[0]) : 5;
+                        content = content.replace(scorePattern, '').trim();
+                    }
+
+                    if (answerMatch) {
+                        const answerValue = answerMatch[0].match(/[A-Za-z]+/);
+                        currentAnswer = answerValue ? answerValue[0].toUpperCase() : '';
+                        content = content.replace(answerPattern, '').trim();
+                    }
+
+                    currentQuestion = {
+                        id: 'q_' + Date.now() + '_' + questions.length,
+                        type: currentType,
+                        title: content,
+                        score: currentScore
+                    };
+                } else if (optMatch && currentQuestion) {
+                    const optionText = line.replace(optionPattern, '').trim();
+                    currentOptions.push(optionText);
+                } else if (answerMatch && currentQuestion) {
+                    const answerValue = answerMatch[0].match(/[A-Za-z]+/);
+                    currentAnswer = answerValue ? answerValue[0].toUpperCase() : '';
+                } else if (scoreMatch) {
+                    const scoreValue = scoreMatch[0].match(/\d+/);
+                    currentScore = scoreValue ? parseInt(scoreValue[0]) : 5;
+                }
+
+                const nextLine = lines[index + 1];
+                const nextIsQuestion = nextLine ? nextLine.match(questionNumberPattern) : false;
+                const isLastLine = index === lines.length - 1;
+
+                if ((nextIsQuestion || isLastLine) && currentQuestion) {
+                    currentQuestion.score = currentScore;
+                    
+                    if (currentQuestion.type === 'single_choice' || currentQuestion.type === 'multiple_choice') {
+                        if (currentOptions.length > 0) {
+                            currentQuestion.options = currentOptions;
+                        } else {
+                            currentQuestion.options = ['', '', '', ''];
+                        }
+                        
+                        const optionCount = currentQuestion.options.length;
+                        
+                        if (currentAnswer) {
+                            if (currentQuestion.type === 'multiple_choice') {
+                                currentQuestion.answer = currentAnswer.split('')
+                                    .map(c => c.charCodeAt(0) - 65)
+                                    .filter(idx => idx >= 0 && idx < optionCount);
+                                if (currentQuestion.answer.length === 0) {
+                                    currentQuestion.answer = [0];
+                                }
+                            } else {
+                                const answerIndex = currentAnswer.charCodeAt(0) - 65;
+                                currentQuestion.answer = (answerIndex >= 0 && answerIndex < optionCount) ? answerIndex : 0;
+                            }
+                        } else {
+                            currentQuestion.answer = currentQuestion.type === 'multiple_choice' ? [0] : 0;
+                        }
+                    } else if (currentQuestion.type === 'fill_blank') {
+                        const blanks = currentQuestion.title.match(/___/g) || [];
+                        currentQuestion.blanks = blanks.length > 0 ? blanks.map((_, i) => ({ answer: '' })) : [{ answer: '' }, { answer: '' }];
+                    } else if (currentQuestion.type === 'short_answer') {
+                        currentQuestion.answer = '';
+                        currentQuestion.keywords = [];
+                        currentQuestion.keywordThreshold = 60;
+                    } else if (currentQuestion.type === 'true_false') {
+                        currentQuestion.answer = true;
+                    } else {
+                        currentQuestion.options = ['', '', '', ''];
+                        currentQuestion.answer = 0;
+                    }
+
+                    questions.push(currentQuestion);
+                    currentQuestion = null;
+                    currentOptions = [];
+                    currentAnswer = '';
+                    currentScore = 5;
+                    currentType = selectedType === 'auto' ? 'single_choice' : selectedType;
+                }
+            });
+
+            return questions;
+        }
+
+        function mapType(typeStr) {
+            const typeMap = {
+                '单选': 'single_choice',
+                '单选题': 'single_choice',
+                'single': 'single_choice',
+                'choice': 'single_choice',
+                '多选': 'multiple_choice',
+                '多选题': 'multiple_choice',
+                'multiple': 'multiple_choice',
+                '判断': 'true_false',
+                '判断题': 'true_false',
+                '填空': 'fill_blank',
+                '填空题': 'fill_blank',
+                '简答': 'short_answer',
+                '简答题': 'short_answer',
+                '问答': 'short_answer'
+            };
+            
+            return typeMap[typeStr] || 'single_choice';
+        }
+
+        function downloadJson() {
+            if (!convertedData || !convertedData.questions) {
+                alert('没有可下载的数据');
+                return;
+            }
+            
+            try {
+                const jsonStr = JSON.stringify(convertedData, null, 2);
+                const encodedData = encodeURIComponent(jsonStr);
+                const base64Data = btoa(encodedData);
+                
+                const blob = new Blob([base64Data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                
+                a.href = url;
+                a.download = `exam_${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('下载JSON文件失败:', error);
+                alert('下载失败，请检查控制台错误信息');
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('textInput').value = '';
+            document.getElementById('htmlFileInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('resultSection').classList.remove('show');
+        }
+
+        function formatText() {
+            const input = document.getElementById('textInput');
+            let text = input.value.trim();
+            if (!text) {
+                alert('请先输入文本');
+                return;
+            }
+            
+            let formatted = autoFormatText(text);
+            input.value = formatted;
+            alert('格式整理完成！');
+        }
+
+        function autoFormatText(text) {
+            let lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            
+            let result = [];
+            let questionCount = 0;
+            let inQuestion = false;
+            let currentOptions = [];
+            let hasAnswer = false;
+            let hasScore = false;
+            let extractedAnswer = '';
+            let extractedScore = '';
+            
+            const optionPattern = /^[A-Za-z][.\uff0e、]/;
+            const answerPattern = /[\s，,；;]?答案[\uff1a:]?\s*[A-Za-z]+/i;
+            const scorePattern = /[\s，,；;]?分值[\uff1a:]?\s*\d+/i;
+            const numberPattern = /^\d+[.\uff0e、]/;
+            
+            lines.forEach((line) => {
+                if (numberPattern.test(line)) {
+                    if (inQuestion) {
+                        result.push('');
+                    }
+                    questionCount++;
+                    inQuestion = true;
+                    hasAnswer = false;
+                    hasScore = false;
+                    currentOptions = [];
+                    extractedAnswer = '';
+                    extractedScore = '';
+                    
+                    let questionText = line;
+                    
+                    const answerMatch = questionText.match(answerPattern);
+                    if (answerMatch) {
+                        extractedAnswer = answerMatch[0].replace(/[\s，,；;]?答案[\uff1a:]?\s*/i, '');
+                        questionText = questionText.replace(answerPattern, '').trim();
+                    }
+                    
+                    const scoreMatch = questionText.match(scorePattern);
+                    if (scoreMatch) {
+                        extractedScore = scoreMatch[0].replace(/[\s，,；;]?分值[\uff1a:]?\s*/i, '');
+                        questionText = questionText.replace(scorePattern, '').trim();
+                    }
+                    
+                    if (!questionText.includes('[')) {
+                        questionText = questionText.replace(numberPattern, `${questionCount}.[单选]`);
+                    }
+                    result.push(questionText);
+                    
+                    if (extractedScore) {
+                        result.push('分值：' + extractedScore);
+                        hasScore = true;
+                    }
+                    if (extractedAnswer) {
+                        result.push('答案：' + extractedAnswer);
+                        hasAnswer = true;
+                    }
+                } else if (optionPattern.test(line)) {
+                    const optLetter = line.charAt(0).toUpperCase();
+                    const optText = line.replace(optionPattern, '').trim();
+                    result.push(`${optLetter}.${optText}`);
+                    currentOptions.push(optLetter);
+                } else if (answerPattern.test(line)) {
+                    hasAnswer = true;
+                    result.push(line.replace(/正确答案[\uff1a:]/i, '答案：'));
+                } else if (scorePattern.test(line)) {
+                    hasScore = true;
+                    result.push(line.replace(/得分[\uff1a:]/i, '分值：'));
+                } else if (inQuestion && line) {
+                    const lastIndex = result.length - 1;
+                    if (lastIndex >= 0 && !optionPattern.test(result[lastIndex]) && !answerPattern.test(result[lastIndex]) && !scorePattern.test(result[lastIndex])) {
+                        result[lastIndex] += ' ' + line;
+                    } else {
+                        result.push(line);
+                    }
+                }
+            });
+            
+            for (let i = result.length - 1; i >= 0; i--) {
+                if (!hasAnswer && !scorePattern.test(result[i]) && !answerPattern.test(result[i])) {
+                    const prevLine = result[i - 1];
+                    if (prevLine && (answerPattern.test(prevLine) || scorePattern.test(prevLine))) {
+                        hasAnswer = answerPattern.test(prevLine) || hasAnswer;
+                        hasScore = scorePattern.test(prevLine) || hasScore;
+                        continue;
+                    }
+                    if (!hasScore) {
+                        result.splice(i + 1, 0, '分值：5');
+                        hasScore = true;
+                    }
+                    if (!hasAnswer && currentOptions.length > 0) {
+                        result.splice(i + 1, 0, '答案：' + currentOptions[0]);
+                        hasAnswer = true;
+                    }
+                }
+                const prevLine = result[i - 1];
+                if (prevLine && (answerPattern.test(prevLine) || scorePattern.test(prevLine))) {
+                    hasAnswer = answerPattern.test(prevLine) || hasAnswer;
+                    hasScore = scorePattern.test(prevLine) || hasScore;
+                }
+            }
+            
+            return result.join('\n');
+        }
+
+        function loadExample() {
+            const example = `1.[单选]下列哪个是正确答案？
+A.选项一的内容
+B.选项二的内容
+C.选项三的内容
+D.选项四的内容
+答案：B
+分值：5
+
+2.[多选]请选择所有正确的选项：
+A.第一个选项
+B.第二个选项
+C.第三个选项
+D.第四个选项
+答案：AB
+分值：10
+
+3.[判断]地球是圆的。
+答案：正确
+分值：3
+
+4.[填空]中国的首都是___，人口约___亿。
+分值：5
+
+5.[简答]请简述什么是人工智能？
+分值：15`;
+            
+            document.getElementById('textInput').value = example;
+        }
+    </script>
+</body>
+</html>

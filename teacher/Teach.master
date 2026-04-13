@@ -553,6 +553,8 @@
 
             var path = window.location.pathname.toLowerCase();
             var file = path.substring(path.lastIndexOf('/') + 1).replace(/\.aspx.*$/, '');
+            var urlParams = new URLSearchParams(window.location.search);
+            var fromCourse = urlParams.has('cid') && file === 'exam';
 
             var menuDiv = document.getElementById('MenuDiv');
             var menuToggleBtn = document.getElementById('MenuToggleBtn');
@@ -564,12 +566,23 @@
                     items[i].setAttribute('title', navText);
                 }
                 if (!section) continue;
-                var prefixes = sectionMap[section] || [section];
-                for (var j = 0; j < prefixes.length; j++) {
-                    if (file === prefixes[j] || file.indexOf(prefixes[j]) === 0) {
-                        items[i].classList.add('is-active');
-                        break;
+                
+                var isActive = false;
+                
+                if (fromCourse && section === 'course') {
+                    isActive = true;
+                } else if (!fromCourse) {
+                    var prefixes = sectionMap[section] || [section];
+                    for (var j = 0; j < prefixes.length; j++) {
+                        if (file === prefixes[j] || file.indexOf(prefixes[j]) === 0) {
+                            isActive = true;
+                            break;
+                        }
                     }
+                }
+                
+                if (isActive) {
+                    items[i].classList.add('is-active');
                 }
             }
 
