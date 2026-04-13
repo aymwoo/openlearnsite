@@ -56,25 +56,33 @@ public partial class Manager_roomselect : System.Web.UI.Page
 
     protected void Btnselect_Click(object sender, EventArgs e)
     {
-        foreach (DataListItem item in this.DLroom.Items )
+        try
         {
-            int Rid =Int32.Parse( ((Label)item.FindControl("LabelRid")).Text);
-            bool Rcheck = ((CheckBox)item.FindControl("CheckRoom")).Checked;
-            bool Renable = ((CheckBox)item.FindControl("CheckRoom")).Enabled;
-            if (Renable)
+            foreach (DataListItem item in this.DLroom.Items )
             {
-                int Rhid = 0;
-                if (Rcheck)
+                int Rid =Int32.Parse( ((Label)item.FindControl("LabelRid")).Text);
+                bool Rcheck = ((CheckBox)item.FindControl("CheckRoom")).Checked;
+                bool Renable = ((CheckBox)item.FindControl("CheckRoom")).Enabled;
+                if (Renable)
                 {
-                     Rhid = Int32.Parse(Request.QueryString["hid"].ToString());//该记录设为
+                    int Rhid = 0;
+                    if (Rcheck)
+                    {
+                         Rhid = Int32.Parse(Request.QueryString["hid"].ToString());//该记录设为
+                    }
+                    LearnSite.BLL.Room rm = new LearnSite.BLL.Room();
+                    rm.UpdateRhid(Rid, Rhid);
+                    System.Threading.Thread.Sleep(100);
                 }
-                LearnSite.BLL.Room rm = new LearnSite.BLL.Room();
-                rm.UpdateRhid(Rid, Rhid);
-                System.Threading.Thread.Sleep(100);
             }
+            System.Threading.Thread.Sleep(1000);
+            ShowRoom();
+            LearnSite.Common.WordProcess.Alert("保存成功！", this.Page);
         }
-        System.Threading.Thread.Sleep(1000);
-        ShowRoom();
+        catch
+        {
+            LearnSite.Common.WordProcess.Alert("保存失败！", this.Page);
+        }
     }
     private void ShowRoom()
     {
