@@ -18,30 +18,36 @@
         .course-create-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .course-create-field-full {
             grid-column: 1 / -1;
         }
-        .course-create-feedback {
-            min-height: 4rem;
+
+        .course-create-select {
+            height: 2.25rem !important;
+            min-width: 140px;
+            width: 100% !important;
         }
 
-        .course-create-feedback .status {
-            color: #b91c1c;
+        .course-create-msg {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: block;
         }
 
         .course-create-actions {
             display: flex;
             gap: 16px;
-            margin-top: 32px;
-            padding-top: 32px;
+            margin-top: 24px;
+            padding-top: 24px;
             border-top: 1px dashed #cbd5e1;
         }
 
         .course-create-primary-btn {
-            padding: 14px 36px;
+            padding: 10px 28px;
             background: linear-gradient(135deg, var(--workspace-primary-bg) 0%, var(--workspace-primary-hover) 100%);
             color: white;
             font-size: 15px;
@@ -58,7 +64,7 @@
         }
 
         .course-create-secondary-btn {
-            padding: 14px 36px;
+            padding: 10px 28px;
             background: #ffffff;
             color: #475569;
             font-size: 15px;
@@ -98,25 +104,29 @@
                 <h2 class="course-create-section-title">基础信息</h2>
                 <p class="course-create-section-desc">以下字段仍沿用原有提交逻辑与事件绑定，创建成功后继续跳转到学案编辑页。</p>
 
+                <div class="course-create-msg">
+                    <asp:Label ID="Labelmsg" runat="server"></asp:Label>
+                </div>
+
                 <div class="course-create-grid">
                     <div class="course-create-field course-create-field-full">
                         <label class="course-create-label" for="<%= Texttitle.ClientID %>">学案名称</label>
-                        <asp:TextBox ID="Texttitle" runat="server" Width="280px" SkinID="TextBoxNormal" CssClass="course-create-input"></asp:TextBox>
+                        <asp:TextBox ID="Texttitle" runat="server" SkinID="TextBoxNormal" CssClass="course-create-input"></asp:TextBox>
                     </div>
 
                     <div class="course-create-field">
                         <label class="course-create-label" for="<%= DDLclass.ClientID %>">学案分类</label>
-                        <asp:DropDownList ID="DDLclass" runat="server" Width="100px" Font-Size="9pt" CssClass="course-create-select"></asp:DropDownList>
+                        <asp:DropDownList ID="DDLclass" runat="server" CssClass="course-create-select"></asp:DropDownList>
                     </div>
 
                     <div class="course-create-field">
                         <label class="course-create-label" for="<%= DDLcobj.ClientID %>">教学年级</label>
-                        <asp:DropDownList ID="DDLcobj" runat="server" Width="100px" Font-Size="9pt" AutoPostBack="True" onselectedindexchanged="DDLcobj_SelectedIndexChanged" CssClass="course-create-select"></asp:DropDownList>
+                        <asp:DropDownList ID="DDLcobj" runat="server" AutoPostBack="True" onselectedindexchanged="DDLcobj_SelectedIndexChanged" CssClass="course-create-select"></asp:DropDownList>
                     </div>
 
                     <div class="course-create-field">
                         <label class="course-create-label" for="<%= DDLCks.ClientID %>">按排课节</label>
-                        <asp:DropDownList ID="DDLCks" runat="server" Font-Size="8pt" Width="50px" Font-Names="Arial" CssClass="course-create-select"></asp:DropDownList>
+                        <asp:DropDownList ID="DDLCks" runat="server" CssClass="course-create-select"></asp:DropDownList>
                     </div>
 
                     <div class="course-create-field">
@@ -133,17 +143,11 @@
                         </label>
                     </div>
                 </div>
-            </section>
 
-            <section class="course-create-actions">
-                <asp:Button ID="BtnCreate" runat="server" Text="创建学案" onclick="BtnCreate_Click" CssClass="course-create-primary-btn" />
-                <asp:Button ID="Btnreturn" runat="server" Text="返回学案" onclick="Btnreturn_Click" CssClass="course-create-secondary-btn" />
-            </section>
-
-            <section class="course-create-feedback">
-                <h2 class="course-create-section-title">处理结果</h2>
-                <p class="course-create-section-desc">创建失败、课时超限等提示仍由原后台逻辑输出。</p>
-                <asp:Label ID="Labelmsg" runat="server"></asp:Label>
+                <div class="course-create-actions">
+                    <asp:Button ID="BtnCreate" runat="server" Text="创建学案" onclick="BtnCreate_Click" CssClass="course-create-primary-btn" />
+                    <asp:Button ID="Btnreturn" runat="server" Text="返回学案" onclick="Btnreturn_Click" CssClass="course-create-secondary-btn" />
+                </div>
             </section>
         </div>
     </div>
