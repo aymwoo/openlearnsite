@@ -726,3 +726,43 @@ table {border-collapse:collapse;}
 #vditor-wrap .vditor-preview__action {
     text-align: left !important;
 }
+
+/* At lg breakpoint, use grid layout for left/right columns */
+@media (min-width: 1024px) {
+    #showcontent:has(> .left) {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 100%;
+    position: static;
+    z-index: 100;
+    background: var(--color-surface-dim);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border);
+    padding: 1.25rem;
+}
+@media (min-width: 1024px) {
+    .sidebar {
+        position: sticky;
+        top: 5rem;
+        max-width: 280px;
+    }
+}
+
+/* ======================================================================
+   MODERN RESPONSIVE OVERRIDES
+   These rules override hardcoded fixed widths (e.g. 1200px, 800px) in
+   legacy elements to allow them to flow nicely inside Tailwind cards.
+   ====================================================================== */
+.coursecontent, .ccontent, .courseother, .infomation, .softdiv, .softcontent, .softcenter, .startdiv, .typedivhead, .typediv, .typedivcenter, .courseleft, .courseright, .courseright1, .quizleft, .quizleft1, .quizleft2, .quizleft3, .cheadleft, .cleft, .create, .cimport, .pattitude, .indexdiv, .managerleftbottom {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+table { max-width: 100% !important; }
