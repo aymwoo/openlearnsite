@@ -307,6 +307,11 @@ img {
     transform: translateY(-1px);
     filter: brightness(1.05);
 }
+.buttonimg:active {
+    box-shadow: none;
+    transform: translateY(1px);
+    filter: brightness(0.95);
+}
 
 .buttonnone {
     border: 1px solid var(--color-border);
@@ -337,6 +342,11 @@ img {
     filter: brightness(1.05);
     box-shadow: var(--shadow-md);
     transform: translateY(-1px);
+}
+#Btnform:active {
+    box-shadow: none;
+    transform: translateY(1px);
+    filter: brightness(0.95);
 }
 
 /* --- Cards & Panels --- */
@@ -559,6 +569,10 @@ table { max-width: 100% !important; }
     opacity: 1;
     transform: translateY(-2px);
 }
+.stunum:active {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(0);
+}
 .stuimg { width: 70px; height: 80px; border-radius: var(--radius-lg); object-fit: cover; }
 .stulink { text-decoration: none; }
 
@@ -612,6 +626,9 @@ table { max-width: 100% !important; }
 .star:hover, .star.active {
     color: #fbbf24;
     transform: scale(1.2);
+}
+.star:active {
+    transform: scale(0.95);
 }
 
 /* --- Info Panels --- */
