@@ -8,6 +8,8 @@
         background: var(--co-bg);
         color: var(--co-text);
         box-sizing: border-box;
+	width: 100%;
+        min-height: calc(100vh - 8rem);
     }
     .co-wrap * { box-sizing: border-box; }
 
