@@ -23,7 +23,7 @@ jobs:
         run: chmod +x run_tests.sh
 
       - name: Run Unit Tests
-        run: ./run_tests.sh --no-e2e
+        run: ./scripts/run_tests.sh --no-e2e
 
       - name: Test Basic Compilation
         run: |
